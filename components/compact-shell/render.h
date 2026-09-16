@@ -144,7 +144,8 @@ class CompactShell {
         bool selected = menu.focus == index;
         if (selected) d.rectangle(0, y, 128, g.row_height, fg);
         auto *font = menu.readable ? large : body;
-        const char *title = nodes[child(menu.current, index)].title;
+        const std::string row_text = row_title(child(menu.current, index));
+        const char *title = row_text.c_str();
         int bx, by, bw, bh;
         d.get_text_bounds(0, 0, title, font, display::TextAlign::TOP_LEFT, &bx,&by,&bw,&bh);
         // Bounded marquee exposes complete long labels without changing focus.
@@ -161,7 +162,8 @@ class CompactShell {
       }
     } else {
       d.start_clipping(2, 14, 126, 64-g.footer-16);
-      const char *detail = nodes[menu.current].action == 3 ? pending : nodes[menu.current].detail;
+      const std::string detail_text = nabla::detail(menu.current);
+      const char *detail = nodes[menu.current].action == 3 ? pending : detail_text.c_str();
       d.print(2, 15, body, fg, detail);
       d.end_clipping();
       // Header is the semantic Back target; provide an obvious touch-sized row.

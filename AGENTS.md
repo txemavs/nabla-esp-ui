@@ -27,7 +27,8 @@ Applies to the entire nabla-esp-ui repository.
   Physical input adapters remain pending.
 - Header has no divider. Header/footer share the bar surface, now 36 px.
 - Desktop footer is persistent; app footer is hidden unless an operation needs it.
-- Startup progress is simulated, then brand/clock replace it.
+- Startup opens the menu directly; progress and logo animations are opt-in for operations.
+- Settings starts with Information; read-only info fields share live model/network/version/uptime.
 - Triangle uses the theme foreground without a frame; interior focus rotates upward.
 - Normal controls preserve their contents on focus and change the border.
 - Gray idle borders, theme-foreground selected borders; monochrome option hides idle borders.

@@ -22,7 +22,7 @@ One tree drives an eight-tile launcher and a scrollable list. Root triangle
 toggles the view; the rotation control cycles 90 degrees. Interior triangle
 and X return to the parent; root status icons are placeholders.
 The header has no divider. A shared bar surface provides header and footer.
-The desktop footer displays simulated startup progress then brand and clock.
+The desktop footer displays brand and clock immediately; operation progress remains opt-in.
 Application views hide the idle footer. See navigation/README.md.
 
 ## Boundary and migration

@@ -1,13 +1,9 @@
-# Shared launcher and simulated startup load; app pages are placeholders.
+# Shared launcher; enter immediately without a simulated boot delay.
 esphome:
   on_boot:
     priority: -100
     then:
       - script.execute: nav_home
-      - script.execute:
-          id: nabla_logo_spin
-          target: !lambda return id(toolbar_logo_image);
-      - script.execute: toolbar_demo_load
 
 packages:
   toolbar_progress: !include ../../components/toolbar/progress.yaml
@@ -221,3 +217,17 @@ lvgl:
                     - script.execute:
                         id: nav_choose
                         index: 7
+
+# Refresh only information text; preserve focus and scroll position.
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          int current = id(nav_current);
+          if (nabla::nodes[current].info)
+            lv_label_set_text(id(nav_detail), nabla::detail(current).c_str());
+          lv_obj_t *labels[] = {id(nav_row_label_0), id(nav_row_label_1), id(nav_row_label_2), id(nav_row_label_3), id(nav_row_label_4), id(nav_row_label_5), id(nav_row_label_6), id(nav_row_label_7)};
+          for (int i = 0; i < nabla::children(current); ++i) {
+            int n = nabla::child(current, i);
+            if (nabla::nodes[n].info) lv_label_set_text(labels[i], nabla::row_title(n).c_str());
+          }

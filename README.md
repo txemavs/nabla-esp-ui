@@ -31,7 +31,8 @@ Draft YAML in docs/platform/ is explicitly illustrative, not accepted firmware.
 - Touch and keyboard; Up/Down plus Enter emulate rotary navigation.
 - A root rotation button cycles 90 degrees; grid reflows 4x2 or 2x4.
 - Shared compact header/footer, configurable logo and status icon assets.
-- Simulated startup progress followed by brand and HH:MM desktop footer.
+- Immediate launcher startup, reusable operation progress and brand/HH:MM footer.
+- Settings > Information shows model, network, ESPHome version and uptime.
 - Dark/light appearance and build-time Spanish/English with accent glyphs.
 - Native 128x64 tiny/readable and 320x480 portrait profiles.
 - Shared simulated Wi-Fi scans, masked password editing and failure/retry states.

@@ -2,6 +2,9 @@ substitutions:
   nabla_resource_root: ".."
 
 # This is the user-editable navigation tree. No numeric IDs or C++ required.
+packages:
+  device_info: !include ../../components/device-info/package.yaml
+
 external_components:
   - source:
       type: local
@@ -41,6 +44,24 @@ nabla_navigation:
         title: ${tr_settings}
         icon: ${icon_settings}
         children:
+          - key: information
+            title: ${tr_information}
+            children:
+              - key: device_model
+                title: ${tr_info_model}
+                info: model
+              - key: device_wifi
+                title: Wi-Fi
+                info: wifi
+              - key: device_ip
+                title: IP
+                info: ip
+              - key: device_version
+                title: ESPHome
+                info: version
+              - key: device_uptime
+                title: ${tr_info_uptime}
+                info: uptime
           - key: connections
             title: ${tr_wifi_form_connections}
             children:
@@ -50,9 +71,6 @@ nabla_navigation:
           - key: language
             title: ${tr_language}
             detail: ${tr_language_detail}
-          - key: about
-            title: ${tr_about}
-            detail: ${tr_about_detail}
           - key: appearance
             title: ${tr_appearance}
             children:

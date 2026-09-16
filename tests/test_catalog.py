@@ -18,6 +18,26 @@ class CatalogTests(unittest.TestCase):
                 {"key": "dark", "title": "Dark", "action": "dark"}]},
             {"key": "sensors", "title": "Sensores", "icon": "T"}]}
 
+    def test_information_fields_are_read_only_leaves(self):
+        t = self.tree()
+        n = t["children"][0]["children"][0]
+        n.pop("detail")
+        n["info"] = "ip"
+        self.assertEqual(catalog.flatten(t)[2]["info"], "ip")
+        self.assertIn(", 3}", catalog.emit(t))
+        for bad in ("password", 3, []):
+            n["info"] = bad
+            with self.assertRaises(ValueError):
+                catalog.flatten(t)
+        n["info"] = "ip"
+        n["action"] = "wifi_demo"
+        with self.assertRaises(ValueError):
+            catalog.flatten(t)
+        n["action"] = "open"
+        n["detail"] = "stale"
+        with self.assertRaises(ValueError):
+            catalog.flatten(t)
+
     def test_nested_parent_and_order(self):
         nodes = catalog.flatten(self.tree())
         self.assertEqual([n["parent"] for n in nodes], [-1, 0, 1, 1, 0])

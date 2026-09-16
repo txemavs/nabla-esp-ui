@@ -1,3 +1,6 @@
+substitutions:
+  nabla_device_model: "JC3248W535CN"
+
 # Guition JC3248W535CN: ESP32-S3, 16 MiB flash, 8 MiB octal PSRAM.
 esp32:
   board: esp32-s3-devkitc-1

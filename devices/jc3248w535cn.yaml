@@ -1,5 +1,6 @@
 # Standalone hardware bring-up using the same UI as the desktop simulator.
 substitutions:
+  nabla_device_model: "JC3248W535CN"
   ui_language: es
   nabla_initial_rotation: "90"
   screen_width: "480"

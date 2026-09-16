@@ -4,6 +4,8 @@ Reusable UI building blocks live here, grouped by component. New components
 should have a widget.yaml entry point and a README describing parameters,
 dependencies, focus/pressed behavior, examples and limitations.
 
+- device-info/package.yaml: read-only model, network, version and uptime snapshot;
+  see device-info/README.md for field bindings and limits.
 - logo/widget.yaml: theme-foreground equilateral triangle with upward focus motion.
 - toolbar/widget.yaml: persistent application shell, breadcrumbs and close.
 - menu-tile.yaml: parameterized application tile.

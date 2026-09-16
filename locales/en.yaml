@@ -1,4 +1,9 @@
 substitutions:
+  tr_information: "Information"
+  tr_info_model: "Model"
+  tr_info_uptime: "Uptime"
+  tr_info_disconnected: "Disconnected"
+  tr_info_unavailable: "Not available"
   tr_home: "Home"
   tr_settings: "Settings"
   tr_communications: "Communications"

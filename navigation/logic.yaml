@@ -179,7 +179,7 @@ script:
           lv_obj_set_grid_dsc_array(id(launcher_content), portrait ? grid_two : grid_four, portrait ? grid_four : grid_two);
           lv_obj_set_width(id(navigation_content), screen_w - 8);
           lv_obj_set_width(id(nav_detail), screen_w - 16);
-          if (nabla::nodes[current].detail[0]) lv_obj_remove_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
+          if (!nabla::detail(current).empty()) lv_obj_remove_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
           else lv_obj_add_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
           lv_obj_set_x(id(toolbar_wifi), screen_w - 84);
           lv_obj_set_x(id(toolbar_bluetooth), screen_w - 42);
@@ -198,7 +198,7 @@ script:
           lv_obj_set_style_bg_color(id(home_page)->obj, background, 0);
           lv_obj_set_style_bg_color(id(navigation_page)->obj, background, 0);
           lv_obj_set_style_text_color(id(nav_detail), foreground, 0);
-          lv_label_set_text(id(nav_detail), nabla::nodes[current].detail);
+          lv_label_set_text(id(nav_detail), nabla::detail(current).c_str());
           lv_obj_t *tiles[] = {id(menu_tile_0), id(menu_tile_1), id(menu_tile_2), id(menu_tile_3), id(menu_tile_4), id(menu_tile_5), id(menu_tile_6), id(menu_tile_7)};
           lv_obj_t *rows[] = {id(nav_row_0), id(nav_row_1), id(nav_row_2), id(nav_row_3), id(nav_row_4), id(nav_row_5), id(nav_row_6), id(nav_row_7)};
           lv_obj_t *labels[] = {id(nav_row_label_0), id(nav_row_label_1), id(nav_row_label_2), id(nav_row_label_3), id(nav_row_label_4), id(nav_row_label_5), id(nav_row_label_6), id(nav_row_label_7)};
@@ -239,7 +239,7 @@ script:
             if (n < 0) lv_obj_add_flag(rows[i], LV_OBJ_FLAG_HIDDEN);
             else {
               lv_obj_remove_flag(rows[i], LV_OBJ_FLAG_HIDDEN);
-              lv_label_set_text(labels[i], nabla::nodes[n].title);
+              lv_label_set_text(labels[i], nabla::row_title(n).c_str());
               border(rows[i], id(nav_selection) == i);
             }
           }

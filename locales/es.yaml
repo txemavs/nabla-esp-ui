@@ -1,4 +1,9 @@
 substitutions:
+  tr_information: "Información"
+  tr_info_model: "Modelo"
+  tr_info_uptime: "Encendido"
+  tr_info_disconnected: "Sin conexión"
+  tr_info_unavailable: "No disponible"
   tr_home: "Inicio"
   tr_settings: "Ajustes"
   tr_communications: "Comunicaciones"
