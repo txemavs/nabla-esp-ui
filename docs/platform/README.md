@@ -23,8 +23,9 @@ documented extension, not edits throughout the core.
 2. [Components and input](COMPONENTS-AND-INPUT.md): catalog, profiles and editors.
 3. [Connectivity and commissioning](CONNECTIVITY.md): Wi-Fi, passwords and peers.
 4. [Vehicle and Nabla Edge](VEHICLE-EDGE.md): independent startup and telemetry.
-5. [Delivery roadmap](ROADMAP.md): milestones with completion gates.
-6. [Research notes](SOURCES.md): primary sources and version caveats.
+5. [Edge configuration integration](EDGE-CONFIG.md): reviewed menus and BLE bridge.
+6. [Delivery roadmap](ROADMAP.md): milestones with completion gates.
+7. [Research notes](SOURCES.md): primary sources and version caveats.
 
 [Draft configuration](platform.proposal.yaml) is illustrative, deliberately outside
 examples/. Do not feed it to ESPHome: the proposed nabla_ui domain does not exist.

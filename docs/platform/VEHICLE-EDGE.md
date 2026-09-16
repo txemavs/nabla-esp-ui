@@ -2,8 +2,9 @@
 
 Status: proposed deployment architecture, not an implemented car integration.
 The Raspberry Pi 4, exact panel and purchased CAN/OBD adapter must be inventoried.
-No existing Nabla Edge implementation or API was inspected in this planning pass;
-its adapter contract must be mapped to the actual service before implementation.
+The public menu script and protocol drafts have now been reviewed; see
+[Edge configuration integration](EDGE-CONFIG.md). Installed Pi services and the
+network backend still need to be mapped before implementation.
 
 ## Responsibility split
 
@@ -19,7 +20,8 @@ to be verified), provides a Wi-Fi access point for the ESP32, and exposes
 vehicle telemetry over that Wi-Fi link. Speed is not transported over BLE.
 
 BLE is the bootstrap/control channel: reuse the existing Nabla Edge Pi
-advertising/commissioning behavior after inspecting its actual implementation.
+advertising/commissioning behavior after inspecting its installed implementation.
+The public BLE documentation does not yet establish a configuration service.
 The Pi announces readiness; the ESP32 then joins the Pi's Wi-Fi and subscribes
 to the telemetry service. Previously provisioned credentials can be reused;
 new credentials require the authorized provisioning flow, not public advertising.
