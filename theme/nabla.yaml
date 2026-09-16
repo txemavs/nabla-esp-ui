@@ -1,4 +1,6 @@
 substitutions:
+  nabla_bar_height: "48"
+  nabla_toolbar_align: "TOP_MID"
   nabla_background: "0x000000"
   nabla_accent: "0x00C8FF"
   nabla_secondary: "0x808080"

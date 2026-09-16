@@ -1,0 +1,10 @@
+# Shared surface for header/footer bars. Parameters: bar_id, anchor, background.
+id: ${bar_id}
+align: ${anchor}
+width: 100%
+height: ${nabla_bar_height}
+bg_color: ${background}
+border_width: 0
+pad_all: 0
+radius: 0
+scrollbar_mode: "OFF"

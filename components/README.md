@@ -15,3 +15,6 @@ The toolbar.yaml compatibility entry point remains supported.
 
 The tile slots are populated from the declarative navigation catalog; do not
 duplicate application titles, icons or numeric targets in component includes.
+
+- bar/surface.yaml: common header/footer surface and height.
+- progress/widget.yaml: temporary gray/cyan progress footer.

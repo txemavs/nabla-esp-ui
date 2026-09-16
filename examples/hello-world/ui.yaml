@@ -20,6 +20,7 @@ lvgl:
   top_layer:
     widgets:
       - !include ../../components/toolbar.yaml
+      - !include ../../components/progress/widget.yaml
   pages:
     - id: home_page
       bg_color: ${nabla_background}
@@ -32,9 +33,9 @@ lvgl:
         - obj:
             id: navigation_content
             x: 8
-            y: 52
+            y: ${(nabla_bar_height | int) + 4}
             width: 464
-            height: 260
+            height: ${(screen_height | int) - (nabla_bar_height | int) - 12}
             pad_all: 4
             bg_opa: TRANSP
             border_width: 0

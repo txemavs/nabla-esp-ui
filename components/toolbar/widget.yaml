@@ -1,14 +1,11 @@
 # Theme-aware toolbar; one shared logo for startup and navigation.
 obj:
-  id: navigation_toolbar
-  width: 100%
-  height: 48
-  bg_color: ${nabla_background}
-  border_width: 0
-  border_side: BOTTOM
-  border_color: ${nabla_secondary}
-  pad_all: 0
-  radius: 0
+  <<: !include
+    file: ../bar/surface.yaml
+    vars:
+      bar_id: navigation_toolbar
+      anchor: ${nabla_toolbar_align}
+      background: ${nabla_background}
   widgets:
     - label:
         id: toolbar_wifi
@@ -29,26 +26,6 @@ obj:
         text: "\uf293"
         text_font: nabla_toolbar_brands
         text_color: ${nabla_secondary}
-        clickable: false
-    - label:
-        id: toolbar_progress_label
-        hidden: true
-        x: ${(screen_width | int) - 104}
-        y: 12
-        width: 52
-        text: "0%"
-        text_align: RIGHT
-        text_font: nabla_font_16
-        clickable: false
-    - obj:
-        id: toolbar_divider
-        x: 26
-        y: 39
-        width: ${(screen_width | int) - 52}
-        height: 1
-        bg_color: ${nabla_secondary}
-        border_width: 0
-        pad_all: 0
         clickable: false
     - button:
         id: toolbar_home

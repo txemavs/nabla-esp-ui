@@ -1,0 +1,42 @@
+# Shared progress bar surface, shown as a footer in the example.
+obj:
+  <<: !include
+    file: ../bar/surface.yaml
+    vars:
+      bar_id: progress_footer
+      anchor: BOTTOM_MID
+      background: 0x404040
+  hidden: true
+  widgets:
+    - obj:
+        id: footer_progress_track
+        x: 12
+        y: ${(nabla_bar_height | int) - 18}
+        width: ${(screen_width | int) - 88}
+        height: 3
+        bg_color: 0x707070
+        border_width: 0
+        pad_all: 0
+        radius: 0
+        clickable: false
+        widgets:
+          - obj:
+              id: footer_progress_fill
+              width: 1
+              height: 100%
+              bg_color: ${nabla_accent}
+              border_width: 0
+              pad_all: 0
+              radius: 0
+              clickable: false
+    - label:
+        id: footer_progress_label
+        align: BOTTOM_RIGHT
+        x: -12
+        y: -10
+        width: 58
+        text: "0%"
+        text_align: RIGHT
+        text_font: nabla_font_16
+        text_color: ${nabla_accent}
+        clickable: false

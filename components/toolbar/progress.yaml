@@ -1,4 +1,4 @@
-# Shared toolbar progress: -2 hidden, -1 idle line, 0..100 active percentage.
+# Shared footer progress: negative hides the footer, 0..100 shows progress.
 globals:
   - id: toolbar_progress
     type: int

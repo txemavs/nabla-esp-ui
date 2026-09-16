@@ -118,3 +118,11 @@ never claim the one-second startup simulation represents actual initialization.
 Toolbar right icons use Font Awesome Solid and Brands. Root Wi-Fi/Bluetooth
 are display-only placeholders, never presented as live connectivity. Keep
 root indicators outside the focus order and preserve X/ESC inside views.
+
+## Current bar composition
+Header and footer share components/bar/surface.yaml and nabla_bar_height.
+The header has no divider or progress. Progress belongs to the gray/cyan
+footer; negative progress hides it. Reserve its height in the body while
+visible. Earlier header-progress/underline rules are superseded. The minimal
+composition is header, body text and optional footer; tiny-screen profiles
+remain planned, not validated by the 480x320 example.

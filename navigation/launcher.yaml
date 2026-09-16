@@ -1,8 +1,9 @@
 # One menu definition for the initial landscape profile.
 obj:
+  id: launcher_content
   width: 100%
-  y: 48
-  height: ${(screen_height | int) - 48}
+  y: ${nabla_bar_height}
+  height: ${(screen_height | int) - (nabla_bar_height | int)}
   bg_opa: TRANSP
   border_width: 0
   pad_all: 12
