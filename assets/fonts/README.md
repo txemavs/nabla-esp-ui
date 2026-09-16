@@ -12,3 +12,7 @@ Icon names are registered in theme/icons.yaml. To add an icon, add its codepoint
 to the Font Awesome glyph list in theme/fonts.yaml, then define its named
 substitution in theme/icons.yaml. Render icons with nabla_icons_32; use
 nabla_font_16/20/28 for text. Only Free Solid icons in the bundled version apply.
+
+fa-brands-400.ttf: Font Awesome Free Brands 6.7.2, from the official
+FortAwesome/Font-Awesome release; covered by FontAwesome-LICENSE.txt.
+Used for the Bluetooth toolbar glyph.

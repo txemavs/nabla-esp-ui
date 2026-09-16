@@ -1,8 +1,8 @@
 # One menu definition for the initial landscape profile.
 obj:
   width: 100%
-  y: 52
-  height: ${(screen_height | int) - 52}
+  y: 48
+  height: ${(screen_height | int) - 48}
   bg_opa: TRANSP
   border_width: 0
   pad_all: 12

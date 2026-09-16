@@ -32,9 +32,9 @@ lvgl:
         - obj:
             id: navigation_content
             x: 8
-            y: 56
+            y: 52
             width: 464
-            height: 256
+            height: 260
             pad_all: 4
             bg_opa: TRANSP
             border_width: 0

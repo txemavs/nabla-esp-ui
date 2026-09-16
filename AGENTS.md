@@ -114,3 +114,7 @@ it remains the Home mark. The underline meets its resting lower tip.
 Toolbar progress is shared via components/toolbar/progress.yaml. Reserve space
 for percentages while active, keep the line above transparent controls, and
 never claim the one-second startup simulation represents actual initialization.
+
+Toolbar right icons use Font Awesome Solid and Brands. Root Wi-Fi/Bluetooth
+are display-only placeholders, never presented as live connectivity. Keep
+root indicators outside the focus order and preserve X/ESC inside views.

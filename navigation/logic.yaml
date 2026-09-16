@@ -151,6 +151,14 @@ script:
               border(rows[i], id(nav_selection) == i);
             }
           }
+          if (current) {
+            lv_obj_add_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+          } else {
+            lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_remove_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+          }
+          lv_obj_set_x(id(toolbar_progress_label), ${screen_width} - (current ? 104 : 148));
           const bool loading = id(toolbar_progress) >= 0;
           const auto toolbar_bg = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
           const auto toolbar_fg = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
@@ -160,7 +168,7 @@ script:
             lv_obj_remove_flag(id(toolbar_progress_label), LV_OBJ_FLAG_HIDDEN);
             lv_label_set_text_fmt(id(toolbar_progress_label), "%d%%", id(toolbar_progress));
           } else lv_obj_add_flag(id(toolbar_progress_label), LV_OBJ_FLAG_HIDDEN);
-          int line_width = (${screen_width} - 30) * (loading ? id(toolbar_progress) : 100) / 100;
+          int line_width = (${screen_width} - 52) * (loading ? id(toolbar_progress) : 100) / 100;
           if (id(toolbar_progress) == -2 || line_width == 0) lv_obj_add_flag(id(toolbar_divider), LV_OBJ_FLAG_HIDDEN);
           else {
             lv_obj_remove_flag(id(toolbar_divider), LV_OBJ_FLAG_HIDDEN);
@@ -216,14 +224,14 @@ script:
               toolbar_style(buttons[i], texts[i], !is_current && id(nav_selection) == total + 1 + i);
               x += w; available -= w;
             }
-            toolbar_style(id(toolbar_close), id(toolbar_close_label), id(nav_selection) == total + (int) id(nav_crumbs).size());
+            toolbar_style(id(toolbar_close), nullptr, id(nav_selection) == total + (int) id(nav_crumbs).size());
           } else {
             lv_obj_add_flag(id(toolbar_close), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_crumb_1), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_crumb_2), LV_OBJ_FLAG_HIDDEN);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_HIDDEN);
             lv_obj_set_x(id(toolbar_crumb_0), 54);
-            lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 60 - (loading ? 100 : 0));
+            lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 148 - (loading ? 56 : 0));
             lv_label_set_text(id(toolbar_crumb_label_0), nabla::nodes[0].title);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_text_font(id(toolbar_crumb_label_0), id(nabla_font_bold_16)->get_lv_font(), 0);

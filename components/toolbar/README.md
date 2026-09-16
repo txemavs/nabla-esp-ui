@@ -41,3 +41,9 @@ it with the one-second logo intro. It is a visual demonstration, not a measure
 of firmware or network initialization. Real callers should drive progress
 with their own events and stop toolbar_demo_load before taking ownership.
 The toolbar follows dark/light mode, including text and focus borders.
+
+The header is 48 pixels high. The right-hand icon area uses Font Awesome:
+red solid X in applications, and gray Wi-Fi plus Bluetooth Brands at the root.
+Root icons are noninteractive placeholders, excluded from focus; they do not
+indicate live connectivity. Progress reserves space before this icon area.
+The line ends at the horizontal center of the rightmost icon.

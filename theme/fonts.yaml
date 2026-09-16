@@ -38,3 +38,16 @@ font:
     bpp: 4
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€"
+
+  - file: ../assets/fonts/fa-solid-900.ttf
+    id: nabla_toolbar_icons
+    size: 22
+    bpp: 4
+    glyphsets: []
+    glyphs: ["\uf00d", "\uf1eb"]
+  - file: ../assets/fonts/fa-brands-400.ttf
+    id: nabla_toolbar_brands
+    size: 22
+    bpp: 4
+    glyphsets: []
+    glyphs: ["\uf293"]
