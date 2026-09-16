@@ -1,8 +1,11 @@
+substitutions:
+  nabla_resource_root: ".."
+
 # This is the user-editable navigation tree. No numeric IDs or C++ required.
 external_components:
   - source:
       type: local
-      path: ../external_components
+      path: ${nabla_resource_root}/external_components
 
 nabla_navigation:
   forms:

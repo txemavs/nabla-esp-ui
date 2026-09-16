@@ -1,7 +1,10 @@
+substitutions:
+  nabla_resource_root: ".."
+
 # Transactional renderer; metadata comes from nabla_navigation.forms.
 esphome:
   includes:
-    - ../components/forms/regular.h
+    - ${nabla_resource_root}/components/forms/regular.h
 script:
   - id: forms_bind
     then:

@@ -1,12 +1,13 @@
 substitutions:
+  nabla_resource_root: ".."
   nabla_initial_rotation: "0"
 
 esphome:
   includes:
-    - ../navigation/tree.h
-    - ../navigation/focus.h
-    - ../profiles/geometry.h
-    - ../navigation/orientation.h
+    - ${nabla_resource_root}/navigation/tree.h
+    - ${nabla_resource_root}/navigation/focus.h
+    - ${nabla_resource_root}/profiles/geometry.h
+    - ${nabla_resource_root}/navigation/orientation.h
 
 globals:
   - id: nav_list_view

@@ -1,12 +1,13 @@
 substitutions:
+  nabla_resource_root: ".."
   nabla_keyboard_latin: "true"
 
 # Local simulated Wi-Fi form, composed by the demo navigation.
 esphome:
   includes:
-    - ../components/forms/latin_keyboard.h
-    - ../components/forms/wifi_flow.h
-    - ../components/wifi-form/form.h
+    - ${nabla_resource_root}/components/forms/latin_keyboard.h
+    - ${nabla_resource_root}/components/forms/wifi_flow.h
+    - ${nabla_resource_root}/components/wifi-form/form.h
 
 script:
   - id: wifi_form_bind

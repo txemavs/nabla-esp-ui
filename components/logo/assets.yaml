@@ -1,13 +1,16 @@
+substitutions:
+  nabla_resource_root: ".."
+
 # SVG is the editable geometric source; ESPHome rasterizes at build time.
 image:
   - platform: file
-    file: ../components/logo/silver.svg
+    file: ${nabla_resource_root}/components/logo/silver.svg
     id: nabla_logo_large
     type: RGB565
     transparency: alpha_channel
     resize: 180x180
   - platform: file
-    file: ../components/logo/silver.svg
+    file: ${nabla_resource_root}/components/logo/silver.svg
     id: nabla_logo_small
     type: RGB565
     transparency: alpha_channel
@@ -15,7 +18,7 @@ image:
 
 esphome:
   includes:
-    - ../components/logo/motion.h
+    - ${nabla_resource_root}/components/logo/motion.h
 
 script:
   - id: nabla_logo_set_color

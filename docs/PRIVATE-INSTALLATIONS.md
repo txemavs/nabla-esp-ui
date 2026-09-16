@@ -46,27 +46,68 @@ will accept a binding through its documented adapter contract; it must not embed
 specific installation's URL or entity. Do not introduce unimplemented YAML keys
 to imply that this binding contract is already available.
 
-## Current packaging limitation
+## Device Builder with a pinned local library
 
-The working device entry point is devices/jc3248w535cn.yaml. Its transitive font,
-image, C++ include and local external-component paths currently rely on the root
-configuration living one directory below the repository root. YAML package
-includes alone do not make all of these paths portable.
+The supported consumer layout keeps one public checkout next to a private root
+configuration. Set nabla_resource_root to that checkout; fonts, images, C++ headers
+and the local external component use this root. Its default is .. so the existing
+device and simulator entry points retain their layout.
 
-An arbitrary remote-package import into Device Builder is therefore not yet a
-supported deployment recipe. Before publishing that recipe:
+Example directory structure:
 
-1. Make all transitive assets and external components resolve from an independent
-   consumer configuration outside the checkout.
-2. Validate and compile that independent consumer using a pinned revision.
-3. Add the private device in Device Builder without copying installation data
-   into the library.
-4. Perform the first USB installation with networking and authenticated OTA.
-5. Verify an actual subsequent OTA update, reboot and touch operation.
+    esphome/
+      .nabla-ui/              # Public library checkout at a tested commit
+      panel.yaml              # Private device configuration
+      secrets.yaml            # Private credentials, managed by the installation
 
-Document the tested import syntax only after this consumer build passes. The
-current standalone firmware has no Wi-Fi/API/OTA; its simulated Wi-Fi editor does
-not configure the real radio.
+The public checkout can be inspected in the installation's file editor. Device
+Builder's device entry opens the private composition and can build its includes.
+Do not edit generated C++ or duplicate UI behavior into the private root.
+
+A minimal private composition looks like this (supply the named secrets locally):
+
+```yaml
+substitutions:
+  nabla_resource_root: .nabla-ui
+  ui_language: en
+
+packages:
+  base: !include .nabla-ui/devices/jc3248w535cn.yaml
+
+wifi:
+  reboot_timeout: 0s
+  networks:
+    - ssid: !secret panel_wifi_ssid
+      password: !secret panel_wifi_password
+      priority: 10
+
+ota:
+  - platform: esphome
+    password: !secret panel_ota_password
+```
+
+Clone the public repository into .nabla-ui and check out an explicitly selected,
+tested commit before validating the private root. For upgrades, check that the
+library checkout is clean, fetch, and select the new tested commit; then validate
+and install only the intended device. Do not automatically update all devices.
+
+An optional manually supplied network can precede fallback networks with a higher
+priority (for example 40 above fallbacks at 30/20/10). Simply moving an entry to
+the top does not replace explicit priority. Keep its SSID/password in local
+secrets. An omitted manual entry leaves the fallback configuration unchanged.
+This is firmware configuration, not a completed runtime Wi-Fi editor: the current
+on-screen Wi-Fi form is still the M2 simulation.
+
+An arbitrary remote YAML package import is not supported by this recipe: the
+resources must exist in the local checkout selected by nabla_resource_root.
+Direct GitHub-only asset packaging remains a separate improvement.
+
+Validation includes a hardware firmware build from a private consumer directory
+outside this repository without sibling asset symlinks, and configuration
+validation of the regular, compact and password simulator entry points.
+The standalone public device YAML remains offline; Wi-Fi/OTA are opt-in additions
+in the private root. The first network-enabled USB installation and a subsequent
+authenticated OTA upload have been verified for the initial board.
 
 ## Routed OTA and offline operation
 

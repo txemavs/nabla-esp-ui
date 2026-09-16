@@ -64,7 +64,9 @@ Applies to the entire nabla-esp-ui repository.
 - Keep credentials out of logs/examples; remote commands are allowlisted and scoped.
 - Follow docs/PRIVATE-INSTALLATIONS.md: site YAML and bindings stay outside this repo.
 - Never publish real entities, camera URLs, network inventory, firmware or backups.
-- Validate remote-package portability from an independent consumer before advertising it.
+- Use nabla_resource_root for runtime file paths; YAML !include paths stay source-relative.
+- Validate independent consumers; the Builder recipe uses a pinned local checkout,
+  not an arbitrary GitHub-only package import.
 - UI updates belong to the UI loop; callbacks enqueue bounded state changes.
 - Keep source artwork and bundled licenses; register new glyphs and icons.
 

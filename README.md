@@ -79,7 +79,8 @@ is narrower than complete M3 validation.
 
 Keep site-specific device YAML, camera/entity bindings and secrets outside this
 public repository. See [the public/private boundary](docs/PRIVATE-INSTALLATIONS.md)
-for ownership, routed OTA and the current remote-package portability limitation.
+for ownership, routed OTA and a Device Builder composition using a pinned local
+library checkout.
 
 ## Brand and contributions
 

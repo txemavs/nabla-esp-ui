@@ -1,11 +1,14 @@
+substitutions:
+  nabla_resource_root: ".."
+
 esphome:
   includes:
-    - ../components/forms/wifi_flow.h
-    - ../components/forms/compact_wifi.h
-    - ../navigation/focus.h
-    - ../profiles/geometry.h
-    - ../components/compact-shell/model.h
-    - ../components/compact-shell/render.h
+    - ${nabla_resource_root}/components/forms/wifi_flow.h
+    - ${nabla_resource_root}/components/forms/compact_wifi.h
+    - ${nabla_resource_root}/navigation/focus.h
+    - ${nabla_resource_root}/profiles/geometry.h
+    - ${nabla_resource_root}/components/compact-shell/model.h
+    - ${nabla_resource_root}/components/compact-shell/render.h
   on_boot:
     priority: -100
     then:
@@ -25,19 +28,19 @@ esphome:
           id(compact_home).publish_state(false);
 
 font:
-  - file: ../assets/fonts/DejaVuSans-Bold.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans-Bold.ttf
     id: compact_small
     size: 8
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
-  - file: ../assets/fonts/DejaVuSans.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: compact_body
     size: 10
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
-  - file: ../assets/fonts/DejaVuSans.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: compact_large
     size: 16
     bpp: 1

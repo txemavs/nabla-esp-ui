@@ -1,27 +1,30 @@
+substitutions:
+  nabla_resource_root: ".."
+
 # Explicit glyphs keep firmware font data bounded.
 font:
-  - file: ../assets/fonts/DejaVuSans.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: nabla_font_16
     extras:
-      - file: ../assets/fonts/fa-solid-900.ttf
+      - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
         glyphs: ["\uf00c", "\uf00d", "\uf053", "\uf054", "\uf55a"]
     size: 16
     bpp: 4
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
-  - file: ../assets/fonts/DejaVuSans.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: nabla_font_20
     size: 20
     bpp: 4
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
-  - file: ../assets/fonts/DejaVuSans.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: nabla_font_28
     size: 28
     bpp: 4
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
-  - file: ../assets/fonts/fa-solid-900.ttf
+  - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
     id: nabla_icons_32
     size: 32
     bpp: 4
@@ -35,26 +38,26 @@ font:
       - "\uf185"
       - "\uf0eb"
       - "\uf2c9"
-  - file: ../assets/fonts/DejaVuSans-Bold.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans-Bold.ttf
     id: nabla_font_bold_16
     size: 16
     bpp: 4
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
 
-  - file: ../assets/fonts/fa-solid-900.ttf
+  - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
     id: nabla_toolbar_icons
     size: 22
     bpp: 4
     glyphsets: []
     glyphs: ["\uf00d", "\uf1eb", "\uf2f1"]
-  - file: ../assets/fonts/fa-brands-400.ttf
+  - file: ${nabla_resource_root}/assets/fonts/fa-brands-400.ttf
     id: nabla_toolbar_brands
     size: 22
     bpp: 4
     glyphsets: []
     glyphs: ["\uf293"]
-  - file: ../assets/fonts/DejaVuSans.ttf
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: nabla_font_12
     size: 12
     bpp: 4
