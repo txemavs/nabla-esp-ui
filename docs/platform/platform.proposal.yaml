@@ -1,0 +1,76 @@
+# DESIGN ONLY. Not accepted by ESPHome or the current nabla_navigation schema.
+# Do not put this file in packages. No firmware should include docs/platform/.
+document_status: proposal
+proposal_version: 1
+nabla_ui:
+  schema_version: 1
+  panel:
+    id: vehicle_panel
+    profile: readable_color
+    locale: es
+    fallback_locale: en
+    inputs: [touch, encoder]
+    motion: reduced_optional
+  shell:
+    header: navigation
+    footer:
+      home: brand_and_clock
+      applications: per_application
+      operation: progress
+  navigation:
+    root: home
+    views: [tiles, list]
+    entries:
+      - id: home
+        title_key: main_menu
+        children: [settings, communications, vehicle]
+      - id: settings
+        title_key: settings
+        application: settings
+      - id: communications
+        title_key: communications
+        application: communications
+      - id: vehicle
+        title_key: vehicle
+        application: vehicle_status
+  applications:
+    settings:
+      module: settings
+      features: [appearance, wifi, pairing]
+    communications:
+      module: service_status
+      services: [pi, edge, tailscale]
+    vehicle_status:
+      module: telemetry_list
+      values: [vehicle_voltage]
+  bindings:
+    vehicle_voltage:
+      source: local_adapter
+      reference: vehicle_voltage_entity
+      type: number
+      unit: V
+      unavailable: show_reason
+      stale_after: 5s
+  adapters:
+    local_adapter:
+      kind: esphome_entities
+    edge:
+      kind: nabla_edge
+      required_for_local_ui: false
+    home_assistant:
+      enabled: false
+  cooperation:
+    provisioning:
+      candidate_transport: improv_ble
+      require_target_authorization: true
+      credential_transport_policy: authenticated_encrypted
+    remote_input:
+      enabled: false
+      allowed_actions: [UP, DOWN, LEFT, RIGHT, ENTER, ESC]
+  limits:
+    navigation_depth: 16
+    active_operations: 2
+    cached_views: 2
+# References here are proposed semantic names, not real ESPHome IDs.
+# Future validation must reject unresolved bindings and unsupported capabilities.
+# For a tiny peer, change profile/input/presentation; keep application semantics.

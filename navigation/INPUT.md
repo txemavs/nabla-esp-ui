@@ -1,98 +1,46 @@
 # Shared input contract
 
-This contract applies to every nabla.net ESP UI device and presentation.
-Hardware adapters emit semantic actions; views must not depend on GPIO pins,
-SDL key codes, or a particular physical input device.
+Hardware adapters emit semantic actions; views do not know GPIOs or SDL keys.
+Canonical actions: UP, DOWN, LEFT, RIGHT, ENTER, ESC.
+Home is an optional additional action, distinct from the context-sensitive logo.
 
-## Core actions
+## Current behavior
 
-- Previous / Up: select the previous item in the view's defined order.
-- Next / Down: select the next item; lists scroll to keep focus visible.
-- Confirm: activate the selected item, or enter/finish editing a value.
-- Back: close the current view and return to its parent/previous context.
-- Home: return to the application desktop.
-- Left / Right: separate directional actions for controls that explicitly
-  support them. They do not duplicate sequential menu navigation by default.
+UP/DOWN traverse menu order and wrap; list focus scrolls into view.
+ENTER activates; ESC returns to the parent, and is a no-op at the root.
+Keyboard Home opens the root. LEFT/RIGHT are reserved until a control defines them.
+Touch/mouse selects and activates through the same 120 ms feedback path.
 
-In the current launcher, sequential order is row-major: traverse the first row
-left to right, then the next row. Up/Down follows that sequence and wraps.
-A menu list follows its displayed order.
+Root focus: entries, triangle, rotation button. Root triangle toggles tiles/list.
+Interior focus: entries, triangle, visible ancestors, X. Triangle and X go back.
+Current title is bold, noninteractive and excluded from focus.
+Status icons and idle footer text have no action.
 
-## Device adapters
+Triangle focus recolors the mark white without a frame, preserving its base/status
+color outside focus. Interior focus also rotates it left. Ordinary control focus
+changes borders, not application colors. Monochrome mode hides unselected borders.
+Clearing focus restores the triangle's normal color and orientation.
 
-- Touchscreen: tapping an item selects and activates it.
-- Mouse: clicking behaves like tapping.
-- Rotary encoder: rotation emits Previous/Next; pressing emits Confirm.
-- Five-way joystick: Up, Down, Left, Right and center press (Confirm).
-- Optional Escape/back button: emits Back.
-- Simulator keyboard: Up/Down, Enter, Escape and Home respectively.
-  Left/Right are reserved until a view implements directional interaction.
+## Adapters
 
-Devices without a dedicated Back button must still expose an on-screen,
-focusable route back. A physical Home button is optional.
+Touch and SDL keyboard are implemented. A mouse is touch-equivalent.
+Physical rotary and joystick adapters remain planned:
+- Rotary provides UP/DOWN and ENTER.
+- Optional dedicated back button provides ESC.
+- Five-way joystick provides four directions and center ENTER.
+- Keyboard provides corresponding keys.
 
-## Visual and interaction rules
+Every device without physical ESC must have a sequentially reachable on-screen
+Back/Cancel. No essential operation may require LEFT/RIGHT, a long press or a
+gesture exclusively. Physical adapters own debounce and release/repeat behavior.
 
-- Actionable controls use medium gray; selected/pressed controls have a white border.
-- Touch and keyboard confirmation share the same activation path.
-- Current activation feedback lasts 120 ms before opening a view.
-- Focus and activation are distinct: moving focus never opens an application.
-- Mixed input must work without switching modes.
-- Controls that edit values must distinguish navigation from editing visually.
-- Future toolbar actions must participate in the focus order.
-- Returning to a view should restore its prior focus and scroll position.
+## Extension contract
 
-## Current implementation and pending work
+Distinguish focus from activation: moving focus must never execute an action.
+Define edit mode separately from browse mode; fields need reachable Save/Cancel.
+Preserve focus by stable semantic key across refresh, rotation and navigation.
+Modal overlays own focus temporarily and restore it on close.
+Remote sessions must release held input on disconnect and offer local escape.
 
-SDL Up/Down calls nav_move(-1/+1), Enter calls nav_activate, Escape calls
-nav_back, and Home calls nav_home. Touch uses nav_choose(index).
-Hardware encoder and joystick adapters are not implemented yet.
-Left/Right control-specific behavior and edit mode remain pending.
-The toolbar is focusable and per-node focus/scroll restoration is implemented.
-
-## Required device profiles
-
-The canonical action vocabulary is UP, DOWN, LEFT, RIGHT, ENTER, ESC.
-Home is a separate UI destination (the triangle), not a required physical key.
-
-- Touch: on-screen controls provide U/D/L/R/E-equivalent operations;
-  an on-screen ESC is always available in an application.
-- Rotary encoder: rotation provides UP/DOWN and press provides ENTER.
-  The top-right X must be reachable in the sequential focus order and ENTER
-  on it invokes ESC.
-- Rotary encoder + ESC: the same controls plus a physical ESC button.
-- Five-way joystick: UP/DOWN/LEFT/RIGHT and center press as ENTER.
-  Without a separate physical ESC, use the focusable on-screen X.
-- Keyboard: arrow keys, Enter and Escape map to the six canonical actions.
-
-ESC closes the current view and restores the previous context.
-The triangle always goes directly to the desktop.
-The desktop has no view to close: ESC there is a no-op and the X is hidden.
-
-The shared toolbar and focusable X are implemented in the landscape profile.
-Physical adapters remain pending.
-No view may require LEFT/RIGHT exclusively: rotary-only devices must have a
-sequentially reachable way to perform the equivalent operation.
-
-## Persistent toolbar and appearance
-- Toolbar follows the theme: black/white in dark, white/black in light.
-- A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
-- Focus changes only the border; content colors never change with focus.
-- Use the shared accent-colored logo component; preserve the original JPG as reference.
-- Desktop title is translated Main menu; X is hidden there. Splash remains clean.
-- Settings > Appearance switches dark/light at runtime. The preference is stored
-  through ESPHome globals; persistence follows the platform save interval.
-- Content focus retains the white/gray border convention.
-
-Current presentation contract: ordinary control focus changes only borders, never icon, text or
-background colors. Icons and names default to white. The current toolbar title
-is bold in the theme foreground color and excluded from focus; ancestors remain regular clickable text.
-The single underline starts just after the logo's lower tip. Startup spins the
-same toolbar logo in place for one second; there is no separate splash page.
-Set nabla_monochrome: "true" to hide unselected control borders. This is a
-presentation option, not validation of physical OLED hardware.
-
-The brand triangle is the focus exception: inside a view it rotates 90 degrees
-left over 180 ms, without a focus box. Activating it returns to the parent,
-just like X/ESC. Removing focus restores its downward orientation. At the root
-it remains the Home mark. The underline meets its resting lower tip.
+Forms, editing and remote input are design work, not implemented behavior.
+See [component/input plan](../docs/platform/COMPONENTS-AND-INPUT.md) for the target.

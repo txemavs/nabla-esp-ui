@@ -26,16 +26,10 @@ Avoid perpetual motion; preserve the one-second intro duration.
 Do not overwrite the original JPG. Keep geometric sources editable and
 animation logic reusable. Support reduced/disabled motion as a future option.
 
-UI palette: reserve the configurable accent for the triangle. Render its silhouette
-in one solid color; errors may set it red. Other controls and dividers use
-#808080 in both themes, with white focus and white card titles. Cards remain
-dark neutral surfaces even on light pages. Preserve the silver/sky artwork as
-the historical reference. Animation must never overwrite status colors.
-
-Current presentation contract: focus changes only borders, never icon, text or
-background colors. Icons and names default to white. The current toolbar title
-is bold in the theme foreground color and excluded from focus; ancestors remain regular clickable text.
-The single underline starts just after the logo's lower tip. Startup spins the
-same toolbar logo in place for one second; there is no separate splash page.
-Set nabla_monochrome: "true" to hide unselected control borders. This is a
-presentation option, not validation of physical OLED hardware.
+UI palette: the triangle uses a configurable solid accent (cyan by default).
+Its focused state is white; an error may change the underlying status color.
+Ordinary control focus changes borders. App cards may have their own colors.
+The header has no divider. Shared header/footer follow dark/light mode; idle
+brand text is gray, while the startup progress footer is gray/cyan.
+Preserve the silver/sky artwork as historical reference, not a mandatory raster
+texture on every display. Monochrome/readable profiles must preserve recognizability.

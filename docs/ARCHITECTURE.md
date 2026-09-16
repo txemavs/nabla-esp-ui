@@ -1,51 +1,41 @@
 # Architecture and extension philosophy
 
-The goal is a stable reusable core with an expanding module catalog.
-Using the library should mean configuring YAML. Extending it should mean
-implementing a module once, documenting it and providing a runnable example.
+The goal is a stable reusable core with an expanding module catalog. A panel
+should configure YAML; a new capability should be implemented once as a module.
+Home Assistant is optional. Local ESPHome functions, Nabla Edge and peer devices
+must fit the same application contracts.
 
-Panel configuration selects hardware, input capabilities, theme, locale,
-applications, navigation and data bindings. Home Assistant is one data source;
-local ESPHome entities, MQTT and calculated values must also be possible.
+The detailed target design starts at [the platform plan](platform/README.md).
+It includes component families, editors, adaptive display/input profiles,
+commissioning, peer cooperation, vehicle startup and a gated delivery roadmap.
+Proposed YAML is marked as design-only; it is not the current accepted schema.
 
-Extension levels:
-1. Compose existing packages and widgets with YAML includes.
-2. Use native ESPHome actions or a small lambda for local behavior.
-3. Add a reusable header or external ESPHome component for substantial logic.
-Avoid copying large lambdas between panels.
+## Current implementation
 
-Modules declare parameters, dependencies, input behavior and limitations.
-Examples must distinguish demo data and unimplemented functionality.
-A new module should not require changing unrelated modules or the core.
+examples/hello-world/navigation.yaml is validated by the local nabla_navigation
+external component, which emits immutable C++ node descriptors.
+navigation/logic.yaml currently owns rendering, navigation and focus.
+components/ provides reusable visual includes; simulator/hardware/ supplies host
+display, mouse, keyboard and clock adapters. Locale substitutions are build-time.
 
-Current milestone:
-- Shared application toolbar with Home logo, clickable breadcrumbs and close.
-- Sequential focus includes all toolbar actions; touch and Enter share activation.
-- Parent navigation restores per-node focus and scroll position.
-- English/Spanish build-time locale YAML with matching translation keys.
+One tree drives an eight-tile launcher and a scrollable list. Root triangle
+toggles the view; the rotation control cycles 90 degrees. Interior triangle
+and X return to the parent; root status icons are placeholders.
+The header has no divider. A shared bar surface provides header and footer.
+The desktop footer displays simulated startup progress then brand and clock.
+Application views hide the idle footer. See navigation/README.md.
 
-Remaining:
-- Declarative YAML catalog is implemented; expand with typed data bindings.
-- Keep traversal algorithms reusable; use an ESPHome external component if
-  needed to validate and generate arbitrary node structures during compilation.
-- Root composition reads the catalog; lift the fixed eight-row capacity when needed.
-- Real data adapters, physical input adapters, editable settings and runtime language switching.
-- General window history for cross-links: current close semantics follow the
-  parent tree, not an arbitrary application/window stack.
+## Boundary and migration
 
-The current toolbar is for the 480 x 320 landscape profile. Compact profiles
-will reuse navigation semantics but need their own tested layout.
+The current example still uses fixed widget IDs, eight row slots and some
+profile-specific metrics. General module manifests, typed bindings, forms,
+actual peer services and 128x64 rendering are not implemented.
+Do not describe these as completed because an illustrative YAML file exists.
 
-## Persistent toolbar and appearance
-- Toolbar follows the theme: black/white in dark, white/black in light.
-- A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
-- Focused toolbar controls turn the theme foreground color.
-- Use the shared accent-colored logo component; preserve the original JPG as reference.
-- Desktop title is translated Main menu; X is hidden there. Splash remains clean.
-- Settings > Appearance switches dark/light at runtime. The preference is stored
-  through ESPHome globals; persistence follows the platform save interval.
-- Content focus retains the white/gray border convention.
+Incrementally extract navigation/focus, operation state and layout policies.
+Keep the working example as a regression fixture. Prefer native ESPHome actions;
+use a small reusable C++ helper or external component for substantial logic.
+Do not copy large lambdas into each device or introduce runtime code loading.
 
-The user tree now lives in examples/hello-world/navigation.yaml. The local
-nabla_navigation component validates it at ESPHome compile time and emits data.
-No manual generation or numeric node maintenance is required.
+Read [architecture contracts](platform/ARCHITECTURE.md) and
+[delivery gates](platform/ROADMAP.md) before expanding the public API.

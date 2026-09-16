@@ -1,191 +1,88 @@
 # ∇ nabla-esp-ui
 
-A modular UI library for **ESPHome + LVGL**, with a shared visual style, reusable components, and navigation adapted to different displays and input methods.
+A modular UI platform for **ESPHome + LVGL**: define applications and navigation
+in YAML, reuse presentation and interaction across panels.
 
-**Define what you want to control; reuse how it looks and works.**
+Works toward standalone devices, optional Home Assistant integration, Nabla Edge
+and cooperation between large and small screens. Local operation must not depend
+on a server being available.
 
-> **Status: first desktop example.** The Hello World simulator compiles with ESPHome 2026.8.2 and opens a 480 x 320 SDL2 window. The application library and hardware profiles below remain planned; no physical hardware is validated yet.
+**Status:** working desktop prototype on ESPHome 2026.8.2 / LVGL 9.5.
+Physical boards, editable settings and device-to-device links are not validated.
+Start with [the simulator](simulator/README.md).
 
-## Try the simulator
+## Platform plan
 
-Follow [the simulator setup and run instructions](simulator/README.md). The example uses a separate SDL hardware package and a reusable LVGL view, with no Home Assistant or board required.
+The [platform design](docs/platform/README.md) describes the architecture,
+component catalog, readable/tiny display profiles, keyboards and forms, Wi-Fi
+commissioning, peer control, and the vehicle panel with a Raspberry Pi 4.
+The [roadmap](docs/platform/ROADMAP.md) defines implementation order and exit gates.
 
-## The idea
+The next slice is a shared Wi-Fi form with mock scans and text/password input,
+tested with touch and sequential controls before connecting real radios.
+Draft YAML in docs/platform/ is explicitly illustrative, not accepted firmware.
 
-Build panels without redesigning buttons, bars, menus, and controls for every device.
+## What works today
 
-A menu containing eight applications should appear as eight icons on a touchscreen or eight list entries on a small display with a rotary encoder. Navigation structure and functionality are shared; each profile provides a suitable presentation.
+- One declarative navigation tree with up to eight children per node.
+- Eight-tile desktop or scrollable list, switched with the root triangle.
+- Nested navigation with clickable ancestors, restored focus and scroll.
+- Touch and keyboard; Up/Down plus Enter emulate rotary navigation.
+- A root rotation button cycles 90 degrees; grid reflows 4x2 or 2x4.
+- Shared compact header/footer, configurable logo and status icon assets.
+- Simulated startup progress followed by brand and HH:MM desktop footer.
+- Dark/light appearance and build-time Spanish/English with accent glyphs.
 
-The same lighting application should work across rooms, buildings, and Home Assistant installations by changing entity mappings rather than copying its implementation.
+The current desktop contains Settings, Communications, Photos, Music, Cameras,
+Weather, Lights and Sensors. Most are placeholders; Settings demonstrates
+appearance and nested navigation, not completed network configuration.
+Wi-Fi/Bluetooth header icons are visual placeholders, not live connection status.
 
-## What each panel configures
+## How the repository fits together
 
-- **Hardware:** board, display, touchscreen, encoder, and backlight.
-- **UI profile:** format, density, and input method.
-- **Navigation:** available applications, ordering, and favorite shortcuts.
-- **Entities:** lights, sensors, and actions for that installation.
-- **Theme:** shared styling with optional overrides.
+- theme/: colors, typography, glyphs and assets.
+- components/: reusable visual pieces and [catalog](components/README.md).
+- navigation/: interaction, rendering and [tree contract](navigation/README.md).
+- external_components/nabla_navigation/: validation and generated C++ descriptors.
+- locales/: build-time translations.
+- examples/hello-world/: current panel composition.
+- simulator/hardware/: SDL, keyboard, mouse and host clock adapters.
+- docs/platform/: proposed modules, profiles, integrations and release plan.
 
-Configuration will initially use **native ESPHome packages, includes, and variables**. A custom generator is not required. The public configuration syntax will be established through the first compilable examples.
+Native ESPHome packages and includes assemble firmware. The local external
+component validates the navigation YAML during normal ESPHome compilation.
+There is no mandatory standalone generation step.
 
-## Library layers
+## Design principles
 
-### Theme
+Application meaning is separate from placement and transport. A light control
+should bind to a local entity, Home Assistant or Edge without reimplementing its
+UI. The same menu becomes tiles on a large touch screen and a readable list on
+a smaller device; it is not just scaled down.
 
-The initial nabla.net identity uses a black background, gray controls, white focus and labels, and accent reserved for the triangle; cards may define their own colors (currently #00C8FF), and the original logo in assets/nabla.jpg. Shared colors and the logo resource are defined in theme/nabla.yaml.
+Every interaction must have a path using UP/DOWN/ENTER and accessible Back.
+Use typed state for unknown/stale/offline values and bounded asynchronous work.
+Add a new capability as a documented module with a runnable example.
+A stable core still receives maintenance; it is not a promise of zero future edits.
 
-Shared colors, typography, icons, spacing, dimensions, and visual states. Compact, regular, and large variants should maintain a common identity.
+The first physical target is **JC3248W535CN**, pending board-specific validation.
+A true 128x64 profile, larger OLED profiles and physical input adapters are planned.
+Host rendering does not establish ESP memory, radio, touch or display support.
 
-### Visual components
+## Brand and contributions
 
-Building blocks such as icon buttons, bars, indicators, cards, headers, and menu rows.
-
-Each component is defined once, accepts parameters, and avoids assumptions about a particular display or entity. A bar should look and behave consistently wherever it is used.
-
-### Applications
-
-Functional modules built from library components: lighting, sensors, scenes, climate, media, and settings.
-
-Each application declares its dependencies and groups its data connections, actions, and presentations. Installation-specific entity mappings remain outside the module.
-
-### Navigation
-
-A shared contract for opening applications, going back, returning home, selecting, and confirming.
-
-The initial touch profile will provide a desktop with up to eight shortcuts and a global menu revealed from a corner, with a visible alternative entry point. The menu will offer access to the desktop, settings, and favorite applications.
-
-The encoder profile will use structured menus: rotate to select, press to enter, and a configurable back action.
-
-### Profiles
-
-Presentation depends on resolution, orientation, available space, and input method—not just physical screen size.
-
-A lighting application may use cards and detail controls on a touchscreen, and a list with sequential adjustments on a small display. It will share functionality and configuration wherever practical.
-
-Each format will have an appropriate composition rather than shrinking a full desktop to fit every display.
-
-### Hardware
-
-Physical drivers and connections remain separate from the UI.
-
-The **JC3248W535CN** is the first target device. Its exact configuration and compatibility will be verified during implementation.
-
-## Planned structure
-
-Directories will be added as their modules are implemented:
-
-```text
-theme/          Colors, styles, fonts, and icons
-components/     Parameterized visual building blocks
-apps/           Applications and their presentations
-navigation/     Shared menus and actions
-profiles/       Composition by format and input method
-hardware/       Board and peripheral configurations
-examples/       Complete panels and entity mappings
-simulator/      Host configurations with SDL2 and demo data
-docs/catalog/   Module documentation and examples
-```
-
-## Module contract
-
-- Each instance has unique identifiers resolved during configuration.
-- Adding another instance must not require copying scripts or editing module internals.
-- Each module declares its dependencies and required parameters.
-- Removing a module should remove its associated logic without leaving dangling references.
-- Visual components must not hardcode installation-specific Home Assistant entities.
-- Applications define how unknown, unavailable, and pending states are handled.
-- Profiles share navigation actions even when their presentation differs.
-- Native ESPHome and LVGL actions are preferred; additional C++ must be limited in scope and documented.
-- Examples keep credentials in secret files excluded from the repository.
-
-ESPHome resolves IDs and composition at compile time. The library will build on that model without relying on runtime widget discovery.
-
-## Component catalog
-
-Each component or application will have an entry documenting:
-
-- Name, purpose, and status: experimental or validated.
-- Parameters, defaults, and identifiers.
-- Dependencies and compatible profiles.
-- A minimal inclusion example.
-- A screenshot or demonstration when available.
-- Completed checks and known limitations.
-
-The catalog will distinguish available modules from planned work.
-
-## Desktop development
-
-The planned development environment is **ESPHome host + SDL2**: a desktop window will run the same UI includes used on the device.
-
-This will allow us to:
-
-- Review styling and layouts at different resolutions.
-- Test touch interaction with a mouse.
-- Map keyboard keys to navigation actions for menu testing.
-- Use mock data to exercise states and transitions.
-- Run component examples without flashing a board.
-
-Windows development is expected to use WSL with graphical support. Reproducible setup instructions and an ESPHome version will be established when the first example is validated.
-
-YAML changes require recompilation. Desktop execution does not validate ESP memory usage, performance, or physical drivers; builds and tests on real hardware remain necessary.
-
-## Initial scope
-
-- [x] Pin an ESPHome version and provide a reproducible host + SDL2 example.
-- [ ] Define the initial theme and basic visual components.
-- [ ] Define navigation and application registration contracts.
-- [ ] Present the same menu as an icon desktop and an encoder-driven list.
-- [ ] Implement lighting and settings applications.
-- [ ] Prepare and validate the JC3248W535CN hardware profile.
-- [ ] Document the first modules in the catalog.
-
-Eight desktop positions do not imply eight completed applications. Shortcuts will reflect the configured modules.
-
-### First milestone: Hello World
-
-Start with a minimal desktop example before building the application library:
-
-- Open an SDL2 window with configurable dimensions.
-- Render an eight-tile launcher with an in-place toolbar logo intro.
-- Open placeholder application pages from reusable tiles and return to the launcher.
-- Run without a physical board, Home Assistant, or credentials.
-- Keep desktop display/input configuration separate from reusable UI.
-- Document setup and a single command to build and run the example.
-
-Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. The 4 x 2 launcher appears immediately with a one-second toolbar logo intro. Applications share a focusable Home/breadcrumb/close toolbar. Settings and sensor folders demonstrate nested navigation; real application functionality remains planned.
-
-### Success criterion
-
-Add, repeat, or remove a control and reuse an application in another profile without editing component internals. Expected changes should be concentrated in panel composition, hardware, and entity mappings.
-
-## Repository language
-
-Documentation, code comments, identifiers, and development instructions use English. User-facing interface localization can be added separately.
+Brand: nabla.net ESP UI. Preserve the original triangle artwork in assets/nabla.jpg.
+See [brand identity](docs/BRAND.md) and [contributor instructions](AGENTS.md).
+Documentation and identifiers use English; UI strings are localized.
+Keep bundled font licenses and all applicable third-party attribution.
 
 ## References
 
 - [ESPHome LVGL](https://esphome.io/components/lvgl/)
-- [LVGL widgets](https://esphome.io/components/lvgl/widgets/)
-- [LVGL layouts](https://esphome.io/components/lvgl/layouts/)
 - [ESPHome packages](https://esphome.io/components/packages/)
-- [LVGL cookbook](https://esphome.io/cookbook/lvgl/)
-- [SDL2 host display](https://esphome.io/components/display/sdl/)
+- [SDL host display](https://esphome.io/components/display/sdl/)
 - [ESPHome UI Kit](https://github.com/mplogas/esphome-ui-kit)
 - [ESPHome Modular LVGL Buttons](https://github.com/agillis/esphome-modular-lvgl-buttons)
 
-These projects serve as design references. Any reused code must preserve its applicable license and attribution.
-
-## Architecture, toolbar and languages
-
-See [architecture and extension philosophy](docs/ARCHITECTURE.md),
-[toolbar/navigation behavior](navigation/README.md) and
-[build-time English/Spanish localization](locales/README.md).
-The navigation tree is now defined in [YAML](examples/hello-world/navigation.yaml),
-validated and compiled by a local ESPHome component. See the
-[navigation guide](navigation/README.md) to add entries without editing C++.
-
-## Component catalog
-
-See [reusable UI components](components/README.md), including the drawn logo
-and shared toolbar. The accent-colored logo uses editable equilateral geometry, performs a one-second intro turn in the toolbar. The original brand image remains
-a reference asset. See [brand identity](docs/BRAND.md).
+External projects are references, not claims of API compatibility.
+See [research notes](docs/platform/SOURCES.md) for the platform plan.
