@@ -70,3 +70,9 @@ state machine. The contract documents dependencies, states, focus, bounds and ex
 
 - shell/package.yaml: reusable regular LVGL shell without an imported menu.
   The consumer owns nabla_navigation; see shell/README.md and simulator/composition.yaml.
+
+## Build-time packaging
+
+[Runtime helper exporter](../external_components/nabla_runtime/README.md) resolves
+shared C++ headers from local or pinned GitHub checkouts. It adds no UI controls;
+[the GitHub entry point](../docs/GITHUB-LIBRARY.md) assembles the public LVGL shell.
