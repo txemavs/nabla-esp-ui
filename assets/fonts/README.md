@@ -16,3 +16,8 @@ nabla_font_16/20/28 for text. Only Free Solid icons in the bundled version apply
 fa-brands-400.ttf: Font Awesome Free Brands 6.7.2, from the official
 FortAwesome/Font-Awesome release; covered by FontAwesome-LICENSE.txt.
 Used for the Bluetooth toolbar glyph.
+
+
+Ubuntu Mono Regular and Bold: unmodified Ubuntu fonts-ubuntu package files,
+UbuntuMono-R.ttf and UbuntuMono-B.ttf. See Ubuntu-LICENSE.txt for the
+Ubuntu Font Licence and package attribution. Default runtime family; DejaVu Sans is the alternate.

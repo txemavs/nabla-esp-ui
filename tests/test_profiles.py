@@ -18,12 +18,22 @@ const Node nodes[] = {
  {"Appearance",1,"","",0}, {"Dark",4,"","",1}, {"Light",4,"","",2},
  {"Communications",0,"","",0}, {"Photos",0,"","",0}, {"Music",0,"","",0},
  {"Cameras",0,"","",0}, {"Weather",0,"","",0}, {"Lights",0,"","",0},
- {"Sensors",0,"","",0}, {"Room",13,"","",0}, {"Temperature",14,"","",0}
+ {"Sensors",0,"","",0}, {"Room",13,"","",0}, {"Temperature",14,"","",0},
+ {"Dark mode",4,"","",5}, {"Font",4,"","",6}, {"Borders",4,"","",7}
 };
 const int count = sizeof(nodes)/sizeof(nodes[0]);
 }
 int main() {
  using namespace nabla;
+ // Detailed multiline content must never leak into compact menu summaries.
+ nabla_info::values[2] = "Example - 192.0.2.42";
+ nabla_info::details[2] = "Example\nIP: 192.0.2.42\nGateway: 192.0.2.1";
+ assert(nabla_info::value(2).find('\n') == std::string::npos);
+ assert(nabla_info::detail(2).find("Gateway:") != std::string::npos);
+ assert(nabla_info::detail(-1).empty());
+ nabla_info::values[3] = "192.0.2.42";
+ assert(nabla_info::detail(3) == nabla_info::value(3));
+
  for (bool readable : {false,true}) {
    for (bool footer : {false,true}) {
      auto g = Geometry::compact(readable,footer);
@@ -59,6 +69,18 @@ int main() {
    m.focus=8; m.activate(); assert(m.current==0 && m.readable!=readable);
    // Theme action returns to its parent and does not strand focus.
    m.open(6); assert(!m.dark && m.current==4 && m.focus<children(4));
+   m.focus=2; m.activate();
+   assert(m.dark && m.current==4 && m.focus==2);
+   assert(row_title(16,m.dark,m.font_family)=="[x] Dark mode");
+   m.focus=3; m.activate();
+   assert(m.font_family && m.current==4 && m.focus==3);
+   assert(row_title(17,m.dark,m.font_family)=="Font: DejaVu Sans");
+   m.activate(); assert(m.font_family==0 && m.focus==3);
+   assert(row_title(17,m.dark,m.font_family)=="Font: Ubuntu Mono");
+   m.focus=4; m.activate(); assert(!m.borders && m.current==4 && m.focus==4);
+   assert(row_title(18,m.dark,m.font_family,m.borders)=="[ ] Borders");
+   m.activate(); assert(m.borders && m.focus==4);
+
  }
  for(auto g : {Geometry::regular(480,320,true),Geometry::regular(320,480,true)}) {
    assert(g.content_height() == g.height - 72);

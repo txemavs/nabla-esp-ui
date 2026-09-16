@@ -17,11 +17,14 @@ inline int children(int n) {
   return total;
 }
 inline std::string detail(int n) {
-  return valid(n) ? (nodes[n].info ? nabla_info::value(nodes[n].info) : std::string(nodes[n].detail)) : "";
+  return valid(n) ? (nodes[n].info ? nabla_info::detail(nodes[n].info) : std::string(nodes[n].detail)) : "";
 }
-inline std::string row_title(int n) {
+inline std::string row_title(int n, bool dark = true, int family = 0, bool borders = true) {
   if (!valid(n)) return "";
-  return nodes[n].info ? std::string(nodes[n].title) + ": " + detail(n) : std::string(nodes[n].title);
+  if (nodes[n].action == 5) return std::string(dark ? "[x] " : "[ ] ") + nodes[n].title;
+  if (nodes[n].action == 7) return std::string(borders ? "[x] " : "[ ] ") + nodes[n].title;
+  if (nodes[n].action == 6) return std::string(nodes[n].title) + ": " + (family == 0 ? "Ubuntu Mono" : "DejaVu Sans");
+  return nodes[n].info ? std::string(nodes[n].title) + ": " + nabla_info::value(nodes[n].info) : std::string(nodes[n].title);
 }
 inline std::string path(int n) {
   if (!valid(n)) return "";

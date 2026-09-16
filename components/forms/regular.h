@@ -1,5 +1,6 @@
 #pragma once
 #include "lvgl.h"
+#include "esphome/components/nabla_navigation/control_style.h"
 #include "esphome/components/nabla_navigation/forms.h"
 namespace nabla_forms {
 struct RegularForm {
@@ -46,11 +47,7 @@ struct RegularForm {
       auto *b=buttons[i];
       if(i>=model.total()){lv_obj_add_flag(b,LV_OBJ_FLAG_HIDDEN);continue;}
       lv_obj_remove_flag(b,LV_OBJ_FLAG_HIDDEN);lv_obj_set_pos(b,0,i*46);lv_obj_set_size(b,w-8,40);
-      lv_obj_set_style_bg_color(b,bg,0);lv_obj_set_style_bg_color(b,bg,LV_STATE_PRESSED);
-      lv_obj_set_style_text_color(b,fg,0);
-      lv_obj_set_style_border_color(b,i==model.focus?fg:lv_color_hex(0x808080),0);
-      lv_obj_set_style_border_width(b,i==model.focus?2:mono?0:1,0);
-      lv_obj_set_style_border_color(b,fg,LV_STATE_PRESSED);
+      nabla_style::control(b,i==model.focus,dark,mono);
       auto *label=lv_obj_get_child(b,0);
       lv_obj_set_width(label,w-28);lv_label_set_text(label,model.row(i).c_str());lv_obj_center(label);
     }

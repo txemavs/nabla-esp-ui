@@ -5,7 +5,8 @@
 namespace nabla {
 struct CompactMenu {
   int current = 0, focus = 0, top = 0;
-  bool dark = true, readable = false;
+  bool dark = true, readable = false, borders = true;
+  int font_family = 0;
   std::vector<int> saved_focus = std::vector<int>(count, 0);
   std::vector<int> saved_top = std::vector<int>(count, 0);
   int total() const { return children(current) + 1; } // reachable logo/Back
@@ -18,6 +19,10 @@ struct CompactMenu {
   void move(int delta) { focus = wrap_focus(focus, delta, total()); anchor(); }
   void open(int node) {
     if (!valid(node)) return;
+    if (nodes[node].action == 5 || nodes[node].action == 6 || nodes[node].action == 7) {
+      if (nodes[node].action == 5) dark = !dark; else if (nodes[node].action == 7) borders = !borders; else font_family = (font_family + 1) % 2;
+      node = nodes[node].parent;
+    }
     if (nodes[node].action == 1 || nodes[node].action == 2) {
       dark = nodes[node].action == 1;
       node = nodes[node].parent;

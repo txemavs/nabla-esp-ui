@@ -115,3 +115,14 @@ The wifi action opens the Wi-Fi form; wifi_demo remains an alias for compatibili
 The transport is mock unless the private ESP32/LVGL composition enables nabla_wifi.
 See external_components/nabla_wifi/README.md for save, cancellation and fallback
 behavior. info fields bind read-only information leaves; see components/device-info.
+
+Appearance supports toggle_dark and toggle_font leaf actions. They apply in
+place and retain focus; the row shows the current checkbox/family state.
+
+Appearance also exposes toggle_borders: enabled by default, with idle borders
+#404040 in dark mode and #BFBFBF in light mode. With borders disabled, controls
+use inverse foreground/background for focus and retain sequential/touch access.
+LVGL menus, toolbar controls, forms, Wi-Fi fields and keyboard use the shared
+control_style.h helper. Compact profiles use binary fill inversion.
+The setting changes decoration, not the display color capability or font.
+Physical e-paper rendering/refresh remains unverified; this is a host UI preview.

@@ -217,3 +217,29 @@ original stock keyboard; it is an isolated earlier fixture.
 
 See [forms](../components/forms/README.md) and
 [M2 evidence](../docs/platform/M2-VERIFICATION.md) for coverage and limitations.
+
+## Information preview
+
+Run ./simulator/run.sh information, then Settings > Information.
+Wi-Fi combines network and IP; open it for gateway, netmask and signal.
+Model opens chip, display technology, resolution and color capability.
+All preview network values are synthetic and labeled as a demo. The regular
+simulator reports unavailable network data instead. No device upload is involved.
+
+Settings > Appearance contains a dark-mode checkbox row and a font-family row.
+Touch or ENTER toggles either in place; UP/DOWN moves between them. The text
+family switches between Ubuntu Mono (default) and DejaVu Sans; icons stay unchanged.
+
+Appearance also exposes toggle_borders: enabled by default, with idle borders
+#404040 in dark mode and #BFBFBF in light mode. With borders disabled, controls
+use inverse foreground/background for focus and retain sequential/touch access.
+LVGL menus, toolbar controls, forms, Wi-Fi fields and keyboard use the shared
+control_style.h helper. Compact profiles use binary fill inversion.
+The setting changes decoration, not the display color capability or font.
+Physical e-paper rendering/refresh remains unverified; this is a host UI preview.
+
+## Device-owned composition
+
+Run ./simulator/run.sh composition. Edit simulator/composition.yaml to change
+its complete navigation tree and forms. This imports reusable components without
+importing an example menu, matching the recommended private Builder structure.

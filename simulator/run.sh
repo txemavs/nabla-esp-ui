@@ -12,7 +12,9 @@ case "${1:-regular}" in
   portrait) config=simulator/portrait.yaml ;;
   tiny) config=simulator/compact.yaml ;;
   readable) config=simulator/readable.yaml ;;
+  composition) config=simulator/composition.yaml ;;
+  information) config=simulator/information.yaml ;;
   password) config=simulator/password.yaml ;;
-  *) echo "Usage: $0 [regular|portrait|tiny|readable|password]" >&2; exit 2 ;;
+  *) echo "Usage: $0 [regular|portrait|tiny|readable|password|information|composition]" >&2; exit 2 ;;
 esac
 exec esphome run "$config"

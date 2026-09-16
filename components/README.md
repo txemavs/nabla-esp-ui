@@ -60,3 +60,13 @@ policies. Host-verified; physical OLED and GPIO adapters remain pending.
 choice/toggle editors, confirmation/error states, UTF-8 draft and optional Latin
 keyboard. Regular/compact renderers share the controller and simulated Wi-Fi
 state machine. The contract documents dependencies, states, focus, bounds and examples.
+
+- appearance/fonts.h: paired proportional/monospace text fonts; Appearance uses
+  toggle_dark and toggle_font rows. See appearance/README.md for state, input,
+  dependencies and host verification limits.
+
+- nabla_navigation/control_style.h: shared LVGL theme-relative borders and inverse
+  focus, selected with Appearance > Borders; see appearance/README.md.
+
+- shell/package.yaml: reusable regular LVGL shell without an imported menu.
+  The consumer owns nabla_navigation; see shell/README.md and simulator/composition.yaml.

@@ -1,5 +1,6 @@
 #pragma once
 #include "lvgl.h"
+#include "esphome/components/nabla_navigation/control_style.h"
 #include "wifi_flow.h"
 #include <cstring>
 namespace nabla_wifi_form {
@@ -125,9 +126,7 @@ struct Editor {
       if(index>=count){lv_obj_add_flag(b,LV_OBJ_FLAG_HIDDEN);continue;}
       lv_obj_remove_flag(b,LV_OBJ_FLAG_HIDDEN);
       lv_obj_set_pos(b,0,25+i*((h-30)/5));lv_obj_set_size(b,w-8,(h-30)/5-3);
-      lv_obj_set_style_bg_color(b,bg,0);lv_obj_set_style_text_color(b,fg,0);
-      lv_obj_set_style_border_width(b,index==scan_index?2:1,0);
-      lv_obj_set_style_border_color(b,index==scan_index?fg:lv_color_hex(0x808080),0);
+      nabla_style::control(b,index==scan_index,dark_theme);
       auto *label=lv_obj_get_child(b,0);
       std::string caption=reset_confirm?(index==0?words[9]:real_words[5]):
         scan_picker && flow.real()?(index==0?words[3]:index==1?real_words[3]:words[6]):
@@ -163,11 +162,17 @@ struct Editor {
   }
   void highlight() {
     auto mark = [&](lv_obj_t *o, bool selected) {
-      lv_obj_set_style_border_width(o, selected ? 2 : 1, 0);
-      lv_obj_set_style_border_color(o, lv_color_hex(selected ? (dark_theme ? 0xFFFFFF : 0x000000) : 0x808080), 0);
+      nabla_style::control(o,selected,dark_theme);
     };
     int n = keys();
     mark(ssid, focus == 0); mark(password, focus == 1);
+    for(auto *field : {ssid,password}) {
+      const bool selected=(field==ssid?focus==0:focus==1);
+      auto ink=lv_color_hex(dark_theme?0xFFFFFF:0);
+      if(!nabla_style::borders && selected) ink=lv_color_hex(dark_theme?0:0xFFFFFF);
+      lv_obj_set_style_text_color(field,ink,LV_PART_TEXTAREA_PLACEHOLDER);
+      lv_obj_set_style_bg_color(field,ink,LV_PART_CURSOR);
+    }
     mark(apply, focus == n + 2); mark(scan, focus == n + 3); mark(open_box, focus == n + 4); mark(cancel, focus == n + 5);
     if (focus >= 2 && focus < n + 2) {
       lv_obj_add_state(keyboard, LV_STATE_FOCUSED);
@@ -257,15 +262,18 @@ struct Editor {
     for (int state : {0, int(LV_STATE_CHECKED), int(LV_STATE_FOCUSED),
                       int(LV_STATE_PRESSED), int(LV_STATE_FOCUSED | LV_STATE_PRESSED),
                       int(LV_STATE_CHECKED | LV_STATE_FOCUSED), int(LV_STATE_CHECKED | LV_STATE_PRESSED)}) {
-      lv_obj_set_style_bg_color(keyboard, bg, LV_PART_ITEMS | state);
-      lv_obj_set_style_text_color(keyboard, fg, LV_PART_ITEMS | state);
+      bool inverse=!nabla_style::borders && (state & (LV_STATE_FOCUSED | LV_STATE_PRESSED));
+      lv_obj_set_style_border_width(keyboard,nabla_style::borders ? ((state & (LV_STATE_FOCUSED | LV_STATE_PRESSED))?2:1) : 0,LV_PART_ITEMS | state);
+      lv_obj_set_style_bg_color(keyboard,inverse?fg:bg,LV_PART_ITEMS | state);
+      lv_obj_set_style_text_color(keyboard,inverse?bg:fg,LV_PART_ITEMS | state);
       lv_obj_set_style_border_color(keyboard,
-          state & (LV_STATE_FOCUSED | LV_STATE_PRESSED) ? fg : lv_color_hex(0x808080),
+          state & (LV_STATE_FOCUSED | LV_STATE_PRESSED) ? fg : nabla_style::idle(dark),
           LV_PART_ITEMS | state);
     }
     lv_obj_set_style_bg_color(open_box,bg,LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(open_box,fg,static_cast<lv_style_selector_t>(LV_PART_INDICATOR) | LV_STATE_CHECKED);
-    lv_obj_set_style_border_color(open_box,fg,LV_PART_INDICATOR);
+    lv_obj_set_style_border_color(open_box,nabla_style::idle(dark),LV_PART_INDICATOR);
+    lv_obj_set_style_border_width(open_box,nabla_style::borders?1:0,LV_PART_INDICATOR);
     lv_obj_set_style_text_color(open_box,bg,static_cast<lv_style_selector_t>(LV_PART_INDICATOR) | LV_STATE_CHECKED);
     highlight();
   }

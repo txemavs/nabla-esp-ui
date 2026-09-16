@@ -1,4 +1,5 @@
 substitutions:
+  nabla_display_monochrome: "true"
   ui_language: es
   compact_profile: tiny
 
@@ -22,8 +23,8 @@ display:
       height: ${screen_height}
     update_interval: 100ms
     lambda: |-
-      nabla::compact_shell.render(it, id(compact_small), id(compact_body),
-        id(compact_large), "${tr_compact_back}", "${tr_compact_editor_pending}");
+      nabla::compact_shell.render(it, (nabla::compact_shell.menu.font_family==0 ? id(compact_ubuntu_small) : id(compact_small)), (nabla::compact_shell.menu.font_family==0 ? id(compact_ubuntu_body) : id(compact_body)),
+        (nabla::compact_shell.menu.font_family==0 ? id(compact_ubuntu_large) : id(compact_large)), "${tr_compact_back}", "${tr_compact_editor_pending}");
 
 touchscreen:
   - platform: sdl

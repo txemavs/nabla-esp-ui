@@ -12,7 +12,8 @@ Applies to the entire nabla-esp-ui repository.
 ## Purpose
 - Build a reusable ESPHome/LVGL platform that works without Home Assistant.
 - Keep Home Assistant, Nabla Edge, peer links and hardware as optional adapters.
-- Panel YAML composes intent; reusable modules own behavior and presentation.
+- Panel YAML owns its navigation tree/forms and installation configuration; reusable modules own behavior and presentation.
+- Builder compositions import components/shell/package.yaml directly, not an example menu.
 - No installation-specific entities or network clients inside shared widgets.
 - English docs/identifiers; localized UI with matching es/en keys.
 - Work in this repository, not the older esphome-ui-kit fork.
@@ -30,8 +31,10 @@ Applies to the entire nabla-esp-ui repository.
 - Startup opens the menu directly; progress and logo animations are opt-in for operations.
 - Settings starts with Information; read-only info fields share live model/network/version/uptime.
 - Triangle uses the theme foreground without a frame; interior focus rotates upward.
-- Normal controls preserve their contents on focus and change the border.
-- Gray idle borders, theme-foreground selected borders; monochrome option hides idle borders.
+- With borders enabled, normal controls preserve contents and change the focus border.
+- Appearance can disable borders; focus then inverts the selected control instead.
+- Theme-relative idle borders (#404040 dark / #BFBFBF light), foreground selected borders.
+- Monochrome hides idle borders; the separate Borders option removes focus borders too.
 - Dark/light toolbar and footer; app tile colors remain independent.
 - Use runtime logical dimensions when rendering rotated layouts.
 - Settings > Connections > Wi-Fi hosts a manual SSID/password demo (wifi_demo).

@@ -44,7 +44,7 @@ class CompactShell {
       std::string key=wifi.key<4?t[7+wifi.key]:keys[wifi.key-4];
       if(wifi.key==3)key="Aa / 12 / !?";
       if(key==" ")key="_";
-      d.rectangle(0,27,128,25,fg);d.print(64,29,large,fg,display::TextAlign::TOP_CENTER,key.c_str());
+      if(menu.borders)d.rectangle(0,27,128,25,fg);else d.filled_rectangle(0,27,128,25,fg);d.print(64,29,large,menu.borders?fg:bg,display::TextAlign::TOP_CENTER,key.c_str());
       d.printf(2,54,small,fg,"%d/%d",wifi.key+1,wifi.total());
       d.printf(126,54,small,fg,display::TextAlign::TOP_RIGHT,"%d/%d",
         static_cast<int>(wifi.draft.value.size()),static_cast<int>(wifi.draft.limit));
@@ -66,12 +66,12 @@ class CompactShell {
     for(int r=0;r<3;r++){
       int index=wifi.top+r;if(index>=total)break;
       int y=13+r*17;
-      if(index==wifi.focus)d.rectangle(0,y,128,17,fg);
+      if(index==wifi.focus) { if(menu.borders)d.rectangle(0,y,128,17,fg); else d.filled_rectangle(0,y,128,17,fg); }
       d.start_clipping(3,y+1,124,y+15);
       auto label=wifi.row(index);int bx,by,bw,bh;
       d.get_text_bounds(0,0,label.c_str(),body,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
       int offset=index==wifi.focus && bw>120?std::min(bw-120,std::max(0,int(((millis()-wifi_since)/100)%(bw-120+20))-10)):0;
-      d.print(4-offset,y+2,body,fg,label.c_str());d.end_clipping();
+      d.print(4-offset,y+2,body,index==wifi.focus && !menu.borders?bg:fg,label.c_str());d.end_clipping();
     }
   }
   void render_forms(esphome::display::Display &d, esphome::font::Font *small,
@@ -96,14 +96,14 @@ class CompactShell {
     for(int r=0;r<rows;r++){
       int index=forms.top+r;if(index>=forms.total())break;
       int y=12+r*rh;bool selected=index==forms.focus;
-      if(selected)d.rectangle(0,y,128,rh,fg);
+      if(selected) { if(menu.borders)d.rectangle(0,y,128,rh,fg); else d.filled_rectangle(0,y,128,rh,fg); }
       auto *font=menu.readable?large:body;const auto label=forms.row(index);
       int bx,by,bw,bh;
       d.get_text_bounds(0,0,label.c_str(),font,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
       int offset=selected && bw>120?int(((millis()-form_since)/100)%(bw-120+20)):0;
       offset=std::clamp(offset-10,0,std::max(0,bw-120));
       d.start_clipping(3,y+1,124,y+rh-2);
-      d.print(4-offset,y+(rh-bh)/2,font,fg,label.c_str());d.end_clipping();
+      d.print(4-offset,y+(rh-bh)/2,font,selected && !menu.borders?bg:fg,label.c_str());d.end_clipping();
     }
   }
   bool app_footer = false;
@@ -127,11 +127,13 @@ class CompactShell {
     Color bg = menu.dark ? Color::BLACK : Color::WHITE;
     d.fill(bg);
     bool header_focus = menu.focus == children(menu.current);
+    if(header_focus && !menu.borders) d.filled_rectangle(0,0,15,12,fg);
+    auto mark_color=header_focus && !menu.borders?bg:fg;
     // Equilateral triangle, fixed center. Up on parent focus, down otherwise.
     if (header_focus && menu.current)
-      d.triangle(2, 10, 12, 10, 7, 1, fg);
-    else d.triangle(2, 1, 12, 1, 7, 10, fg);
-    if (header_focus && !menu.current) d.rectangle(0, 0, 15, 12, fg);
+      d.triangle(2, 10, 12, 10, 7, 1, mark_color);
+    else d.triangle(2, 1, 12, 1, 7, 10, mark_color);
+    if (header_focus && !menu.current && menu.borders) d.rectangle(0, 0, 15, 12, fg);
     d.start_clipping(16, 0, 127, 11);
     d.print(16, 0, small, fg, nodes[menu.current].title);
     d.end_clipping();
@@ -142,9 +144,9 @@ class CompactShell {
         if (index >= n) break;
         int y = g.header + r * g.row_height;
         bool selected = menu.focus == index;
-        if (selected) d.rectangle(0, y, 128, g.row_height, fg);
+        if (selected) { if(menu.borders) d.rectangle(0,y,128,g.row_height,fg); else d.filled_rectangle(0,y,128,g.row_height,fg); }
         auto *font = menu.readable ? large : body;
-        const std::string row_text = row_title(child(menu.current, index));
+        const std::string row_text = row_title(child(menu.current, index), menu.dark, menu.font_family, menu.borders);
         const char *title = row_text.c_str();
         int bx, by, bw, bh;
         d.get_text_bounds(0, 0, title, font, display::TextAlign::TOP_LEFT, &bx,&by,&bw,&bh);
@@ -157,7 +159,7 @@ class CompactShell {
           if (phase > range+10) offset = std::max(0, 2*range+10-phase);
         }
         d.start_clipping(3, y+1, 124, y+g.row_height-2);
-        d.print(4-offset, y+(g.row_height-bh)/2, font, fg, title);
+        d.print(4-offset, y+(g.row_height-bh)/2, font, selected && !menu.borders ? bg : fg, title);
         d.end_clipping();
       }
     } else {
@@ -167,8 +169,8 @@ class CompactShell {
       d.print(2, 15, body, fg, detail);
       d.end_clipping();
       // Header is the semantic Back target; provide an obvious touch-sized row.
-      d.rectangle(0, 64-g.footer-14, 128, 14, fg);
-      d.print(4, 64-g.footer-14, body, fg, back_text);
+      if(menu.borders)d.rectangle(0,64-g.footer-14,128,14,fg);else d.filled_rectangle(0,64-g.footer-14,128,14,fg);
+      d.print(4, 64-g.footer-14, body, menu.borders?fg:bg, back_text);
     }
     if (g.footer) {
       d.print(2, 54, small, fg, "NABLA");

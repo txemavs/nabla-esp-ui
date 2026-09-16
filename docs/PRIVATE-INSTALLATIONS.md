@@ -64,7 +64,11 @@ The public checkout can be inspected in the installation's file editor. Device
 Builder's device entry opens the private composition and can build its includes.
 Do not edit generated C++ or duplicate UI behavior into the private root.
 
-A minimal private composition looks like this (supply the named secrets locally):
+The base device import below is a bring-up shortcut, not the recommended editable
+menu composition. For a device-owned menu use the structure described under
+Device-owned menus below.
+
+A minimal bring-up composition looks like this (supply the named secrets locally):
 
 ```yaml
 substitutions:
@@ -133,3 +137,20 @@ An online entry in Device Builder is evidence of its reported availability, not
 proof that a new firmware was compiled or uploaded. Distinguish configuration
 validation, successful compilation, verified USB writing, observed physical
 behavior and a completed OTA test in reports.
+
+## Device-owned menus
+
+The Builder device YAML is the source of truth for the device model, display
+capabilities, initial appearance, application list, navigation tree, forms and
+installation bindings. Import components/shell/package.yaml, hardware, theme and
+profile independently. Declare external_components with the local checkout path
+and nabla_navigation.tree/forms directly in the root; include device-info/package.yaml
+for information bindings. Do not import examples/hello-world/ui.yaml or the
+standalone devices demo in this composition: they bring an example menu.
+
+simulator/composition.yaml is a complete public, credential-free reference.
+Translate its local paths to .nabla-ui in Builder and supply the hardware adapter
+instead of SDL. Preserve existing wifi, api, ota and secrets references.
+Changes in the Builder root belong to the installation; they must not be overwritten
+by library updates. Advancing the library checkout does not replace the root menu.
+User runtime preferences override initial defaults when already persisted.

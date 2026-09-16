@@ -1,5 +1,8 @@
 substitutions:
   nabla_resource_root: ".."
+  nabla_display_kind: "${tr_info_display_simulator}"
+  nabla_display_monochrome: "false"
+  nabla_info_preview: "false"
   nabla_device_model: "ESPHome simulator"
 
 esphome:
@@ -13,7 +16,14 @@ esphome:
 script:
   - id: device_info_refresh
     then:
-      - lambda: nabla_info::refresh("${nabla_device_model}", "${tr_info_disconnected}", "${tr_info_unavailable}");
+      - lambda: |-
+          nabla_info::refresh("${nabla_device_model}", "${nabla_display_kind}",
+            "${screen_width} x ${screen_height}", ${nabla_display_monochrome},
+            ${nabla_info_preview},
+            {"${tr_info_disconnected}", "${tr_info_unavailable}",
+             "${tr_info_chip}", "${tr_info_screen}", "${tr_info_color}",
+             "${tr_info_mono}", "${tr_info_router}", "${tr_info_mask}",
+             "${tr_info_signal}"});
 
 interval:
   - interval: 1s

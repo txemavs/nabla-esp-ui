@@ -63,3 +63,38 @@ font:
     bpp: 4
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
+
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
+    id: nabla_ubuntu_16
+    extras:
+      - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
+        glyphs: ["\uf00c", "\uf00d", "\uf053", "\uf054", "\uf55a"]
+    size: 16
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
+    id: nabla_ubuntu_20
+    size: 20
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
+    id: nabla_ubuntu_28
+    size: 28
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-B.ttf
+    id: nabla_ubuntu_bold_16
+    size: 16
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"
+
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
+    id: nabla_ubuntu_12
+    size: 12
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€›"

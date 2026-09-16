@@ -46,3 +46,22 @@ font:
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-B.ttf
+    id: compact_ubuntu_small
+    size: 8
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
+    id: compact_ubuntu_body
+    size: 10
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
+    id: compact_ubuntu_large
+    size: 16
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"

@@ -1,15 +1,27 @@
 substitutions:
   nabla_resource_root: ".."
   nabla_initial_rotation: "0"
+  nabla_initial_dark: "true"
+  nabla_initial_borders: "true"
+  nabla_initial_font_choice: "0"
 
 esphome:
   includes:
+    - ${nabla_resource_root}/components/appearance/fonts.h
     - ${nabla_resource_root}/navigation/tree.h
     - ${nabla_resource_root}/navigation/focus.h
     - ${nabla_resource_root}/profiles/geometry.h
     - ${nabla_resource_root}/navigation/orientation.h
 
 globals:
+  - id: nav_borders
+    type: bool
+    restore_value: true
+    initial_value: '${nabla_initial_borders}'
+  - id: nav_font_choice
+    type: int
+    restore_value: true
+    initial_value: '${nabla_initial_font_choice}'
   - id: nav_list_view
     type: bool
     initial_value: 'false'
@@ -19,7 +31,7 @@ globals:
   - id: nav_dark
     type: bool
     restore_value: true
-    initial_value: 'true'
+    initial_value: '${nabla_initial_dark}'
   - id: nav_current
     type: int
     initial_value: '0'
@@ -83,6 +95,12 @@ script:
             - lambda: |-
                 if (nabla::nodes[node].action == 1 || nabla::nodes[node].action == 2) {
                   id(nav_dark) = nabla::nodes[node].action == 1;
+                  node = nabla::nodes[node].parent;
+                }
+                if (nabla::nodes[node].action == 5 || nabla::nodes[node].action == 6 || nabla::nodes[node].action == 7) {
+                  if (nabla::nodes[node].action == 5) id(nav_dark) = !id(nav_dark);
+                  else if (nabla::nodes[node].action == 7) id(nav_borders) = !id(nav_borders);
+                  else id(nav_font_choice) = (id(nav_font_choice) + 1) % 2;
                   node = nabla::nodes[node].parent;
                 }
                 int old = id(nav_current);
@@ -187,11 +205,10 @@ script:
           lv_obj_set_width(id(footer_brand), screen_w - 96);
           lv_obj_set_width(id(footer_progress_track), screen_w - 88);
 
+          nabla_style::borders = id(nav_borders);
           int total = nabla::children(current);
           auto border = [&](lv_obj_t *obj, bool selected) {
-            lv_obj_set_style_border_color(obj, selected ? foreground : lv_color_hex(${nabla_secondary}), 0);
-            lv_obj_set_style_border_width(obj, selected ? 2 : (${nabla_monochrome} ? 0 : 1), 0);
-            lv_obj_set_style_border_color(obj, foreground, LV_STATE_PRESSED);
+            nabla_style::control(obj,selected,id(nav_dark),${nabla_monochrome});
           };
           ESP_LOGI("navigation", "%s [focus %d]", nabla::path(current).c_str(), id(nav_selection));
           lv_obj_remove_flag(id(navigation_toolbar), LV_OBJ_FLAG_HIDDEN);
@@ -218,12 +235,11 @@ script:
               lv_obj_update_layout(tiles[i]);
               lv_point_t title_size;
               lv_text_get_size(&title_size, nabla::nodes[root_child].title,
-                              id(nabla_font_16)->get_lv_font(), 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
+                              (id(nav_font_choice)==0 ? id(nabla_ubuntu_16)->get_lv_font() : id(nabla_font_16)->get_lv_font()), 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
               lv_obj_set_style_text_font(tile_titles[i],
                 title_size.x > lv_obj_get_width(tiles[i]) - 8
-                  ? id(nabla_font_12)->get_lv_font() : id(nabla_font_16)->get_lv_font(), 0);
+                  ? (id(nav_font_choice)==0 ? id(nabla_ubuntu_12)->get_lv_font() : id(nabla_font_12)->get_lv_font()) : (id(nav_font_choice)==0 ? id(nabla_ubuntu_16)->get_lv_font() : id(nabla_font_16)->get_lv_font()), 0);
             }
-            border(tiles[i], id(nav_selection) == i);
             if (root_child >= 0) {
               auto color = ${nabla_monochrome} ? background : lv_color_hex(id(nav_dark) ? nabla::nodes[root_child].bg_dark : nabla::nodes[root_child].bg_light);
               lv_obj_set_style_bg_color(tiles[i], color, 0);
@@ -232,6 +248,18 @@ script:
             lv_obj_set_style_text_color(tile_titles[i], foreground, 0);
             lv_obj_set_style_text_color(tile_icons[i], root_child < 0 || ${nabla_monochrome} ? foreground :
               lv_color_hex(id(nav_dark) ? nabla::nodes[root_child].icon_dark : nabla::nodes[root_child].icon_light), 0);
+            if (!id(nav_borders)) {
+              border(tiles[i], id(nav_selection) == i);
+              if(id(nav_selection)!=i && root_child>=0 && !${nabla_monochrome})
+                lv_obj_set_style_text_color(tile_icons[i],
+                  lv_color_hex(id(nav_dark)?nabla::nodes[root_child].icon_dark:nabla::nodes[root_child].icon_light),0);
+            }
+            else {
+              lv_obj_set_style_border_width(tiles[i], id(nav_selection)==i ? 2 : (${nabla_monochrome}?0:1),0);
+              lv_obj_set_style_border_width(tiles[i],2,LV_STATE_PRESSED);
+              lv_obj_set_style_border_color(tiles[i],id(nav_selection)==i?foreground:nabla_style::idle(id(nav_dark)),0);
+              lv_obj_set_style_border_color(tiles[i],foreground,LV_STATE_PRESSED);
+            }
             lv_obj_set_style_bg_color(rows[i], background, 0);
             lv_obj_set_style_bg_color(rows[i], background, LV_STATE_PRESSED);
             lv_obj_set_style_text_color(labels[i], foreground, 0);
@@ -239,7 +267,7 @@ script:
             if (n < 0) lv_obj_add_flag(rows[i], LV_OBJ_FLAG_HIDDEN);
             else {
               lv_obj_remove_flag(rows[i], LV_OBJ_FLAG_HIDDEN);
-              lv_label_set_text(labels[i], nabla::row_title(n).c_str());
+              lv_label_set_text(labels[i], nabla::row_title(n, id(nav_dark), id(nav_font_choice), id(nav_borders)).c_str());
               border(rows[i], id(nav_selection) == i);
             }
           }
@@ -292,13 +320,15 @@ script:
             lv_obj_set_style_border_width(button, selected ? 1 : 0, 0);
             lv_obj_set_style_shadow_width(button, 0, 0);
             if (label) lv_obj_set_style_text_color(label, toolbar_fg, 0);
+            if (!id(nav_borders)) nabla_style::control(button,selected,id(nav_dark));
+
           };
-          toolbar_style(id(toolbar_home), nullptr, false);
+          toolbar_style(id(toolbar_home), nullptr, !id(nav_borders) && id(nav_selection)==total);
           toolbar_style(id(toolbar_rotate), id(toolbar_rotate_label), !current && id(nav_selection) == total + 1);
           // Focus recolors only the mark; preserve the configured base/status color.
-          lv_obj_set_style_image_recolor(id(toolbar_logo_image), foreground, 0);
+          lv_obj_set_style_image_recolor(id(toolbar_logo_image), !id(nav_borders) && id(nav_selection)==total ? background : foreground, 0);
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, 0);
-          lv_obj_set_style_image_recolor(id(toolbar_logo_image), foreground, LV_STATE_FOCUSED);
+          lv_obj_set_style_image_recolor(id(toolbar_logo_image), !id(nav_borders) && id(nav_selection)==total ? background : foreground, LV_STATE_FOCUSED);
           lv_obj_set_style_text_color(id(toolbar_close_label), ${nabla_monochrome} ? foreground : lv_color_hex(${nabla_error}), 0);
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, LV_STATE_FOCUSED);
           if (id(nav_selection) == total) lv_obj_add_state(id(toolbar_logo_image), LV_STATE_FOCUSED);
@@ -316,7 +346,7 @@ script:
             for (int n = nabla::nodes[current].parent; n > 0; n = nabla::nodes[n].parent)
               ancestors.insert(ancestors.begin(), n);
             auto width = [&](const char *text, bool bold) {
-              const lv_font_t *font = bold ? id(nabla_font_bold_16)->get_lv_font() : id(nabla_font_16)->get_lv_font();
+              const lv_font_t *font = bold ? (id(nav_font_choice)==0 ? id(nabla_ubuntu_bold_16)->get_lv_font() : id(nabla_font_bold_16)->get_lv_font()) : (id(nav_font_choice)==0 ? id(nabla_ubuntu_16)->get_lv_font() : id(nabla_font_16)->get_lv_font());
               lv_point_t size;
               lv_text_get_size(&size, text, font, 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
               return (int) size.x + 6;
@@ -343,7 +373,7 @@ script:
               bool is_current = id(nav_crumbs)[i] == current;
               if (is_current) lv_obj_remove_flag(buttons[i], LV_OBJ_FLAG_CLICKABLE);
               else lv_obj_add_flag(buttons[i], LV_OBJ_FLAG_CLICKABLE);
-              lv_obj_set_style_text_font(texts[i], is_current ? id(nabla_font_bold_16)->get_lv_font() : id(nabla_font_16)->get_lv_font(), 0);
+              lv_obj_set_style_text_font(texts[i], is_current ? (id(nav_font_choice)==0 ? id(nabla_ubuntu_bold_16)->get_lv_font() : id(nabla_font_bold_16)->get_lv_font()) : (id(nav_font_choice)==0 ? id(nabla_ubuntu_16)->get_lv_font() : id(nabla_font_16)->get_lv_font()), 0);
               toolbar_style(buttons[i], texts[i], !is_current && id(nav_selection) == total + 1 + i);
               x += w; available -= w;
               if (i + 1 < (int) id(nav_crumbs).size()) {
@@ -362,7 +392,7 @@ script:
             lv_obj_set_width(id(toolbar_crumb_0), screen_w - 174);
             lv_label_set_text(id(toolbar_crumb_label_0), nabla::nodes[0].title);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_CLICKABLE);
-            lv_obj_set_style_text_font(id(toolbar_crumb_label_0), id(nabla_font_bold_16)->get_lv_font(), 0);
+            lv_obj_set_style_text_font(id(toolbar_crumb_label_0), (id(nav_font_choice)==0 ? id(nabla_ubuntu_bold_16)->get_lv_font() : id(nabla_font_bold_16)->get_lv_font()), 0);
             toolbar_style(id(toolbar_crumb_0), id(toolbar_crumb_label_0), false);
           }
       - if:
@@ -385,3 +415,14 @@ script:
           then:
             - lambda: nabla_forms::regular_form.render(id(nav_dark), ${nabla_monochrome});
             - lvgl.page.show: form_gallery_page
+      - lambda: |-
+          const nabla_appearance::FontPair pairs[] = {
+            {id(nabla_font_12)->get_lv_font(), id(nabla_ubuntu_12)->get_lv_font()},
+            {id(nabla_font_16)->get_lv_font(), id(nabla_ubuntu_16)->get_lv_font()},
+            {id(nabla_font_20)->get_lv_font(), id(nabla_ubuntu_20)->get_lv_font()},
+            {id(nabla_font_28)->get_lv_font(), id(nabla_ubuntu_28)->get_lv_font()},
+            {id(nabla_font_bold_16)->get_lv_font(), id(nabla_ubuntu_bold_16)->get_lv_font()},
+          };
+          for (auto *page : {id(home_page)->obj, id(navigation_page)->obj,
+                             id(wifi_form_page)->obj, id(form_gallery_page)->obj})
+            nabla_appearance::apply(page,pairs,5,id(nav_font_choice));

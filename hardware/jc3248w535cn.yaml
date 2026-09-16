@@ -1,4 +1,5 @@
 substitutions:
+  nabla_display_kind: "IPS LCD"
   nabla_device_model: "JC3248W535CN"
 
 # Guition JC3248W535CN: ESP32-S3, 16 MiB flash, 8 MiB octal PSRAM.

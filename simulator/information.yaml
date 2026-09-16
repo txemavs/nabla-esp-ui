@@ -1,0 +1,9 @@
+# Host-only fixture. All network values are synthetic documentation data.
+packages:
+  main: !include hello-world.yaml
+substitutions:
+  nabla_device_model: "JC3248W535CN (demo)"
+  nabla_display_kind: "IPS LCD (demo)"
+  nabla_info_preview: "true"
+esphome:
+  name: nabla-information
