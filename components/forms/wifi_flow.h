@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include <array>
+#include <algorithm>
 namespace nabla_forms {
 enum class Stage { EDIT, SCANNING, RESULTS, CONNECTING, SUCCESS, FAILURE, SCAN_ERROR };
 enum class Error { NONE, SSID, PASSWORD };
@@ -47,7 +48,32 @@ struct TextDraft {
   }
   void clear(){for(char &c:value)c=0;value.clear();}
 };
+struct WifiFlow;
+struct WifiBackend {
+  virtual ~WifiBackend() = default;
+  virtual void scan(WifiFlow &, uint32_t) = 0;
+  virtual void connect(WifiFlow &, uint32_t) = 0;
+  virtual void cancel(WifiFlow &) = 0;
+  virtual bool forget() = 0;
+};
 struct WifiFlow {
+  static inline WifiBackend *backend = nullptr;
+  std::array<std::string,8> live_names{};
+  std::array<Network,8> live_networks{};
+  bool real() const { return backend != nullptr; }
+  void publish_network(const std::string &name, bool unsecured, int signal) {
+    if(name.empty() || name.size()>32 || !TextDraft::valid_utf8(name)) return;
+    int index=-1;
+    for(int i=0;i<found_count;i++) if(live_names[i]==name && live_networks[i].open==unsecured) index=i;
+    if(index>=0) {live_networks[index].rssi=std::max(signal,live_networks[index].rssi);return;}
+    if(found_count>=8){
+      index=0;for(int i=1;i<8;i++)if(live_networks[i].rssi<live_networks[index].rssi)index=i;
+      if(signal<=live_networks[index].rssi)return;
+    }else index=found_count++;
+    live_names[index]=name;
+    live_networks[index]={live_names[index].c_str(),unsecured,false,signal};
+  }
+
   std::string ssid,password;
   bool open=false;
   int selected_network=-1;
@@ -60,22 +86,22 @@ struct WifiFlow {
   bool pending_failure=false;
   void wipe_password(){for(char &c:password)c=0;password.clear();}
   void clear(){wipe_password();ssid.clear();open=false;selected_network=-1;found_count=0;cancel();}
-  void cancel(){stage=Stage::EDIT;error=Error::NONE;pending_failure=false;++revision;}
+  void cancel(){if(backend)backend->cancel(*this);stage=Stage::EDIT;error=Error::NONE;pending_failure=false;++revision;}
   bool scan(uint32_t now,ScanMode mode){
     if(stage==Stage::SCANNING || stage==Stage::CONNECTING)return false;
     stage=Stage::SCANNING;started=now;scan_mode=mode;found_count=0;
-    error=Error::NONE;++revision;return true;
+    error=Error::NONE;++revision;if(backend)backend->scan(*this,now);return true;
   }
   bool scan(uint32_t now,bool empty=false){return scan(now,empty?ScanMode::EMPTY:ScanMode::NORMAL);}
   int results()const{return stage==Stage::RESULTS?found_count:0;}
-  const Network &result(int index)const{return networks[found[index]];}
+  const Network &result(int index)const{return backend?live_networks[index]:networks[found[index]];}
   std::string result_label(int index)const{
     const auto &n=result(index);
     return std::string(n.open?"[O] ":"[P] ")+n.ssid;
   }
   bool choose(int index){
     if(index<0 || index>=results())return false;
-    selected_network=found[index];ssid=networks[selected_network].ssid;open=networks[selected_network].open;
+    const auto &chosen=result(index);selected_network=backend?-1:found[index];ssid=chosen.ssid;open=chosen.open;
     wipe_password();stage=Stage::EDIT;error=Error::NONE;return true;
   }
   bool connect(uint32_t now){
@@ -85,9 +111,10 @@ struct WifiFlow {
     if(error!=Error::NONE)return false;
     pending_failure=selected_network>=0 && selected_network<network_count &&
       ssid==networks[selected_network].ssid && open==networks[selected_network].open && networks[selected_network].fails;
-    started=now;stage=Stage::CONNECTING;++revision;++accepted;wipe_password();return true;
+    started=now;stage=Stage::CONNECTING;++revision;++accepted;if(backend)backend->connect(*this,now);wipe_password();return true;
   }
   void tick(uint32_t now){
+    if(backend)return;
     if(stage==Stage::SCANNING && uint32_t(now-started)>=700){
       if(scan_mode==ScanMode::ERROR){stage=Stage::SCAN_ERROR;return;}
       stage=Stage::RESULTS;

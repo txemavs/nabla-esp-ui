@@ -67,7 +67,7 @@ nabla_navigation:
             children:
               - key: wifi
                 title: ${tr_wifi}
-                action: wifi_demo
+                action: wifi
           - key: language
             title: ${tr_language}
             detail: ${tr_language_detail}

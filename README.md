@@ -9,7 +9,8 @@ on a server being available.
 
 **Status:** working desktop prototype on ESPHome 2026.8.2 / LVGL 9.5.
 A JC3248W535CN now runs the launcher with owner-confirmed touch navigation.
-Persistent settings, radio integration and device-to-device links remain unvalidated.
+An optional primary Wi-Fi adapter has passed initial physical scan/save/rollback
+checks; peer links and full hardware recovery/soak coverage remain pending.
 Start with [the simulator](simulator/README.md).
 
 ## Platform plan
@@ -20,7 +21,8 @@ commissioning, peer control, and the vehicle panel with a Raspberry Pi 4.
 The [roadmap](docs/platform/ROADMAP.md) defines implementation order and exit gates.
 
 M1 adaptive profiles and M2 local forms are implemented on the host. Try the
-Wi-Fi simulation or Settings > Controls (demo); real radios are the next milestone.
+Wi-Fi simulation or Settings > Controls (demo). The private physical composition
+can opt into real Wi-Fi with primary/fallback recovery.
 Draft YAML in docs/platform/ is explicitly illustrative, not accepted firmware.
 
 ## What works today
@@ -42,6 +44,8 @@ The current desktop contains Settings, Communications, Photos, Music, Cameras,
 Weather, Lights and Sensors. Most are placeholders; Settings demonstrates
 appearance and nested navigation, not completed network configuration.
 Wi-Fi/Bluetooth header icons are visual placeholders, not live connection status.
+An opt-in [primary Wi-Fi adapter](external_components/nabla_wifi/README.md) connects
+the LVGL form to real scans and a saved primary without losing configured fallbacks.
 
 ## How the repository fits together
 

@@ -4,6 +4,8 @@ Reusable UI building blocks live here, grouped by component. New components
 should have a widget.yaml entry point and a README describing parameters,
 dependencies, focus/pressed behavior, examples and limitations.
 
+- Optional external_components/nabla_wifi: persistent primary Wi-Fi adapter for
+  the LVGL form; see its README for limits and fallback guarantees.
 - device-info/package.yaml: read-only model, network, version and uptime snapshot;
   see device-info/README.md for field bindings and limits.
 - logo/widget.yaml: theme-foreground equilateral triangle with upward focus motion.

@@ -36,7 +36,9 @@ Applies to the entire nabla-esp-ui repository.
 - Use runtime logical dimensions when rendering rotated layouts.
 - Settings > Connections > Wi-Fi hosts a manual SSID/password demo (wifi_demo).
 - Its component owns editor focus and draft clearing; routes keep shared toolbar.
-- Connect validates locally and clears the password; only mock Wi-Fi, no persistence.
+- The default form is a mock; optional nabla_wifi enables real scan and persistent primary Wi-Fi.
+- Preserve declared fallbacks, cancel/timeout rollback and confirmed primary removal.
+- Never wire wifi.configure directly: it replaces the active network list.
 - Password show time stays zero; never reveal even the last typed character.
 - M2 Save commits once after confirmation; accepting a field changes only its draft.
 - Keep focus/rollback rules in the shared controller, not separate renderer callbacks.

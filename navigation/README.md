@@ -108,3 +108,10 @@ with Settings blue. Labels, focus borders and the navigation logo follow the
 theme foreground. Wi-Fi fields, buttons and keyboard also invert.
 nabla_monochrome ignores tile color overrides and renders icons in foreground;
 this is a presentation mode, not validated e-paper hardware support.
+
+## Optional real Wi-Fi and information
+
+The wifi action opens the Wi-Fi form; wifi_demo remains an alias for compatibility.
+The transport is mock unless the private ESP32/LVGL composition enables nabla_wifi.
+See external_components/nabla_wifi/README.md for save, cancellation and fallback
+behavior. info fields bind read-only information leaves; see components/device-info.

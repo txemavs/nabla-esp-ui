@@ -1,4 +1,10 @@
 substitutions:
+  tr_wifi_real_0: "Primary Wi-Fi (optional)"
+  tr_wifi_real_1: "Primary network saved"
+  tr_wifi_real_2: "Not saved; restoring fallback"
+  tr_wifi_real_3: "Use fallback networks"
+  tr_wifi_real_4: "Forget the primary network?"
+  tr_wifi_real_5: "Forget and use fallback"
   tr_information: "Information"
   tr_info_model: "Model"
   tr_info_uptime: "Uptime"

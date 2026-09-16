@@ -1,4 +1,10 @@
 substitutions:
+  tr_wifi_real_0: "Wi-Fi principal (opcional)"
+  tr_wifi_real_1: "Red principal guardada"
+  tr_wifi_real_2: "No guardada; recuperando respaldo"
+  tr_wifi_real_3: "Usar redes de respaldo"
+  tr_wifi_real_4: "¿Borrar la red principal?"
+  tr_wifi_real_5: "Borrar y usar respaldo"
   tr_information: "Información"
   tr_info_model: "Modelo"
   tr_info_uptime: "Encendido"

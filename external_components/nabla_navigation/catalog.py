@@ -3,7 +3,7 @@ import re
 
 INFO_FIELDS = {"model": 1, "wifi": 2, "ip": 3, "version": 4, "uptime": 5}
 
-ACTIONS = {"open", "dark", "light", "wifi_demo", "forms_demo"}
+ACTIONS = {"open", "dark", "light", "wifi_demo", "wifi", "forms_demo"}
 
 def flatten(tree):
     result = []
@@ -65,7 +65,7 @@ def emit(tree):
         values = [json.dumps(n["title"], ensure_ascii=False), str(n["parent"]),
                   json.dumps(n["detail"], ensure_ascii=False),
                   json.dumps(n["icon"], ensure_ascii=False),
-                  str({"open": 0, "dark": 1, "light": 2, "wifi_demo": 3, "forms_demo": 4}[n["action"]]),
+                  str({"open": 0, "dark": 1, "light": 2, "wifi_demo": 3, "wifi": 3, "forms_demo": 4}[n["action"]]),
                   str(n["bg_dark"]), str(n["bg_light"]), str(n["icon_dark"]), str(n["icon_light"]), str(INFO_FIELDS.get(n["info"], 0))]
         rows.append("{" + ", ".join(values) + "}")
     return ("namespace nabla { const Node nodes[] = {"

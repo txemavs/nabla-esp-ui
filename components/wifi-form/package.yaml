@@ -2,7 +2,7 @@ substitutions:
   nabla_resource_root: ".."
   nabla_keyboard_latin: "true"
 
-# Local simulated Wi-Fi form, composed by the demo navigation.
+# Wi-Fi form: mock by default, real when the optional nabla_wifi adapter is enabled.
 esphome:
   includes:
     - ${nabla_resource_root}/components/forms/latin_keyboard.h
@@ -19,16 +19,15 @@ script:
           e.status=id(wifi_form_status);e.apply=id(wifi_form_apply);e.cancel=id(wifi_form_cancel);
           e.scan=id(wifi_form_scan);e.open_box=id(wifi_form_open);
           static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}", "${tr_flow_18}", "${tr_flow_19}", "${tr_flow_20}", "${tr_flow_21}"};
-          e.words=words;e.setup_scan();
+          static const char *real_words[] = {"${tr_wifi_real_0}", "${tr_wifi_real_1}", "${tr_wifi_real_2}", "${tr_wifi_real_3}", "${tr_wifi_real_4}", "${tr_wifi_real_5}"};
+          e.words=words;e.real_words=real_words;e.setup_scan();
           lv_textarea_set_password_show_time(e.password,0);
           if(${nabla_keyboard_latin}){
             nabla_keyboard::install(e.keyboard);
             lv_obj_set_style_text_font(e.keyboard,id(nabla_font_16)->get_lv_font(),LV_PART_ITEMS);
           }
           nabla_wifi_form::editor.clear();
-      - lvgl.label.update:
-          id: wifi_form_status
-          text: "${tr_wifi_form_demo}"
+      - lambda: nabla_wifi_form::editor.poll();
   - id: wifi_form_accept
     then:
       - lambda: |-
@@ -82,9 +81,7 @@ lvgl:
                   auto &flow=nabla_wifi_form::editor.flow;
                   if(flow.stage==nabla_forms::Stage::SUCCESS || flow.stage==nabla_forms::Stage::FAILURE)flow.cancel();
                   flow.error=nabla_forms::Error::NONE;
-              - lvgl.label.update:
-                  id: wifi_form_status
-                  text: "${tr_wifi_form_demo}"
+              - lambda: nabla_wifi_form::editor.poll();
         - textarea:
             id: wifi_form_password
             one_line: true
@@ -109,9 +106,7 @@ lvgl:
                   auto &flow=nabla_wifi_form::editor.flow;
                   if(flow.stage==nabla_forms::Stage::SUCCESS || flow.stage==nabla_forms::Stage::FAILURE)flow.cancel();
                   flow.error=nabla_forms::Error::NONE;
-              - lvgl.label.update:
-                  id: wifi_form_status
-                  text: "${tr_wifi_form_demo}"
+              - lambda: nabla_wifi_form::editor.poll();
         - label:
             id: wifi_form_status
             text: "${tr_wifi_form_demo}"

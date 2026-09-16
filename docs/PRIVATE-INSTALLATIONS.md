@@ -95,8 +95,10 @@ An optional manually supplied network can precede fallback networks with a highe
 priority (for example 40 above fallbacks at 30/20/10). Simply moving an entry to
 the top does not replace explicit priority. Keep its SSID/password in local
 secrets. An omitted manual entry leaves the fallback configuration unchanged.
-This is firmware configuration, not a completed runtime Wi-Fi editor: the current
-on-screen Wi-Fi form is still the M2 simulation.
+This commented network block is firmware configuration. To enable the runtime
+primary editor on an ESP32/LVGL composition, add nabla_wifi: at the private root.
+The adapter derives its fallbacks from wifi.networks; see its README for limits.
+Without this opt-in the on-screen form remains the M2 simulation.
 
 An arbitrary remote YAML package import is not supported by this recipe: the
 resources must exist in the local checkout selected by nabla_resource_root.

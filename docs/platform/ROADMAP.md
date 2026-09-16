@@ -48,8 +48,11 @@ Native keyboard limitations are addressed by a tested optional layout component.
 Status: started. The JC3248W535CN firmware compiles and was uploaded with verified
 flash data on 2026-09-16. The owner confirmed the eight-icon launcher and touch
 navigation; USB logs corroborated route changes. See [hardware notes](../../hardware/README.md).
-Real Wi-Fi, local data bindings, physical encoder/joystick adapters and the exit
-gate below are still pending.
+Static Wi-Fi/OTA and encrypted API logs are verified. The optional primary Wi-Fi
+adapter now passes initial on-device scan, invalid-password rollback, save and
+forget/reconnect checks. Information shows live model/network/version/uptime.
+Local data bindings, physical encoder/joystick adapters and the full exit gate
+below are still pending.
 
 Confirm JC3248W535CN board revision, flash/PSRAM, controller, touch, backlight and
 pins. Add physical encoder and five-way adapters with debounce and hold/release.
@@ -148,17 +151,19 @@ M0 is documented. M1 now has regular/portrait and native 128x64 tiny/readable
 fixtures with shared catalog and tested focus policies.
 M2 includes native/compact text editors, validated YAML number/choice/toggle
 fields, transactional save/cancel dialogs and deterministic scan/connect fixtures.
-Ten test cases cover schema, navigation, editing and asynchronous state behavior.
+Twelve test cases cover schema, navigation, editing, information and the optional
+Wi-Fi adapter's asynchronous state/recovery behavior.
 
 Current demo path: Settings > Connections > Wi-Fi. Enter SSID/password,
 validate locally and cancel through the standard navigation. action: wifi_demo
-is accepted prototype syntax; it is not a working network configuration action.
+remains a compatibility alias. action: wifi selects the same form: mock by default,
+real with the optional nabla_wifi adapter on the physical LVGL composition.
 The standalone password preview remains available for isolated keyboard work.
 
 Next steps:
 1. Use the host demo to collect usability feedback without changing the M2 contract.
-2. Begin M3 by verifying the JC3248W535CN board revision and actual peripherals.
-3. Add physical input and standalone data adapters, then real Wi-Fi with recovery.
+2. Continue M3 hardware validation on the running JC3248W535CN.
+3. Extend real Wi-Fi recovery coverage and add physical input/local data adapters.
 4. Measure resource use, legibility, reconnect behavior and the hardware exit gates.
 5. Progress through M4 provisioning, M5 peer control, M6 integrations, M7
    vehicle pilot and M8 public release using the gates above.

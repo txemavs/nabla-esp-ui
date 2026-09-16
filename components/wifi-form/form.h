@@ -9,6 +9,8 @@ struct Editor {
   lv_obj_t *scan{}, *open_box{}, *scan_panel{}, *scan_title{};
   lv_obj_t *scan_rows[5]{};
   const char *const *words{};
+  const char *const *real_words{};
+  bool reset_confirm=false;
   nabla_forms::WifiFlow flow;
   int scan_index=0, scan_top=0;
   bool scan_picker=false;
@@ -31,14 +33,26 @@ struct Editor {
     lv_obj_add_flag(scan_panel,LV_OBJ_FLAG_HIDDEN);
   }
   bool scanning() const {
-    return scan_picker || flow.stage==nabla_forms::Stage::SCANNING || flow.stage==nabla_forms::Stage::RESULTS || flow.stage==nabla_forms::Stage::SCAN_ERROR;
+    return reset_confirm || scan_picker || flow.stage==nabla_forms::Stage::SCANNING || flow.stage==nabla_forms::Stage::RESULTS || flow.stage==nabla_forms::Stage::SCAN_ERROR;
   }
   int scan_count() const {
-    return scan_picker?4:flow.stage==nabla_forms::Stage::RESULTS?flow.results()+1:1;
+    return reset_confirm?2:scan_picker?(flow.real()?3:4):flow.stage==nabla_forms::Stage::RESULTS?flow.results()+1:1;
   }
   void start_scan() {scan_picker=true;scan_index=scan_top=0;poll();}
   void select_scan(int index) {
-    if(scan_picker){
+    if(reset_confirm){
+      reset_confirm=false;
+      if(index==1 && nabla_forms::WifiFlow::backend){
+        bool ok=nabla_forms::WifiFlow::backend->forget();
+        clear();
+        flow.stage=ok?nabla_forms::Stage::EDIT:nabla_forms::Stage::FAILURE;
+      }
+      scan_index=scan_top=0;
+    }else if(scan_picker && flow.real()){
+      scan_picker=false;scan_index=scan_top=0;
+      if(index==0)flow.scan(esphome::millis());
+      else if(index==1)reset_confirm=true;
+    }else if(scan_picker){
       scan_picker=false;
       if(index<3)flow.scan(esphome::millis(),static_cast<nabla_forms::ScanMode>(index));
       scan_index=scan_top=0;
@@ -66,6 +80,7 @@ struct Editor {
     poll();
   }
   void poll() {
+    if(!page || !ssid || !password || !status)return;
     using namespace nabla_forms;
     flow.tick(esphome::millis());
     if((flow.stage==Stage::SUCCESS || flow.stage==Stage::FAILURE) &&
@@ -78,7 +93,15 @@ struct Editor {
     int title=flow.error==Error::SSID?15:flow.error==Error::PASSWORD?16:
       flow.stage==Stage::CONNECTING?12:flow.stage==Stage::SUCCESS?13:
       flow.stage==Stage::FAILURE?14:0;
-    if(words)lv_label_set_text(status,words[title]);
+    if(words) {
+      const char *caption=words[title];
+      if(flow.real() && real_words){
+        if(title==0)caption=real_words[0];
+        if(title==13)caption=real_words[1];
+        if(title==14)caption=real_words[2];
+      }
+      lv_label_set_text(status,caption);
+    }
     if(!scan_panel)return;
     if(!scanning()){lv_obj_add_flag(scan_panel,LV_OBJ_FLAG_HIDDEN);return;}
     lv_obj_remove_flag(scan_panel,LV_OBJ_FLAG_HIDDEN);
@@ -90,7 +113,7 @@ struct Editor {
     lv_obj_set_pos(scan_panel,0,38);lv_obj_set_size(scan_panel,w,h);
     int heading=scan_picker?21:flow.stage==Stage::SCANNING?11:
       flow.stage==Stage::SCAN_ERROR?18:flow.stage==Stage::RESULTS && !flow.results()?17:0;
-    lv_label_set_text(scan_title,words[heading]);
+    lv_label_set_text(scan_title,reset_confirm?real_words[4]:flow.real() && heading==0?real_words[0]:words[heading]);
     int count=scan_count();
     scan_index=std::clamp(scan_index,0,count-1);
     scan_top=std::clamp(scan_top,0,std::max(0,count-5));
@@ -106,7 +129,9 @@ struct Editor {
       lv_obj_set_style_border_width(b,index==scan_index?2:1,0);
       lv_obj_set_style_border_color(b,index==scan_index?fg:lv_color_hex(0x808080),0);
       auto *label=lv_obj_get_child(b,0);
-      std::string caption=scan_picker?words[index==0?20:index==1?4:index==2?19:6]:
+      std::string caption=reset_confirm?(index==0?words[9]:real_words[5]):
+        scan_picker && flow.real()?(index==0?words[3]:index==1?real_words[3]:words[6]):
+        scan_picker?words[index==0?20:index==1?4:index==2?19:6]:
         flow.stage==Stage::RESULTS && index<flow.results()?flow.result_label(index):words[6];
       lv_obj_set_width(label,w-36);
       lv_label_set_long_mode(label,LV_LABEL_LONG_MODE_SCROLL_CIRCULAR);
@@ -118,7 +143,7 @@ struct Editor {
   bool editing_password = false;
   bool dark_theme = true;
   void clear() {
-    flow.clear();scan_picker=false;scan_index=scan_top=0;
+    flow.clear();scan_picker=false;reset_confirm=false;scan_index=scan_top=0;
     if(open_box)lv_obj_remove_state(open_box,LV_STATE_CHECKED);
     lv_textarea_set_text(ssid, "");
     lv_textarea_set_text(password, "");
