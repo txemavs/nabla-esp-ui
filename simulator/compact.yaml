@@ -1,0 +1,65 @@
+substitutions:
+  ui_language: es
+  compact_profile: tiny
+
+esphome:
+  name: nabla-compact
+
+host:
+logger:
+packages:
+  profile: !include ../profiles/${compact_profile}.yaml
+  locale: !include ../locales/${ui_language}.yaml
+  catalog: !include ../examples/hello-world/navigation.yaml
+  icons: !include ../theme/icons.yaml
+  shell: !include ../components/compact-shell/package.yaml
+
+display:
+  - platform: sdl
+    id: compact_display
+    dimensions:
+      width: ${screen_width}
+      height: ${screen_height}
+    update_interval: 100ms
+    lambda: |-
+      nabla::compact_shell.render(it, id(compact_small), id(compact_body),
+        id(compact_large), "${tr_compact_back}", "${tr_compact_editor_pending}");
+
+touchscreen:
+  - platform: sdl
+    display: compact_display
+    update_interval: 5ms
+    on_touch:
+      - lambda: nabla::compact_shell.touch(touch.x, touch.y);
+
+binary_sensor:
+  - platform: sdl
+    id: compact_up
+    sdl_id: compact_display
+    key: SDLK_UP
+    on_press:
+      - lambda: nabla::compact_shell.menu.move(-1);
+  - platform: sdl
+    id: compact_down
+    sdl_id: compact_display
+    key: SDLK_DOWN
+    on_press:
+      - lambda: nabla::compact_shell.menu.move(1);
+  - platform: sdl
+    id: compact_enter
+    sdl_id: compact_display
+    key: SDLK_RETURN
+    on_press:
+      - lambda: nabla::compact_shell.menu.activate();
+  - platform: sdl
+    id: compact_back
+    sdl_id: compact_display
+    key: SDLK_ESCAPE
+    on_press:
+      - lambda: nabla::compact_shell.menu.back();
+  - platform: sdl
+    id: compact_home
+    sdl_id: compact_display
+    key: SDLK_HOME
+    on_press:
+      - lambda: nabla::compact_shell.menu.home();

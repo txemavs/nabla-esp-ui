@@ -37,3 +37,5 @@ substitutions:
   tr_wifi_form_success: "Valid input (demo). Password cleared"
   tr_wifi_form_apply: "Test connection"
   tr_wifi_form_cancel: "Cancel"
+  tr_compact_back: "Back"
+  tr_compact_editor_pending: "Editor: phase M2"

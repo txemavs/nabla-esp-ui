@@ -43,3 +43,9 @@ Selected by action: wifi_demo in the demo tree. Current support is host-only
 
 Launcher entries accept icon_dark/icon_light independently of optional bg_dark/bg_light.
 Default surfaces are black/white; focus and text invert with the theme.
+
+## Compact shell
+
+[Compact shell](compact-shell/README.md) renders the shared catalog at 128x64
+with three-row and readable single-row profiles, one-bit fonts and shared focus
+policies. Host-verified; physical OLED and GPIO adapters remain pending.

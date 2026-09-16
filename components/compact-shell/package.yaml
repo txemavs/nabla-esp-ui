@@ -1,0 +1,38 @@
+esphome:
+  includes:
+    - ../navigation/focus.h
+    - ../profiles/geometry.h
+    - ../components/compact-shell/model.h
+    - ../components/compact-shell/render.h
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          App.set_loop_interval(1);
+          nabla::compact_shell.menu.readable = ${compact_readable};
+          nabla::compact_shell.app_footer = ${compact_app_footer};
+          id(compact_up).publish_state(false);
+          id(compact_down).publish_state(false);
+          id(compact_enter).publish_state(false);
+          id(compact_back).publish_state(false);
+          id(compact_home).publish_state(false);
+
+font:
+  - file: ../assets/fonts/DejaVuSans-Bold.ttf
+    id: compact_small
+    size: 8
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+  - file: ../assets/fonts/DejaVuSans.ttf
+    id: compact_body
+    size: 10
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+  - file: ../assets/fonts/DejaVuSans.ttf
+    id: compact_large
+    size: 16
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"

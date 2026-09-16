@@ -1,0 +1,45 @@
+#pragma once
+#include "esphome/components/nabla_navigation/navigation.h"
+#include "focus.h"
+#include <vector>
+namespace nabla {
+struct CompactMenu {
+  int current = 0, focus = 0, top = 0;
+  bool dark = true, readable = false;
+  std::vector<int> saved_focus = std::vector<int>(count, 0);
+  std::vector<int> saved_top = std::vector<int>(count, 0);
+  int total() const { return children(current) + 1; } // reachable logo/Back
+  int rows() const { return readable ? 1 : 3; }
+  void anchor() {
+    // Header focus must not force the list to scroll.
+    if (focus < children(current))
+      top = scroll_anchor(focus, top, rows(), children(current));
+  }
+  void move(int delta) { focus = wrap_focus(focus, delta, total()); anchor(); }
+  void open(int node) {
+    if (!valid(node)) return;
+    if (nodes[node].action == 1 || nodes[node].action == 2) {
+      dark = nodes[node].action == 1;
+      node = nodes[node].parent;
+    }
+    if (node == current) return;
+    saved_focus[current] = focus; saved_top[current] = top;
+    bool entering = nodes[node].parent == current;
+    current = node;
+    focus = content_focus(saved_focus[node], children(node), entering);
+    top = entering ? 0 : saved_top[node];
+    anchor();
+  }
+  void back() { if (current) open(nodes[current].parent); }
+  void home() { open(0); }
+  void activate() {
+    if (focus < children(current)) open(child(current, focus));
+    else if (current) back();
+    else { readable = !readable; anchor(); }
+  }
+  void touch_option(int index) {
+    if (index < 0 || index >= total()) return;
+    focus = index; activate();
+  }
+};
+}

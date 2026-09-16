@@ -40,11 +40,12 @@ It separates application meaning from rendering, bindings and transport.
 - Shared header/footer surface, logo motion, progress demo and desktop clock.
 - Dark/light content, Font Awesome Solid/Brands and build-time Spanish/English.
 - Catalog validation and generated C++ traversal tests.
+- M1 128x64 tiny/readable profiles and real 320x480 portrait fixture.
 - Integrated manual SSID/password demo under Settings > Connections > Wi-Fi.
 
 ## Still to build
 
-128x64 and larger-OLED profiles, real encoder/joystick adapters, the full form catalog,
+Physical OLED drivers and real encoder/joystick adapters, the full form catalog,
 live network status, Wi-Fi commissioning, peer protocol, Home Assistant data
 bindings, Nabla Edge adapter, and vehicle telemetry. The named desktop
 applications mostly remain placeholders. No physical board is validated.
@@ -67,7 +68,7 @@ layout assumptions; these are migration work, not the final module architecture.
 
 The manual Wi-Fi form is now integrated in the main simulator. Refine its
 interaction, add deterministic scan and connection-result fixtures, then build
-the equivalent compact character picker and 128x64 list profile.
+the compact character picker on the M1 128x64 list profile.
 See [the roadmap](ROADMAP.md) for M0-M8 and current completion status.
 
 Peer roles do not depend on screen size: a tiny encoder controller may operate

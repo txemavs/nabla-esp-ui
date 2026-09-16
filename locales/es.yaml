@@ -37,3 +37,5 @@ substitutions:
   tr_wifi_form_success: "Datos válidos (demo). Contraseña borrada"
   tr_wifi_form_apply: "Probar conexión"
   tr_wifi_form_cancel: "Cancelar"
+  tr_compact_back: "Volver"
+  tr_compact_editor_pending: "Editor: fase M2"

@@ -7,4 +7,12 @@ if [[ ! -x .venv/bin/esphome ]]; then
 fi
 source .venv/bin/activate
 export SDL_VIDEODRIVER="${SDL_VIDEODRIVER:-x11}"
-exec esphome run simulator/hello-world.yaml
+case "${1:-regular}" in
+  regular) config=simulator/hello-world.yaml ;;
+  portrait) config=simulator/portrait.yaml ;;
+  tiny) config=simulator/compact.yaml ;;
+  readable) config=simulator/readable.yaml ;;
+  password) config=simulator/password.yaml ;;
+  *) echo "Usage: $0 [regular|portrait|tiny|readable|password]" >&2; exit 2 ;;
+esac
+exec esphome run "$config"

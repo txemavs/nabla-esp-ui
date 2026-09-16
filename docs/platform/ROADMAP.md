@@ -14,6 +14,9 @@ links resolve; no draft file is presented as runnable firmware.
 
 ## M1 — Adaptive shell and focus
 
+Status: host baseline delivered. See [profiles](../../profiles/README.md) and
+[M1 verification](M1-VERIFICATION.md). Hardware validation remains M3.
+
 Extract reusable shell/layout measurements from hardcoded example dimensions.
 Add named regular, readable and tiny profiles. Prototype 128x64 with a real
 128x64 viewport, not merely a rotated 480x320 scene. Support list navigation,
@@ -131,7 +134,8 @@ vehicle PIDs, peer UUIDs or production security guarantees.
 
 There are nine milestones, M0 through M8: the design baseline plus eight
 delivery phases. They are completion gates rather than an inflexible order.
-M0 is documented. M1 is partial (regular shell exists; tiny profiles remain).
+M0 is documented. M1 now has regular/portrait and native 128x64 tiny/readable
+fixtures with shared catalog and tested focus policies.
 M2 has started with the native keyboard and integrated manual Wi-Fi form.
 
 Current demo path: Settings > Connections > Wi-Fi. Enter SSID/password,
@@ -142,7 +146,7 @@ The standalone password preview remains available for isolated keyboard work.
 Next steps:
 1. Refine the integrated form through touch and encoder-emulated input.
 2. Add deterministic scan/results and connecting/failure/retry fixtures to M2.
-3. Complete M1's 128x64 list and character-picker counterpart.
+3. Add the M2 compact character picker to the completed M1 128x64 list.
 4. Finish M2's form lifecycle and adapter contract before M3 real Wi-Fi writes.
 5. Progress through M4 provisioning, M5 peer control, M6 integrations, M7
    vehicle pilot and M8 public release using the gates above.

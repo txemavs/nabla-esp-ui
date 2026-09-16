@@ -35,7 +35,9 @@ Applies to the entire nabla-esp-ui repository.
 - Settings > Connections > Wi-Fi hosts a manual SSID/password demo (wifi_demo).
 - Its component owns editor focus and draft clearing; routes keep shared toolbar.
 - Apply validates locally and clears the password; no Wi-Fi or persistence yet.
-- Small 128x64 profile, complete forms, real data bindings and peers are planned.
+- M1 tiny/readable profiles render the same tree at real 128x64, monochrome.
+- profiles/README.md documents geometry, launch commands and host-only evidence.
+- Compact forms, real data bindings, GPIO adapters and peers remain planned.
 
 ## Extension rules
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.
@@ -56,6 +58,8 @@ Applies to the entire nabla-esp-ui repository.
 - Compile esphome compile simulator/hello-world.yaml.
 - Run ./simulator/run.sh; inspect the actual UI for visual/input changes.
 - Compile es/en when changing locale-sensitive layout.
+- For profile changes compile simulator/compact.yaml, readable.yaml and portrait.yaml;
+  inspect native-resolution output and preserve both compact densities.
 - Run python3 -m unittest discover -s tests -p 'test_*.py' for catalog changes.
 - Verify root view toggle, list scroll, nested return, rotation and rotated touch.
 - Documentation-only changes need link/schema-example/status checks, not firmware

@@ -1,6 +1,8 @@
 esphome:
   includes:
     - ../navigation/tree.h
+    - ../navigation/focus.h
+    - ../profiles/geometry.h
     - ../navigation/orientation.h
 
 globals:
@@ -92,11 +94,9 @@ script:
                   // Entering a child starts at its first option; returning keeps
                   // the previous content item, never a saved toolbar control.
                   bool entering = nabla::nodes[node].parent == old;
-                  if (entering || id(nav_selection) < 0 ||
-                      id(nav_selection) >= nabla::children(node)) {
-                    id(nav_selection) = 0;
-                    id(nav_saved_scroll)[node] = 0;
-                  }
+                  int restored = nabla::content_focus(id(nav_selection), nabla::children(node), entering);
+                  if (entering || restored != id(nav_selection)) id(nav_saved_scroll)[node] = 0;
+                  id(nav_selection) = restored;
                 }
             - script.execute: nav_render
             - lambda: |-
@@ -130,7 +130,7 @@ script:
             - script.stop: nav_choose
             - lambda: |-
                 int total = nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 2);
-                if (total) id(nav_selection) = (id(nav_selection) + delta % total + total) % total;
+                if (total) id(nav_selection) = nabla::wrap_focus(id(nav_selection), delta, total);
             - script.execute: nav_render
             - lambda: |-
                 lv_obj_t *rows[] = {id(nav_row_0), id(nav_row_1), id(nav_row_2), id(nav_row_3), id(nav_row_4), id(nav_row_5), id(nav_row_6), id(nav_row_7)};
@@ -155,6 +155,7 @@ script:
           int screen_w = lv_display_get_horizontal_resolution(lv_display_get_default());
           int screen_h = lv_display_get_vertical_resolution(lv_display_get_default());
           const bool portrait = screen_w < screen_h;
+          const auto base_geometry = nabla::Geometry::regular(screen_w, screen_h, false, ${nabla_bar_height});
           const auto foreground = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
           const auto background = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
           static const int32_t grid_four[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
@@ -191,6 +192,7 @@ script:
             int columns = portrait ? 2 : 4;
             lv_obj_set_grid_cell(tiles[i], LV_GRID_ALIGN_STRETCH, i % columns, 1, LV_GRID_ALIGN_STRETCH, i / columns, 1);
             lv_obj_set_width(rows[i], screen_w - 16);
+            lv_obj_set_height(rows[i], base_geometry.row_height);
             int root_child = nabla::child(0, i);
             if (root_child < 0) lv_obj_add_flag(tiles[i], LV_OBJ_FLAG_HIDDEN);
             else {
@@ -263,9 +265,10 @@ script:
             }
           } else if (footer_visible) lv_obj_remove_flag(id(progress_footer), LV_OBJ_FLAG_HIDDEN);
           else lv_obj_add_flag(id(progress_footer), LV_OBJ_FLAG_HIDDEN);
-          int footer_height = footer_visible ? ${nabla_bar_height} : 0;
-          lv_obj_set_height(id(launcher_content), screen_h - ${nabla_bar_height} - footer_height);
-          lv_obj_set_height(id(navigation_content), screen_h - ${nabla_bar_height} - 6 - footer_height);
+          auto geometry = nabla::Geometry::regular(screen_w, screen_h, footer_visible, ${nabla_bar_height});
+          int footer_height = geometry.footer;
+          lv_obj_set_height(id(launcher_content), geometry.content_height());
+          lv_obj_set_height(id(navigation_content), geometry.content_height() - geometry.gap);
           auto toolbar_style = [toolbar_fg](lv_obj_t *button, lv_obj_t *label, bool selected) {
             lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, 0);
             lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, LV_STATE_PRESSED);

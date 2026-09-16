@@ -16,10 +16,14 @@ Interior focus: entries, triangle, visible ancestors, X. Triangle and X go back.
 Current title is bold, noninteractive and excluded from focus.
 Status icons and idle footer text have no action.
 
-Triangle focus recolors the mark white without a frame, preserving its base/status
-color outside focus. Interior focus also rotates it left. Ordinary control focus
-changes borders, not application colors. Monochrome mode hides unselected borders.
-Clearing focus restores the triangle's normal color and orientation.
+The regular triangle uses theme foreground and rotates 60 degrees to point up
+on parent focus. Control borders invert with the theme; monochrome views hide
+idle borders. Compact triangles use pixel outlines without animation.
+
+The compact renderer shares wrapping and content-restoration policy, with
+content entries followed by the header triangle. Root triangle toggles
+three-row/one-row density. An interior triangle or leaf Back row returns.
+Current title/footer are noninteractive. See ../profiles/README.md.
 
 ## Adapters
 
@@ -42,5 +46,6 @@ Preserve focus by stable semantic key across refresh, rotation and navigation.
 Modal overlays own focus temporarily and restore it on close.
 Remote sessions must release held input on disconnect and offer local escape.
 
-Forms, editing and remote input are design work, not implemented behavior.
+The regular Wi-Fi demo has an editor focus path. Compact editing and remote
+input remain later work.
 See [component/input plan](../docs/platform/COMPONENTS-AND-INPUT.md) for the target.

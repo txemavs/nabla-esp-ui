@@ -1,0 +1,6 @@
+packages:
+  main: !include compact.yaml
+substitutions:
+  compact_profile: readable
+esphome:
+  name: nabla-readable

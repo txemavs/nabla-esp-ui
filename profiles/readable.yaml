@@ -1,0 +1,6 @@
+substitutions:
+  ui_profile: readable
+  compact_readable: "true"
+  compact_app_footer: "false"
+  screen_width: "128"
+  screen_height: "64"

@@ -37,7 +37,7 @@ lvgl:
             id: navigation_content
             x: 4
             y: ${(nabla_bar_height | int) + 2}
-            width: 472
+            width: ${(screen_width | int) - 8}
             height: ${(screen_height | int) - (nabla_bar_height | int) - 6}
             pad_all: 2
             bg_opa: TRANSP
@@ -49,12 +49,12 @@ lvgl:
             widgets:
               - label:
                   id: nav_detail
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   text_font: nabla_font_16
                   text: ""
               - button:
                   id: nav_row_0
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818
@@ -75,7 +75,7 @@ lvgl:
                         index: 0
               - button:
                   id: nav_row_1
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818
@@ -96,7 +96,7 @@ lvgl:
                         index: 1
               - button:
                   id: nav_row_2
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818
@@ -117,7 +117,7 @@ lvgl:
                         index: 2
               - button:
                   id: nav_row_3
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818
@@ -138,7 +138,7 @@ lvgl:
                         index: 3
               - button:
                   id: nav_row_4
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818
@@ -159,7 +159,7 @@ lvgl:
                         index: 4
               - button:
                   id: nav_row_5
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818
@@ -180,7 +180,7 @@ lvgl:
                         index: 5
               - button:
                   id: nav_row_6
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818
@@ -201,7 +201,7 @@ lvgl:
                         index: 6
               - button:
                   id: nav_row_7
-                  width: 464
+                  width: ${(screen_width | int) - 16}
                   height: 48
                   shadow_width: 0
                   bg_color: 0x181818

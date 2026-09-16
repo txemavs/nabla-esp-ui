@@ -10,4 +10,5 @@ packages:
   locale: !include ../locales/${ui_language}.yaml
   hardware: !include hardware/sdl.yaml
   theme: !include ../theme/nabla.yaml
+  profile: !include ../profiles/regular.yaml
   ui: !include ../examples/hello-world/ui.yaml

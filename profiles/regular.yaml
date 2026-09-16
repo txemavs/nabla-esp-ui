@@ -1,0 +1,5 @@
+substitutions:
+  ui_profile: regular
+  screen_width: "480"
+  screen_height: "320"
+  nabla_bar_height: "36"

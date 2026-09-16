@@ -1,0 +1,7 @@
+packages:
+  main: !include hello-world.yaml
+substitutions:
+  screen_width: "320"
+  screen_height: "480"
+esphome:
+  name: nabla-portrait

@@ -73,7 +73,7 @@ Close running windows before rebuilding; launch them again to load changes.
 
 Edit screen_width and screen_height in simulator/hello-world.yaml, then run
 the launcher again. The current view is designed for 480 x 320 landscape;
-automatic small-screen layouts are future work.
+use the separate tiny/readable profiles for 128x64.
 
 - simulator/hello-world.yaml: entry point, dimensions, and package selection.
 - simulator/hardware/sdl.yaml: host platform, virtual display, and mouse input.
@@ -130,8 +130,8 @@ rotation, reachable via Up/Down and Enter. The SDL window remains physically
 480x320; its contents rotate as on a fixed physical panel. See navigation/README.md.
 
 For the larger platform design and proposed keyboard/128x64 fixtures, see
-[the platform roadmap](../docs/platform/ROADMAP.md). These profiles and forms
-are not implemented by changing screen dimensions in the current example.
+[the platform roadmap](../docs/platform/ROADMAP.md). The compact profiles are separate compositions; do not create them by shrinking
+the regular example. Compact forms remain future work.
 
 ## Password keyboard preview
 
@@ -165,3 +165,21 @@ Touch fields to switch the keyboard target, or use Up/Down and Enter.
 The keyboard Ready key advances to password, then validates.
 See [the form contract](../components/wifi-form/README.md) for supported inputs,
 validation limits and pending real Wi-Fi/Nabla Net adapters.
+
+## M1 profile windows
+
+From the repository root:
+```sh
+./simulator/run.sh regular
+./simulator/run.sh portrait
+./simulator/run.sh tiny
+./simulator/run.sh readable
+```
+
+Each command compiles and opens its own window. tiny/readable are native 128x64;
+portrait is a native 320x480 window. They use the same menu catalog.
+Up/Down/Enter and Escape navigate. At compact root, select the triangle after
+the eight options (or touch it) to switch density. A parent triangle/Back row
+remains reachable without a physical Escape key.
+See [profiles](../profiles/README.md) and [M1 evidence](../docs/platform/M1-VERIFICATION.md).
+Compact Wi-Fi editing is explicitly pending M2; the full editor remains in regular.
