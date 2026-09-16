@@ -1,0 +1,33 @@
+# Minimal launch screen. The application destination will be added later.
+lvgl:
+  buffer_size: 100%
+  default_font: montserrat_20
+  pages:
+    - id: hello_page
+      bg_color: ${nabla_background}
+      text_color: ${nabla_text}
+      widgets:
+        - image:
+            src: nabla_logo
+            align: TOP_MID
+            y: 20
+        - label:
+            text: "nabla.net ESP UI"
+            text_font: montserrat_28
+            align: TOP_MID
+            y: 170
+            text_color: ${nabla_accent}
+        - button:
+            width: 180
+            height: 48
+            align: BOTTOM_MID
+            y: -30
+            bg_color: ${nabla_accent}
+            radius: 12
+            widgets:
+              - label:
+                  text: "Iniciar"
+                  align: CENTER
+                  text_color: ${nabla_background}
+            on_click:
+              - logger.log: "Start requested"

@@ -1,0 +1,12 @@
+substitutions:
+  nabla_background: "0x000000"
+  nabla_accent: "0x00C8FF"
+  nabla_text: "0xF2F7FA"
+  nabla_text_muted: "0x91A4B8"
+
+image:
+  - platform: file
+    file: ../assets/nabla.jpg
+    id: nabla_logo
+    type: RGB565
+    resize: 160x134

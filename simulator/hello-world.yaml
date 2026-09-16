@@ -1,0 +1,11 @@
+substitutions:
+  screen_width: "480"
+  screen_height: "320"
+
+esphome:
+  name: nabla-simulator
+
+packages:
+  hardware: !include hardware/sdl.yaml
+  theme: !include ../theme/nabla.yaml
+  ui: !include ../examples/hello-world/ui.yaml

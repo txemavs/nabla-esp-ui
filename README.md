@@ -4,7 +4,11 @@ A modular UI library for **ESPHome + LVGL**, with a shared visual style, reusabl
 
 **Define what you want to control; reuse how it looks and works.**
 
-> **Status: initial design.** This README describes the planned architecture and initial scope. The packages, profiles, and applications below are implementation goals. There is no installable release or validated hardware configuration yet.
+> **Status: first desktop example.** The Hello World simulator compiles with ESPHome 2026.8.2 and opens a 480 x 320 SDL2 window. The application library and hardware profiles below remain planned; no physical hardware is validated yet.
+
+## Try the simulator
+
+Follow [the simulator setup and run instructions](simulator/README.md). The example uses a separate SDL hardware package and a reusable LVGL view, with no Home Assistant or board required.
 
 ## The idea
 
@@ -27,6 +31,8 @@ Configuration will initially use **native ESPHome packages, includes, and variab
 ## Library layers
 
 ### Theme
+
+The initial nabla.net identity uses a black background, cyan accents (currently #00C8FF), and the original logo in assets/nabla.jpg. Shared colors and the logo resource are defined in theme/nabla.yaml.
 
 Shared colors, typography, icons, spacing, dimensions, and visual states. Compact, regular, and large variants should maintain a common identity.
 
@@ -125,7 +131,7 @@ YAML changes require recompilation. Desktop execution does not validate ESP memo
 
 ## Initial scope
 
-- [ ] Pin an ESPHome version and provide a reproducible host + SDL2 example.
+- [x] Pin an ESPHome version and provide a reproducible host + SDL2 example.
 - [ ] Define the initial theme and basic visual components.
 - [ ] Define navigation and application registration contracts.
 - [ ] Present the same menu as an icon desktop and an encoder-driven list.
@@ -140,13 +146,13 @@ Eight desktop positions do not imply eight completed applications. Shortcuts wil
 Start with a minimal desktop example before building the application library:
 
 - Open an SDL2 window with configurable dimensions.
-- Render a shared LVGL view containing “Hello, nabla!”.
-- Include a button that changes a label to verify mouse input and UI updates.
+- Render a shared LVGL launch screen with the original logo and “nabla.net ESP UI”.
+- Include an “Iniciar” button that logs a start request to verify mouse input.
 - Run without a physical board, Home Assistant, or credentials.
 - Keep desktop display/input configuration separate from reusable UI.
 - Document setup and a single command to build and run the example.
 
-This milestone is planned, not yet implemented.
+Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. Click Iniciar and check the terminal for Start requested. Application navigation is not implemented yet.
 
 ### Success criterion
 

@@ -1,0 +1,17 @@
+host:
+
+logger:
+
+display:
+  - platform: sdl
+    id: simulator_display
+    dimensions:
+      width: ${screen_width}
+      height: ${screen_height}
+    auto_clear_enabled: false
+    update_interval: never
+
+touchscreen:
+  - platform: sdl
+    id: simulator_touch
+    display: simulator_display
