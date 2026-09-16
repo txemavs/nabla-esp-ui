@@ -7,3 +7,4 @@ substitutions:
   icon_weather: "\uf185"
   icon_lights: "\uf0eb"
   icon_sensors: "\uf2c9"
+  icon_building: "\uf494"

@@ -82,3 +82,9 @@ shared C++ headers from local or pinned GitHub checkouts. It adds no UI controls
 [Clock and Wi-Fi status](../adapters/homeassistant/README.md): native time sync,
 one-second gray/green/blue Wi-Fi indicator, no input controls. Requires regular
 shell, Wi-Fi and native API; credentials stay in the consumer configuration.
+
+## Command rows
+
+[Device-owned commands](../navigation/COMMANDS.md) bind a menu leaf to native
+ESPHome actions with live state and availability. No installation entities are
+part of the library. Supports shared touch/keyboard/compact activation.

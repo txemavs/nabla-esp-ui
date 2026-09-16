@@ -96,6 +96,10 @@ script:
                   else id(nav_font_choice) = (id(nav_font_choice) + 1) % 2;
                   node = nabla::nodes[node].parent;
                 }
+                if (nabla::nodes[node].action == 8) {
+                  nabla::execute_command(node);
+                  node = nabla::nodes[node].parent;
+                }
                 int old = id(nav_current);
                 if (old != node && nabla::nodes[old].action == 3)
                   nabla_wifi_form::editor.clear();

@@ -27,6 +27,7 @@ struct CompactMenu {
       dark = nodes[node].action == 1;
       node = nodes[node].parent;
     }
+    if (nodes[node].action == 8) { execute_command(node); node = nodes[node].parent; }
     if (node == current) return;
     saved_focus[current] = focus; saved_top[current] = top;
     bool entering = nodes[node].parent == current;
