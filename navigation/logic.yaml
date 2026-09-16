@@ -270,6 +270,8 @@ script:
           // Optical alignment: keep the logo slightly above its geometric center.
           lv_obj_set_y(id(toolbar_logo), -3);
           nabla_logo::turn(id(toolbar_logo_image), current != 0 && id(nav_selection) == total);
+          lv_obj_t *separators[] = {id(toolbar_separator_0), id(toolbar_separator_1)};
+          for (auto *separator : separators) lv_obj_add_flag(separator, LV_OBJ_FLAG_HIDDEN);
           id(nav_crumbs).clear();
           if (current) {
             lv_obj_remove_flag(id(toolbar_close), LV_OBJ_FLAG_HIDDEN);
@@ -277,15 +279,15 @@ script:
             std::vector<int> ancestors;
             for (int n = nabla::nodes[current].parent; n > 0; n = nabla::nodes[n].parent)
               ancestors.insert(ancestors.begin(), n);
-            const lv_font_t *font = id(nabla_font_bold_16)->get_lv_font();
-            auto width = [font](const char *text) {
+            auto width = [&](const char *text, bool bold) {
+              const lv_font_t *font = bold ? id(nabla_font_bold_16)->get_lv_font() : id(nabla_font_16)->get_lv_font();
               lv_point_t size;
               lv_text_get_size(&size, text, font, 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
-              return (int) size.x + 22;
+              return (int) size.x + 6;
             };
             int available = screen_w - 94;
-            int needed = width(nabla::nodes[current].title);
-            for (int n : ancestors) needed += width(nabla::nodes[n].title);
+            int needed = width(nabla::nodes[current].title, true);
+            for (int n : ancestors) needed += width(nabla::nodes[n].title, false) + 12;
             bool collapsed = ancestors.size() > 2 || needed > available;
             if (collapsed && !ancestors.empty()) id(nav_crumbs).push_back(ancestors.back());
             else id(nav_crumbs) = ancestors;
@@ -297,7 +299,7 @@ script:
               if (i >= (int) id(nav_crumbs).size()) { lv_obj_add_flag(buttons[i], LV_OBJ_FLAG_HIDDEN); continue; }
               lv_obj_remove_flag(buttons[i], LV_OBJ_FLAG_HIDDEN);
               const char *title = collapsed && i == 0 && id(nav_crumbs).size() > 1 ? "..." : nabla::nodes[id(nav_crumbs)[i]].title;
-              int w = std::min(width(title), available);
+              int w = std::min(width(title, id(nav_crumbs)[i] == current), available);
               if (i + 1 < (int) id(nav_crumbs).size()) w = std::min(w, std::max(40, available - 100));
               lv_obj_set_x(buttons[i], x);
               lv_obj_set_width(buttons[i], w);
@@ -308,6 +310,11 @@ script:
               lv_obj_set_style_text_font(texts[i], is_current ? id(nabla_font_bold_16)->get_lv_font() : id(nabla_font_16)->get_lv_font(), 0);
               toolbar_style(buttons[i], texts[i], !is_current && id(nav_selection) == total + 1 + i);
               x += w; available -= w;
+              if (i + 1 < (int) id(nav_crumbs).size()) {
+                lv_obj_set_x(separators[i], x);
+                lv_obj_remove_flag(separators[i], LV_OBJ_FLAG_HIDDEN);
+                x += 12; available -= 12;
+              }
             }
             toolbar_style(id(toolbar_close), nullptr, id(nav_selection) == total + (int) id(nav_crumbs).size());
           } else {

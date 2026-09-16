@@ -27,7 +27,7 @@ Applies to the entire nabla-esp-ui repository.
 - Header has no divider. Header/footer share the bar surface, now 36 px.
 - Desktop footer is persistent; app footer is hidden unless an operation needs it.
 - Startup progress is simulated, then brand/clock replace it.
-- Triangle focus turns the mark white without a frame; interior focus rotates left.
+- Triangle focus turns the mark white without a frame; interior focus rotates upward.
 - Normal controls preserve their contents on focus and change the border.
 - Gray idle borders, white selected borders; monochrome option hides idle borders.
 - Dark/light toolbar and footer; app tile colors remain independent.

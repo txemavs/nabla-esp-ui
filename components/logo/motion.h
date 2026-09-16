@@ -5,9 +5,9 @@ namespace nabla_logo {
 inline void planar_frame(void *object, int32_t angle) {
   lv_image_set_rotation(static_cast<lv_obj_t *>(object), angle);
 }
-inline void turn(lv_obj_t *image, bool left) {
+inline void turn(lv_obj_t *image, bool up) {
   if (!image) return;
-  const int target = left ? 900 : 0;
+  const int target = up ? 1800 : 0;
   // Do not restart a running transition on unrelated UI refreshes.
   lv_anim_t *running = lv_anim_get(image, planar_frame);
   if (running && running->end_value == target) return;

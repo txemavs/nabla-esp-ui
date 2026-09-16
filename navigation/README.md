@@ -89,3 +89,7 @@ While the form is open, sequential input is routed to its editor; toolbar
 navigation remains available by touch, with Cancel reachable sequentially.
 See ../components/wifi-form/README.md. This is simulated local validation,
 not credential persistence or live network configuration.
+
+Toolbar breadcrumbs use compact measured labels separated by non-focusable gray
+chevrons. The current title stays bold; collapsed ancestors retain a parent link.
+The focused parent triangle rotates 180 degrees from down to up.
