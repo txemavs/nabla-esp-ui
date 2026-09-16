@@ -6,7 +6,7 @@ These instructions apply to the whole repository.
 - Read README.md and simulator/README.md before making changes.
 - Build reusable ESPHome + LVGL packages, not separate implementations per device.
 - Use English for documentation, identifiers, and code comments. UI supports build-time Spanish and English.
-- Brand: nabla.net ESP UI, black background, cyan accents, original triangle logo.
+- Brand: nabla.net ESP UI, black background, gray controls, white focus and labels; cyan reserved for the triangle.
 - Use theme colors, nabla_font_* for text, and registered Font Awesome Free Solid icons.
 - Register extra glyphs in theme/fonts.yaml and icons in theme/icons.yaml.
 - Keep bundled font licenses and brand attribution.
@@ -45,7 +45,7 @@ These instructions apply to the whole repository.
 - Update documentation and this file when architecture or workflows change.
 
 ## Input contract
-- Normal actionable borders are cyan; selected and pressed borders are white.
+- Normal actionable borders are medium gray; selected and pressed borders are white.
 - Touch and encoder confirmation share nav_choose with 120 ms feedback.
 - SDL Up/Down moves sequential focus, Enter confirms, Escape goes back, Home opens desktop.
 - Test mixed mouse/keyboard navigation; keep input bindings outside shared UI.
@@ -71,13 +71,13 @@ These instructions apply to the whole repository.
 
 ## Persistent toolbar and appearance
 - Toolbar remains black in both light and dark content modes.
-- A continuous cyan bottom line separates toolbar and content; no boxed borders.
-- Focused toolbar sections invert to white background and black text.
-- Use the shared silver/sky logo component; preserve the original JPG as reference.
+- A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
+- Focused toolbar controls turn white on the black background.
+- Use the shared accent-colored logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.
-- Content focus retains the white/cyan border convention.
+- Content focus retains the white/gray border convention.
 
 ## Component catalog
 - Register reusable primitives in components/README.md with per-component docs.

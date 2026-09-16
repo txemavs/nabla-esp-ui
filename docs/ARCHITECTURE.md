@@ -38,13 +38,13 @@ will reuse navigation semantics but need their own tested layout.
 
 ## Persistent toolbar and appearance
 - Toolbar remains black in both light and dark content modes.
-- A continuous cyan bottom line separates toolbar and content; no boxed borders.
-- Focused toolbar sections invert to white background and black text.
-- Use the shared silver/sky logo component; preserve the original JPG as reference.
+- A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
+- Focused toolbar controls turn white on the black background.
+- Use the shared accent-colored logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.
-- Content focus retains the white/cyan border convention.
+- Content focus retains the white/gray border convention.
 
 The user tree now lives in examples/hello-world/navigation.yaml. The local
 nabla_navigation component validates it at ESPHome compile time and emits data.

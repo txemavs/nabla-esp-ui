@@ -5,19 +5,19 @@ button:
   grid_cell_row_pos: ${row}
   grid_cell_x_align: STRETCH
   grid_cell_y_align: STRETCH
-  bg_color: 0x07141C
-  border_color: ${nabla_accent}
+  bg_color: 0x181818
+  border_color: ${nabla_secondary}
   border_width: 1
   radius: 12
   pressed:
-    bg_color: 0x124456
+    bg_color: 0x303030
     border_color: 0xFFFFFF
     border_width: 2
   widgets:
     - label:
         id: ${tile_id}_icon
         text: ""
-        text_color: ${nabla_accent}
+        text_color: ${nabla_secondary}
         text_font: nabla_icons_32
         align: CENTER
         y: -16

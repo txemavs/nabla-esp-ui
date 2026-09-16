@@ -32,7 +32,7 @@ Configuration will initially use **native ESPHome packages, includes, and variab
 
 ### Theme
 
-The initial nabla.net identity uses a black background, cyan accents (currently #00C8FF), and the original logo in assets/nabla.jpg. Shared colors and the logo resource are defined in theme/nabla.yaml.
+The initial nabla.net identity uses a black background, gray controls, white focus and labels, and cyan reserved for the triangle (currently #00C8FF), and the original logo in assets/nabla.jpg. Shared colors and the logo resource are defined in theme/nabla.yaml.
 
 Shared colors, typography, icons, spacing, dimensions, and visual states. Compact, regular, and large variants should maintain a common identity.
 
@@ -187,6 +187,6 @@ validated and compiled by a local ESPHome component. See the
 ## Component catalog
 
 See [reusable UI components](components/README.md), including the drawn logo
-and shared toolbar. The silver/sky logo uses editable equilateral geometry, changes orientation with
+and shared toolbar. The accent-colored logo uses editable equilateral geometry, changes orientation with
 focus and performs a one-second intro turn. The original brand image remains
 a reference asset. See [brand identity](docs/BRAND.md).

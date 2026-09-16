@@ -44,8 +44,8 @@ and scroll per node. This is parent navigation, not arbitrary window history.
 UP/DOWN focus order is content, Home, visible breadcrumbs, X. On the desktop,
 only content and Home participate; X is hidden. ENTER and touch share activation.
 
-The toolbar remains black with a cyan divider. Its selected text sections
-invert; focused interior Home points left. Long paths collapse ancestors into
+The toolbar remains black with a medium-gray divider. Its selected controls
+turn white; focused interior Home points left. Long paths collapse ancestors into
 a clickable ... parent link. Layout is currently tested at 480 x 320.
 
 ## Validation

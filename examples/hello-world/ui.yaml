@@ -32,7 +32,7 @@ lvgl:
         - label:
             text: "nabla.net"
             text_font: nabla_font_28
-            text_color: ${nabla_accent}
+            text_color: 0xFFFFFF
             align: CENTER
             y: 108
     - id: home_page
@@ -66,8 +66,8 @@ lvgl:
                   id: nav_row_0
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF
@@ -86,8 +86,8 @@ lvgl:
                   id: nav_row_1
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF
@@ -106,8 +106,8 @@ lvgl:
                   id: nav_row_2
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF
@@ -126,8 +126,8 @@ lvgl:
                   id: nav_row_3
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF
@@ -146,8 +146,8 @@ lvgl:
                   id: nav_row_4
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF
@@ -166,8 +166,8 @@ lvgl:
                   id: nav_row_5
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF
@@ -186,8 +186,8 @@ lvgl:
                   id: nav_row_6
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF
@@ -206,8 +206,8 @@ lvgl:
                   id: nav_row_7
                   width: 440
                   height: 48
-                  bg_color: 0x07141C
-                  border_color: ${nabla_accent}
+                  bg_color: 0x181818
+                  border_color: ${nabla_secondary}
                   border_width: 1
                   pressed:
                     border_color: 0xFFFFFF

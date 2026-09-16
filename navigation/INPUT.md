@@ -33,7 +33,7 @@ focusable route back. A physical Home button is optional.
 
 ## Visual and interaction rules
 
-- Actionable controls use cyan; selected/pressed controls have a white border.
+- Actionable controls use medium gray; selected/pressed controls have a white border.
 - Touch and keyboard confirmation share the same activation path.
 - Current activation feedback lasts 120 ms before opening a view.
 - Focus and activation are distinct: moving focus never opens an application.
@@ -76,10 +76,10 @@ sequentially reachable way to perform the equivalent operation.
 
 ## Persistent toolbar and appearance
 - Toolbar remains black in both light and dark content modes.
-- A continuous cyan bottom line separates toolbar and content; no boxed borders.
-- Focused toolbar sections invert to white background and black text.
-- Use the shared silver/sky logo component; preserve the original JPG as reference.
+- A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
+- Focused toolbar controls turn white on the black background.
+- Use the shared accent-colored logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.
-- Content focus retains the white/cyan border convention.
+- Content focus retains the white/gray border convention.

@@ -1,6 +1,8 @@
 substitutions:
   nabla_background: "0x000000"
   nabla_accent: "0x00C8FF"
+  nabla_secondary: "0x808080"
+  nabla_error: "0xFF3333"
   nabla_text: "0xF2F7FA"
   nabla_text_muted: "0x91A4B8"
 

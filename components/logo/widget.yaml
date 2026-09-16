@@ -23,5 +23,7 @@ obj:
               id: ${widget_id}_image
               src: ${image_id}
               align: CENTER
+              image_recolor: ${nabla_accent}
+              image_recolor_opa: COVER
               antialias: true
               clickable: false

@@ -31,9 +31,7 @@ inline void spindle_frame(void *object, int32_t phase) {
   // the bottom tip stays anchored throughout the entire turn.
   const int scale = std::max(5, static_cast<int>(256 * std::abs(facing)));
   lv_image_set_scale_x(image, scale);
-  lv_obj_set_style_image_recolor(image, lv_color_hex(0x16334C), 0);
-  const int shade = phase == 3600 ? 0 : static_cast<int>((1 - facing) * 65);
-  lv_obj_set_style_image_recolor_opa(image, shade, 0);
+  // Preserve the configured accent or status color during motion.
 }
 inline void spin(lv_obj_t *image) {
   if (!image) return;

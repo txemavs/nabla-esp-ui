@@ -16,7 +16,7 @@ stops use approximately 0.382 and 0.618.
 
 Motion has two distinct forms:
 - Intro: a 1000 ms spindle-like depth-turn approximation. Horizontal
-  foreshortening and shading change; vertical coordinates and bottom tip remain
+  foreshortening changes; vertical coordinates and bottom tip remain
   fixed. This is not a full perspective 3D mesh.
 - Toolbar: a 180 ms in-plane 90-degree rotation around the triangle centroid.
   The SVG centroid and rotation pivot both lie at the canvas center.
@@ -25,3 +25,9 @@ Avoid perpetual motion; preserve the one-second intro duration.
 
 Do not overwrite the original JPG. Keep geometric sources editable and
 animation logic reusable. Support reduced/disabled motion as a future option.
+
+UI palette: reserve the configurable accent for the triangle. Render its silhouette
+in one solid color; errors may set it red. Other controls and dividers use
+#808080 in both themes, with white focus and white card titles. Cards remain
+dark neutral surfaces even on light pages. Preserve the silver/sky artwork as
+the historical reference. Animation must never overwrite status colors.
