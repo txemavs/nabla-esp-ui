@@ -75,6 +75,12 @@ The 128x64 host profiles are implemented; physical OLED and input adapters remai
 Host rendering alone does not establish hardware support; the initial board check
 is narrower than complete M3 validation.
 
+## Private installations
+
+Keep site-specific device YAML, camera/entity bindings and secrets outside this
+public repository. See [the public/private boundary](docs/PRIVATE-INSTALLATIONS.md)
+for ownership, routed OTA and the current remote-package portability limitation.
+
 ## Brand and contributions
 
 Brand: nabla.net ESP UI. Preserve the original triangle artwork in assets/nabla.jpg.

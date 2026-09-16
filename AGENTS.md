@@ -62,6 +62,9 @@ Applies to the entire nabla-esp-ui repository.
 - Every touch flow needs a U/D/ENTER path with reachable Back/Cancel.
 - Typed state must distinguish unknown/stale/unavailable; never invent readings.
 - Keep credentials out of logs/examples; remote commands are allowlisted and scoped.
+- Follow docs/PRIVATE-INSTALLATIONS.md: site YAML and bindings stay outside this repo.
+- Never publish real entities, camera URLs, network inventory, firmware or backups.
+- Validate remote-package portability from an independent consumer before advertising it.
 - UI updates belong to the UI loop; callbacks enqueue bounded state changes.
 - Keep source artwork and bundled licenses; register new glyphs and icons.
 
