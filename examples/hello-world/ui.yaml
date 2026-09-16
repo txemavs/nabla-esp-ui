@@ -3,7 +3,10 @@ esphome:
   on_boot:
     priority: -100
     then:
-      - delay: 2s
+      - script.execute:
+          id: nabla_logo_spin
+          target: !lambda return id(splash_logo_image);
+      - delay: 1600ms
       - script.execute: nav_home
 
 packages:
@@ -24,14 +27,14 @@ lvgl:
             file: ../../components/logo/widget.yaml
             vars:
               widget_id: splash_logo
-              size: 140
-              stroke: 7
+              size: 180
+              image_id: nabla_logo_large
         - label:
             text: "nabla.net"
             text_font: nabla_font_28
             text_color: ${nabla_accent}
             align: CENTER
-            y: 95
+            y: 108
     - id: home_page
       bg_color: ${nabla_background}
       widgets:

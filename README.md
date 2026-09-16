@@ -187,5 +187,6 @@ validated and compiled by a local ESPHome component. See the
 ## Component catalog
 
 See [reusable UI components](components/README.md), including the drawn logo
-and shared toolbar. The cyan logo uses LVGL lines and changes orientation with
-focus; the original brand image is preserved as a reference asset.
+and shared toolbar. The silver/sky logo uses editable equilateral geometry, changes orientation with
+focus and performs a one-second intro turn. The original brand image remains
+a reference asset. See [brand identity](docs/BRAND.md).

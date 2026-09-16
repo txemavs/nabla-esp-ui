@@ -73,7 +73,7 @@ These instructions apply to the whole repository.
 - Toolbar remains black in both light and dark content modes.
 - A continuous cyan bottom line separates toolbar and content; no boxed borders.
 - Focused toolbar sections invert to white background and black text.
-- Use the shared cyan line logo component; preserve the original JPG as reference.
+- Use the shared silver/sky logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.
@@ -81,9 +81,16 @@ These instructions apply to the whole repository.
 
 ## Component catalog
 - Register reusable primitives in components/README.md with per-component docs.
-- Logo is vector-like LVGL line geometry, shared by splash and toolbar.
+- Logo uses editable equilateral SVG geometry, compiled into transparent assets.
 - Focused interior Home points left; its action still opens desktop.
 - Keep the toolbar black; logo focus does not invert its background.
 
 - Run python3 -m unittest discover -s tests -p 'test_*.py' for catalog changes.
 - Keep keys stable and titles translated; the compiler owns numeric indices.
+
+## Brand geometry and motion
+- Read docs/BRAND.md before changing the logo.
+- Silver reflecting sky; equilateral, acute, substantial ring rather than thin lines.
+- Keep SVG source editable and preserve original artwork.
+- Respect 3/6/9 and golden-ratio preferences without forcing them into every layout.
+- Intro motion is finite, one second; distinguish shaded 2D from real 3D.

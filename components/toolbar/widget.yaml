@@ -26,8 +26,8 @@ obj:
               file: ../logo/widget.yaml
               vars:
                 widget_id: toolbar_logo
-                size: 32
-                stroke: 3
+                size: 36
+                image_id: nabla_logo_small
         on_click:
           - script.execute:
               id: nav_choose

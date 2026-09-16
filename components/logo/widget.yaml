@@ -1,4 +1,4 @@
-# Cyan outline logo. Parameters: widget_id, size, stroke.
+# Parameters: widget_id, size, image_id.
 obj:
   id: ${widget_id}
   width: ${size}
@@ -18,20 +18,12 @@ obj:
         border_width: 0
         pad_all: 0
         clickable: false
-        scrollbar_mode: "OFF"
         widgets:
-          - line:
-              points:
-                - x: ${stroke}
-                  y: ${stroke}
-                - x: ${(size | int) - (stroke | int)}
-                  y: ${stroke}
-                - x: ${(size | int) // 2}
-                  y: ${(size | int) - (stroke | int)}
-                - x: ${stroke}
-                  y: ${stroke}
-              line_color: ${nabla_accent}
-              line_width: ${stroke}
+          - image:
+              id: ${widget_id}_image
+              src: ${image_id}
+              align: CENTER
+              antialias: true
               clickable: false
     - obj:
         id: ${widget_id}_left
@@ -42,18 +34,10 @@ obj:
         border_width: 0
         pad_all: 0
         clickable: false
-        scrollbar_mode: "OFF"
         widgets:
-          - line:
-              points:
-                - x: ${(size | int) - (stroke | int)}
-                  y: ${stroke}
-                - x: ${stroke}
-                  y: ${(size | int) // 2}
-                - x: ${(size | int) - (stroke | int)}
-                  y: ${(size | int) - (stroke | int)}
-                - x: ${(size | int) - (stroke | int)}
-                  y: ${stroke}
-              line_color: ${nabla_accent}
-              line_width: ${stroke}
+          - image:
+              src: ${image_id}
+              align: CENTER
+              angle: 90
+              antialias: true
               clickable: false

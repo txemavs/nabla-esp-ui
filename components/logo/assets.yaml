@@ -1,0 +1,32 @@
+# SVG is the editable geometric source; ESPHome rasterizes at build time.
+image:
+  - platform: file
+    file: ../components/logo/silver.svg
+    id: nabla_logo_large
+    type: RGB565
+    transparency: alpha_channel
+    resize: 180x180
+  - platform: file
+    file: ../components/logo/silver.svg
+    id: nabla_logo_small
+    type: RGB565
+    transparency: alpha_channel
+    resize: 36x36
+
+script:
+  - id: nabla_logo_spin
+    parameters:
+      target: lv_obj_t*
+    then:
+      - lambda: |-
+          if (target == nullptr) return;
+          lv_anim_t animation;
+          lv_anim_init(&animation);
+          lv_anim_set_var(&animation, target);
+          lv_anim_set_values(&animation, 0, 3600);
+          lv_anim_set_duration(&animation, 1000);
+          lv_anim_set_path_cb(&animation, lv_anim_path_ease_in_out);
+          lv_anim_set_exec_cb(&animation, [](void *object, int32_t angle) {
+            lv_image_set_rotation(static_cast<lv_obj_t *>(object), angle % 3600);
+          });
+          lv_anim_start(&animation);

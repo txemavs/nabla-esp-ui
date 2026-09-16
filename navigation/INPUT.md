@@ -78,7 +78,7 @@ sequentially reachable way to perform the equivalent operation.
 - Toolbar remains black in both light and dark content modes.
 - A continuous cyan bottom line separates toolbar and content; no boxed borders.
 - Focused toolbar sections invert to white background and black text.
-- Use the shared cyan line logo component; preserve the original JPG as reference.
+- Use the shared silver/sky logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.

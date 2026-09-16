@@ -1,17 +1,18 @@
-# Logo
+# Silver triangle logo
 
-A line-drawn cyan outline triangle with two orientations, down and left.
-No image file or font glyph is needed at runtime.
+silver.svg is the editable geometric source: equilateral outer and inner
+triangles, three bands and nine faces. Reflections evoke silver and blue sky.
+The original JPG remains a separate reference.
 
-Include widget.yaml with widget_id (unique), size (pixels), stroke (pixels).
-Choose a size larger than four times the stroke width.
-Root is centered in its parent. All geometry is non-clickable so the containing
-button receives touch events. The parent owns the action and input behavior.
+assets.yaml compiles transparent RGB565 assets at 180 and 36 pixels. The source
+is vector geometry; the device renders precomputed pixels rather than an SVG
+engine. Extra sizes should be declared in this package.
 
-The generated IDs widget_id_down and widget_id_left select orientation by
-toggling LV_OBJ_FLAG_HIDDEN. The toolbar points left only when focused on an
-interior view; its action remains Home. This is an immediate state change,
-not an animated rotation. Desktop uses a subtle focus outline.
-The splash uses the same component at a larger size.
+Include widget.yaml with unique widget_id, size and image_id.
+Generated IDs widget_id_down and widget_id_left control orientation.
+widget_id_image identifies the unrotated image for animations.
 
-The original artwork remains in assets/nabla.jpg as a brand reference.
+nabla_logo_spin(target: lv_obj_t*) performs one eased 360-degree turn in 1000 ms.
+The object must remain alive during animation. The splash runs it once and
+opens the desktop at 1600 ms. Actual ESP rendering performance remains untested.
+See docs/BRAND.md for the identity and motion rules.
