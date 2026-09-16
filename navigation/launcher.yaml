@@ -1,0 +1,78 @@
+# One menu definition for the initial landscape profile.
+obj:
+  width: 100%
+  height: 100%
+  bg_opa: TRANSP
+  border_width: 0
+  pad_all: 12
+  layout:
+    type: grid
+    pad_row: 10
+    pad_column: 10
+    grid_columns: [FR(1), FR(1), FR(1), FR(1)]
+    grid_rows: [FR(1), FR(1)]
+  widgets:
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_0
+          title: "Ajustes"
+          marker: "01"
+          column: 0
+          row: 0
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_1
+          title: "Reloj"
+          marker: "02"
+          column: 1
+          row: 0
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_2
+          title: "Fotos"
+          marker: "03"
+          column: 2
+          row: 0
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_3
+          title: "Música"
+          marker: "04"
+          column: 3
+          row: 0
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_4
+          title: "Vídeo"
+          marker: "05"
+          column: 0
+          row: 1
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_5
+          title: "Tiempo"
+          marker: "06"
+          column: 1
+          row: 1
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_6
+          title: "Luces"
+          marker: "07"
+          column: 2
+          row: 1
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_7
+          title: "Sensores"
+          marker: "08"
+          column: 3
+          row: 1

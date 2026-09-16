@@ -32,10 +32,12 @@ From the repository root:
 
 The script activates the project environment, compiles, and launches the
 480 x 320 landscape window. It defaults to the X11 SDL backend for WSLg.
-The screen contains the original logo, **nabla.net ESP UI**, and **Iniciar**.
+The centered nabla.net splash appears for two seconds, then opens a 4-column,
+2-row launcher: Ajustes, Reloj, Fotos, Música, Vídeo, Tiempo, Luces, Sensores.
+Each tile opens a placeholder page; Volver returns to the launcher.
+These are navigation demonstrations, not implemented applications.
+The UI currently uses Spanish labels; source documentation remains English.
 
-Click **Iniciar** to test touch input with the mouse. It logs
-**Start requested** in the terminal; application navigation is not implemented yet.
 Close the window to exit, or press Ctrl+C in the launching terminal.
 
 From Windows PowerShell, for this checkout:
@@ -73,7 +75,9 @@ automatic small-screen layouts are future work.
 
 - simulator/hello-world.yaml: entry point, dimensions, and package selection.
 - simulator/hardware/sdl.yaml: host platform, virtual display, and mouse input.
-- examples/hello-world/ui.yaml: reusable LVGL launch screen.
+- examples/hello-world/ui.yaml: splash, startup transition, and page shell.
+- navigation/launcher.yaml: menu entries and grid positions.
+- components/menu-tile.yaml: shared tile appearance and open action.
 - theme/nabla.yaml: shared colors and logo resource.
 - assets/nabla.jpg: unmodified brand artwork, resized at compile time.
 

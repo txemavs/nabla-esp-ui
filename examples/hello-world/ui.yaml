@@ -1,33 +1,56 @@
-# Minimal launch screen. The application destination will be added later.
+# Shared splash and launcher demo; app pages are placeholders.
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - delay: 2s
+      - lvgl.page.show: home_page
+
 lvgl:
   buffer_size: 100%
   default_font: montserrat_20
   pages:
-    - id: hello_page
+    - id: splash_page
       bg_color: ${nabla_background}
-      text_color: ${nabla_text}
       widgets:
         - image:
             src: nabla_logo
-            align: TOP_MID
-            y: 20
+            align: CENTER
         - label:
-            text: "nabla.net ESP UI"
+            text: "nabla.net"
             text_font: montserrat_28
-            align: TOP_MID
-            y: 170
             text_color: ${nabla_accent}
+            align: CENTER
+            y: 95
+    - id: home_page
+      bg_color: ${nabla_background}
+      widgets:
+        - !include ../../navigation/launcher.yaml
+    - id: app_page
+      bg_color: ${nabla_background}
+      text_color: ${nabla_text}
+      widgets:
+        - label:
+            id: app_title
+            text: ""
+            text_font: montserrat_28
+            text_color: ${nabla_accent}
+            align: CENTER
+            y: -35
+        - label:
+            text: "Próximamente"
+            align: CENTER
+            y: 10
         - button:
-            width: 180
-            height: 48
+            width: 150
+            height: 44
             align: BOTTOM_MID
-            y: -30
+            y: -25
             bg_color: ${nabla_accent}
-            radius: 12
             widgets:
               - label:
-                  text: "Iniciar"
-                  align: CENTER
+                  text: "Volver"
                   text_color: ${nabla_background}
+                  align: CENTER
             on_click:
-              - logger.log: "Start requested"
+              - lvgl.page.show: home_page

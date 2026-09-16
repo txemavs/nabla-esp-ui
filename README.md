@@ -146,13 +146,13 @@ Eight desktop positions do not imply eight completed applications. Shortcuts wil
 Start with a minimal desktop example before building the application library:
 
 - Open an SDL2 window with configurable dimensions.
-- Render a shared LVGL launch screen with the original logo and “nabla.net ESP UI”.
-- Include an “Iniciar” button that logs a start request to verify mouse input.
+- Render a centered logo and nabla.net splash, followed by an eight-tile launcher.
+- Open placeholder application pages from reusable tiles and return to the launcher.
 - Run without a physical board, Home Assistant, or credentials.
 - Keep desktop display/input configuration separate from reusable UI.
 - Document setup and a single command to build and run the example.
 
-Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. Click Iniciar and check the terminal for Start requested. Application navigation is not implemented yet.
+Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. The splash transitions after two seconds to a 4 x 2 launcher. Each tile opens a placeholder page with a back button; application functionality remains planned.
 
 ### Success criterion
 

@@ -1,0 +1,30 @@
+# Reusable launcher tile. Parameters: tile_id, title, marker, column, row.
+button:
+  id: ${tile_id}
+  grid_cell_column_pos: ${column}
+  grid_cell_row_pos: ${row}
+  grid_cell_x_align: STRETCH
+  grid_cell_y_align: STRETCH
+  bg_color: 0x07141C
+  border_color: ${nabla_accent}
+  border_width: 1
+  radius: 12
+  pressed:
+    bg_color: 0x124456
+  widgets:
+    - label:
+        text: "${marker}"
+        text_color: ${nabla_accent}
+        text_font: montserrat_28
+        align: CENTER
+        y: -16
+    - label:
+        text: "${title}"
+        text_font: montserrat_16
+        align: BOTTOM_MID
+        y: -8
+  on_click:
+    - lvgl.label.update:
+        id: app_title
+        text: "${title}"
+    - lvgl.page.show: app_page
