@@ -15,3 +15,6 @@ Ordinary controls change only their border on focus.
 Progress now belongs to components/progress/widget.yaml. The script API in
 progress.yaml remains available for compatibility; negative values hide the
 footer, 0..100 display it. See ../progress/README.md.
+
+The logo container has a -3 px optical vertical offset relative to its centered
+position. Its hit area stays fixed; rotation keeps the same local pivot.

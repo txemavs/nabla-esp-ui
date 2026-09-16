@@ -196,6 +196,8 @@ script:
             if (label) lv_obj_set_style_text_color(label, toolbar_fg, 0);
           };
           toolbar_style(id(toolbar_home), nullptr, current == 0 && id(nav_selection) == total);
+          // Optical alignment: keep the logo slightly above its geometric center.
+          lv_obj_set_y(id(toolbar_logo), -3);
           nabla_logo::turn(id(toolbar_logo_image), current != 0 && id(nav_selection) == total);
           id(nav_crumbs).clear();
           if (current) {
