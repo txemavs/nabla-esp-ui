@@ -59,13 +59,13 @@ These instructions apply to the whole repository.
 - Support touch, rotary U/D/ENTER, rotary+physical ESC, five-way joystick, keyboard.
 - The top-right X invokes ESC and must be reachable by sequential focus and ENTER.
 - Never require physical ESC or LEFT/RIGHT without an on-screen accessible equivalent.
-- Triangle means desktop; X/ESC means close current view. ESC at desktop is a no-op.
+- Triangle and X/ESC close the current view; the keyboard Home action opens the desktop. ESC at desktop is a no-op.
 
 ## Toolbar and localization
 - Read docs/ARCHITECTURE.md and locales/README.md.
 - Use tr_* locale keys for new visible text; keep en/es keys identical.
 - Toolbar focus order follows content, Home, ancestor breadcrumbs, X.
-- Current title is bold white, noninteractive and excluded from focus. Home opens desktop; X follows the parent tree. Do not claim general window history yet.
+- Current title is bold white, noninteractive and excluded from focus. The triangle and X follow the parent tree; the keyboard Home action opens desktop. Do not claim general window history yet.
 - Compile both locales when changing localization or text-dependent layout.
 - Declarative navigation is implemented; real sensor/data bindings remain pending.
 
@@ -82,7 +82,7 @@ These instructions apply to the whole repository.
 ## Component catalog
 - Register reusable primitives in components/README.md with per-component docs.
 - Logo uses editable equilateral SVG geometry, compiled into transparent assets.
-- Home opens the desktop; focus changes only its border.
+- The triangle rotates left on interior focus and activates Back; at root it remains Home.
 - Keep the toolbar black; logo focus does not invert its background.
 
 - Run python3 -m unittest discover -s tests -p 'test_*.py' for catalog changes.
@@ -98,10 +98,15 @@ These instructions apply to the whole repository.
 - Separate intro depth-turn approximation (fixed tip) from centered planar toolbar rotation.
 - SVG centroid must match the animation pivot; verify equal sides after geometry changes.
 
-Current presentation contract: focus changes only borders, never icon, text or
+Current presentation contract: ordinary control focus changes only borders, never icon, text or
 background colors. Icons and names default to white. The current toolbar title
 is bold white and excluded from focus; ancestors remain regular clickable text.
 The single underline starts just after the logo's lower tip. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a
 presentation option, not validation of physical OLED hardware.
+
+The brand triangle is the focus exception: inside a view it rotates 90 degrees
+left over 180 ms, without a focus box. Activating it returns to the parent,
+just like X/ESC. Removing focus restores its downward orientation. At the root
+it remains the Home mark. The underline meets its resting lower tip.

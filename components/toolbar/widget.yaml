@@ -11,9 +11,9 @@ obj:
   widgets:
     - obj:
         id: toolbar_divider
-        x: 29
-        y: 48
-        width: ${(screen_width | int) - 33}
+        x: 26
+        y: 43
+        width: ${(screen_width | int) - 30}
         height: 1
         bg_color: ${nabla_secondary}
         border_width: 0

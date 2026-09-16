@@ -43,7 +43,7 @@ script:
                   int n = id(nav_current), chosen = id(nav_selection);
                   int total = nabla::children(n);
                   if (chosen < total) return nabla::child(n, chosen);
-                  if (chosen == total) return 0;
+                  if (chosen == total) return n ? nabla::nodes[n].parent : 0;
                   chosen -= total + 1;
                   if (chosen < (int) id(nav_crumbs).size() - 1) return id(nav_crumbs)[chosen];
                   return nabla::nodes[n].parent;
@@ -159,7 +159,8 @@ script:
             lv_obj_set_style_shadow_width(button, 0, 0);
             if (label) lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
           };
-          toolbar_style(id(toolbar_home), nullptr, id(nav_selection) == total);
+          toolbar_style(id(toolbar_home), nullptr, current == 0 && id(nav_selection) == total);
+          nabla_logo::turn(id(toolbar_logo_image), current != 0 && id(nav_selection) == total);
           id(nav_crumbs).clear();
           if (current) {
             lv_obj_remove_flag(id(toolbar_close), LV_OBJ_FLAG_HIDDEN);

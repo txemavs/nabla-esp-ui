@@ -84,10 +84,15 @@ sequentially reachable way to perform the equivalent operation.
   through ESPHome globals; persistence follows the platform save interval.
 - Content focus retains the white/gray border convention.
 
-Current presentation contract: focus changes only borders, never icon, text or
+Current presentation contract: ordinary control focus changes only borders, never icon, text or
 background colors. Icons and names default to white. The current toolbar title
 is bold white and excluded from focus; ancestors remain regular clickable text.
 The single underline starts just after the logo's lower tip. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a
 presentation option, not validation of physical OLED hardware.
+
+The brand triangle is the focus exception: inside a view it rotates 90 degrees
+left over 180 ms, without a focus box. Activating it returns to the parent,
+just like X/ESC. Removing focus restores its downward orientation. At the root
+it remains the Home mark. The underline meets its resting lower tip.

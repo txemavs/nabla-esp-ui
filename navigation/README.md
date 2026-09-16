@@ -60,7 +60,7 @@ esphome -s ui_language en compile simulator/hello-world.yaml
 The tests compile generated C++ and exercise traversal and validation failures.
 See locales/README.md and navigation/INPUT.md for shared contracts.
 
-Current presentation contract: focus changes only borders, never icon, text or
+Current presentation contract: ordinary control focus changes only borders, never icon, text or
 background colors. Icons and names default to white. The current toolbar title
 is bold white and excluded from focus; ancestors remain regular clickable text.
 The single underline starts just after the logo's lower tip. Startup spins the
@@ -76,3 +76,8 @@ These are presentation values in the navigation YAML, not hardcoded node indices
 Icons currently use the registered Font Awesome glyph. Arbitrary images and
 animated artwork are planned tile content variants; they are not implemented
 by the catalog yet.
+
+The brand triangle is the focus exception: inside a view it rotates 90 degrees
+left over 180 ms, without a focus box. Activating it returns to the parent,
+just like X/ESC. Removing focus restores its downward orientation. At the root
+it remains the Home mark. The underline meets its resting lower tip.
