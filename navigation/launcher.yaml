@@ -16,6 +16,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_0
+          node: 1
           title: "Ajustes"
           icon: "${icon_settings}"
           column: 0
@@ -24,6 +25,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_1
+          node: 2
           title: "Reloj"
           icon: "${icon_clock}"
           column: 1
@@ -32,6 +34,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_2
+          node: 3
           title: "Fotos"
           icon: "${icon_photos}"
           column: 2
@@ -40,6 +43,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_3
+          node: 4
           title: "Música"
           icon: "${icon_music}"
           column: 3
@@ -48,6 +52,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_4
+          node: 5
           title: "Vídeo"
           icon: "${icon_video}"
           column: 0
@@ -56,6 +61,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_5
+          node: 6
           title: "Tiempo"
           icon: "${icon_weather}"
           column: 1
@@ -64,6 +70,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_6
+          node: 7
           title: "Luces"
           icon: "${icon_lights}"
           column: 2
@@ -72,6 +79,7 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_7
+          node: 8
           title: "Sensores"
           icon: "${icon_sensors}"
           column: 3

@@ -1,5 +1,11 @@
 host:
 
+esphome:
+  on_boot:
+    priority: 800
+    then:
+      - lambda: App.set_loop_interval(1);
+
 logger:
 
 display:
@@ -15,3 +21,4 @@ touchscreen:
   - platform: sdl
     id: simulator_touch
     display: simulator_display
+    update_interval: 5ms

@@ -1,0 +1,132 @@
+esphome:
+  includes:
+    - ../navigation/tree.h
+
+globals:
+  - id: nav_current
+    type: int
+    initial_value: '0'
+  - id: nav_selection
+    type: int
+    initial_value: '0'
+
+script:
+  - id: nav_open
+    parameters:
+      node: int
+    then:
+      - lambda: |-
+          if (!nabla::valid(node)) return;
+          id(nav_current) = node;
+          id(nav_selection) = 0;
+      - script.execute: nav_render
+  - id: nav_back
+    then:
+      - script.execute:
+          id: nav_open
+          node: !lambda 'return id(nav_current) == 0 ? 0 : nabla::nodes[id(nav_current)].parent;'
+  - id: nav_home
+    then:
+      - script.execute:
+          id: nav_open
+          node: 0
+  - id: nav_move
+    parameters:
+      delta: int
+    then:
+      - lambda: |-
+          int total = 0;
+          while (nabla::child(id(nav_current), total) >= 0) total++;
+          if (total) id(nav_selection) = (id(nav_selection) + delta % total + total) % total;
+      - script.execute: nav_render
+  - id: nav_activate
+    then:
+      - script.execute:
+          id: nav_open
+          node: !lambda 'int n = nabla::child(id(nav_current), id(nav_selection)); return n < 0 ? id(nav_current) : n;'
+  - id: nav_render
+    then:
+      - lambda: |-
+          int current = id(nav_current);
+          ESP_LOGI("navigation", "%s", nabla::path(current).c_str());
+          lv_label_set_text(id(nav_breadcrumb), nabla::path(current).c_str());
+          lv_label_set_text(id(nav_detail), nabla::nodes[current].detail);
+          {
+            int n = nabla::child(current, 0);
+            if (n < 0) lv_obj_add_flag(id(nav_row_0), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_0), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_0), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_0), id(nav_selection) == 0 ? 2 : 0, 0);
+            }
+          }
+          {
+            int n = nabla::child(current, 1);
+            if (n < 0) lv_obj_add_flag(id(nav_row_1), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_1), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_1), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_1), id(nav_selection) == 1 ? 2 : 0, 0);
+            }
+          }
+          {
+            int n = nabla::child(current, 2);
+            if (n < 0) lv_obj_add_flag(id(nav_row_2), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_2), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_2), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_2), id(nav_selection) == 2 ? 2 : 0, 0);
+            }
+          }
+          {
+            int n = nabla::child(current, 3);
+            if (n < 0) lv_obj_add_flag(id(nav_row_3), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_3), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_3), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_3), id(nav_selection) == 3 ? 2 : 0, 0);
+            }
+          }
+          {
+            int n = nabla::child(current, 4);
+            if (n < 0) lv_obj_add_flag(id(nav_row_4), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_4), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_4), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_4), id(nav_selection) == 4 ? 2 : 0, 0);
+            }
+          }
+          {
+            int n = nabla::child(current, 5);
+            if (n < 0) lv_obj_add_flag(id(nav_row_5), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_5), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_5), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_5), id(nav_selection) == 5 ? 2 : 0, 0);
+            }
+          }
+          {
+            int n = nabla::child(current, 6);
+            if (n < 0) lv_obj_add_flag(id(nav_row_6), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_6), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_6), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_6), id(nav_selection) == 6 ? 2 : 0, 0);
+            }
+          }
+          {
+            int n = nabla::child(current, 7);
+            if (n < 0) lv_obj_add_flag(id(nav_row_7), LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(id(nav_row_7), LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(nav_row_label_7), nabla::nodes[n].title);
+              lv_obj_set_style_border_width(id(nav_row_7), id(nav_selection) == 7 ? 2 : 0, 0);
+            }
+          }
+      - if:
+          condition:
+            lambda: return id(nav_current) == 0;
+          then:
+            - lvgl.page.show: home_page
+          else:
+            - lvgl.page.show: navigation_page

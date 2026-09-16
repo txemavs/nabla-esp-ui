@@ -34,7 +34,9 @@ The script activates the project environment, compiles, and launches the
 480 x 320 landscape window. It defaults to the X11 SDL backend for WSLg.
 The centered nabla.net splash appears for two seconds, then opens a 4-column,
 2-row launcher: Ajustes, Reloj, Fotos, Música, Vídeo, Tiempo, Luces, Sensores.
-Each tile opens a placeholder page; Volver returns to the launcher.
+Ajustes opens Wi-Fi, Idioma and Acerca de. Sensores opens folders and sensor
+leaves. Breadcrumbs show the route; Volver returns to the parent and Inicio
+returns to the root. Other applications remain placeholders.
 These are navigation demonstrations, not implemented applications.
 The UI currently uses Spanish labels; source documentation remains English.
 
@@ -95,3 +97,12 @@ rotation and touch transforms will belong to the real hardware profile.
 
 Desktop execution checks UI configuration and behavior. It does not validate
 ESP memory limits, performance, physical display drivers, or touch calibration.
+
+## Input responsiveness
+
+The SDL driver in the pinned ESPHome version processes one queued event per
+main loop. The simulator package sets the host loop interval to 1 ms and touch
+polling to 5 ms to reduce mouse-event backlog and missed short presses.
+These settings are host-only and must not be copied into device profiles blindly.
+Mouse input and nested back navigation have been exercised under WSLg.
+See navigation/README.md for the current tree and its limitations.

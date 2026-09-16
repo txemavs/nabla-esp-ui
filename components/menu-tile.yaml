@@ -24,7 +24,6 @@ button:
         align: BOTTOM_MID
         y: -8
   on_click:
-    - lvgl.label.update:
-        id: app_title
-        text: "${title}"
-    - lvgl.page.show: app_page
+    - script.execute:
+        id: nav_open
+        node: ${node}

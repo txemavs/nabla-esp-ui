@@ -4,7 +4,10 @@ esphome:
     priority: -100
     then:
       - delay: 2s
-      - lvgl.page.show: home_page
+      - script.execute: nav_home
+
+packages:
+  navigation: !include ../../navigation/logic.yaml
 
 lvgl:
   buffer_size: 100%
@@ -26,31 +29,196 @@ lvgl:
       bg_color: ${nabla_background}
       widgets:
         - !include ../../navigation/launcher.yaml
-    - id: app_page
+    - id: navigation_page
       bg_color: ${nabla_background}
       text_color: ${nabla_text}
       widgets:
-        - label:
-            id: app_title
-            text: ""
-            text_font: nabla_font_28
-            text_color: ${nabla_accent}
-            align: CENTER
-            y: -35
-        - label:
-            text: "Próximamente"
-            align: CENTER
-            y: 10
         - button:
-            width: 150
-            height: 44
-            align: BOTTOM_MID
-            y: -25
-            bg_color: ${nabla_accent}
+            x: 8
+            y: 6
+            width: 90
+            height: 36
+            bg_color: 0x124456
+            widgets:
+              - label:
+                  text: "Inicio"
+                  align: CENTER
+                  text_font: nabla_font_16
+            on_click:
+              - script.execute: nav_home
+        - button:
+            x: 382
+            y: 6
+            width: 90
+            height: 36
+            bg_color: 0x124456
             widgets:
               - label:
                   text: "Volver"
-                  text_color: ${nabla_background}
                   align: CENTER
+                  text_font: nabla_font_16
             on_click:
-              - lvgl.page.show: home_page
+              - script.execute: nav_back
+        - label:
+            id: nav_breadcrumb
+            x: 12
+            y: 50
+            width: 456
+            text_font: nabla_font_16
+            text_color: ${nabla_accent}
+            long_mode: SCROLL_CIRCULAR
+            text: ""
+        - obj:
+            x: 8
+            y: 82
+            width: 464
+            height: 230
+            pad_all: 4
+            bg_opa: TRANSP
+            border_width: 0
+            layout:
+              type: flex
+              flex_flow: COLUMN
+              pad_row: 6
+            widgets:
+              - label:
+                  id: nav_detail
+                  width: 440
+                  text_font: nabla_font_16
+                  text: ""
+              - button:
+                  id: nav_row_0
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_0
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 0);
+              - button:
+                  id: nav_row_1
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_1
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 1);
+              - button:
+                  id: nav_row_2
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_2
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 2);
+              - button:
+                  id: nav_row_3
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_3
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 3);
+              - button:
+                  id: nav_row_4
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_4
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 4);
+              - button:
+                  id: nav_row_5
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_5
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 5);
+              - button:
+                  id: nav_row_6
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_6
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 6);
+              - button:
+                  id: nav_row_7
+                  width: 440
+                  height: 48
+                  bg_color: 0x07141C
+                  border_color: ${nabla_accent}
+                  border_width: 0
+                  widgets:
+                    - label:
+                        id: nav_row_label_7
+                        text: ""
+                        align: LEFT_MID
+                        text_font: nabla_font_20
+                  on_click:
+                    - script.execute:
+                        id: nav_open
+                        node: !lambda return nabla::child(id(nav_current), 7);
