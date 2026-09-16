@@ -126,3 +126,10 @@ footer; negative progress hides it. Reserve its height in the body while
 visible. Earlier header-progress/underline rules are superseded. The minimal
 composition is header, body text and optional footer; tiny-screen profiles
 remain planned, not validated by the 480x320 example.
+
+The desktop footer is always present. After startup reaches 100% (held for
+100 ms), progress is replaced by Soluciones Lógicas Nabla on the left and
+HH:MM on the right. The shared footer_set_clock(text) action accepts clock
+updates from hardware adapters; the simulator uses host time, Europe/Madrid.
+Application views hide the idle desktop footer and may later supply their own.
+Negative progress restores this route-specific state rather than hiding all footers.

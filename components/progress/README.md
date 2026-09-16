@@ -14,3 +14,10 @@ Real work should stop the demo script and supply measured progress.
 
 This first progress instance uses fixed IDs; multiple simultaneous progress
 bars need a parameterized state/controller before they are supported.
+
+The desktop footer is always present. After startup reaches 100% (held for
+100 ms), progress is replaced by Soluciones Lógicas Nabla on the left and
+HH:MM on the right. The shared footer_set_clock(text) action accepts clock
+updates from hardware adapters; the simulator uses host time, Europe/Madrid.
+Application views hide the idle desktop footer and may later supply their own.
+Negative progress restores this route-specific state rather than hiding all footers.

@@ -1,10 +1,15 @@
-# Shared footer progress: negative hides the footer, 0..100 shows progress.
+# Negative progress restores the desktop footer; applications hide it by default.
 globals:
   - id: toolbar_progress
     type: int
     initial_value: '-1'
 
 script:
+  - id: footer_set_clock
+    parameters:
+      text: std::string
+    then:
+      - lambda: lv_label_set_text(id(footer_clock), text.c_str());
   - id: toolbar_set_progress
     parameters:
       value: int
@@ -24,6 +29,7 @@ script:
             - script.execute:
                 id: toolbar_set_progress
                 value: !lambda return (iteration + 1) * 5;
+      - delay: 100ms
       - script.execute:
           id: toolbar_set_progress
           value: -1

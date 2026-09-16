@@ -64,3 +64,18 @@ binary_sensor:
     key: SDLK_HOME
     on_press:
       - script.execute: nav_home
+
+# Host clock is a simulator adapter; device profiles supply their own clock.
+time:
+  - platform: host
+    id: simulator_clock
+    timezone: Europe/Madrid
+
+interval:
+  - interval: 1s
+    then:
+      - script.execute:
+          id: footer_set_clock
+          text: !lambda |-
+            auto now = id(simulator_clock).now();
+            return now.is_valid() ? now.strftime("%H:%M") : std::string("--:--");
