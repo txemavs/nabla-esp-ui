@@ -27,9 +27,9 @@ Applies to the entire nabla-esp-ui repository.
 - Header has no divider. Header/footer share the bar surface, now 36 px.
 - Desktop footer is persistent; app footer is hidden unless an operation needs it.
 - Startup progress is simulated, then brand/clock replace it.
-- Triangle focus turns the mark white without a frame; interior focus rotates upward.
+- Triangle uses the theme foreground without a frame; interior focus rotates upward.
 - Normal controls preserve their contents on focus and change the border.
-- Gray idle borders, white selected borders; monochrome option hides idle borders.
+- Gray idle borders, theme-foreground selected borders; monochrome option hides idle borders.
 - Dark/light toolbar and footer; app tile colors remain independent.
 - Use runtime logical dimensions when rendering rotated layouts.
 - Settings > Connections > Wi-Fi hosts a manual SSID/password demo (wifi_demo).

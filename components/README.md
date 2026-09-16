@@ -40,3 +40,6 @@ symbols. Spanish/English labels compile; native keys keep the stock repertoire.
 native keyboard, validation, sequential focus and cancel/return lifecycle.
 Selected by action: wifi_demo in the demo tree. Current support is host-only
 480x320/320x480, with no connection or persistence; see its contract for details.
+
+Launcher entries accept icon_dark/icon_light independently of optional bg_dark/bg_light.
+Default surfaces are black/white; focus and text invert with the theme.

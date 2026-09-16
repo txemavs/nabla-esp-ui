@@ -10,10 +10,10 @@ nabla_navigation:
     title: ${tr_main_menu}
     children:
       - key: settings
+        icon_dark: 0x499EFF
+        icon_light: 0x0055BB
         title: ${tr_settings}
         icon: ${icon_settings}
-        bg_dark: 0x12345A
-        bg_light: 0x9ABCE3
         children:
           - key: connections
             title: ${tr_wifi_form_connections}
@@ -37,30 +37,44 @@ nabla_navigation:
                 title: ${tr_light}
                 action: light
       - key: communications
+        icon_dark: 0x46D6A0
+        icon_light: 0x007653
         title: ${tr_communications}
         icon: ${icon_communications}
         detail: ${tr_pending}
       - key: photos
+        icon_dark: 0xC58AFF
+        icon_light: 0x7437AD
         title: ${tr_photos}
         icon: ${icon_photos}
         detail: ${tr_pending}
       - key: music
+        icon_dark: 0xFF83B5
+        icon_light: 0xB11D59
         title: ${tr_music}
         icon: ${icon_music}
         detail: ${tr_pending}
       - key: cameras
+        icon_dark: 0xFF9870
+        icon_light: 0xAA3E12
         title: ${tr_cameras}
         icon: ${icon_video}
         detail: ${tr_pending}
       - key: weather
+        icon_dark: 0xFFD45A
+        icon_light: 0x806000
         title: ${tr_weather}
         icon: ${icon_weather}
         detail: ${tr_pending}
       - key: lights
+        icon_dark: 0xD6E96B
+        icon_light: 0x617000
         title: ${tr_lights}
         icon: ${icon_lights}
         detail: ${tr_pending}
       - key: sensors
+        icon_dark: 0x65D8E8
+        icon_light: 0x006A7C
         title: ${tr_sensors}
         icon: ${icon_sensors}
         children:

@@ -98,3 +98,13 @@ The focused parent triangle rotates 60 degrees so the next vertex points up.
   Returning may restore a content selection, but never a saved toolbar control
   when the destination has options. Empty leaves can focus Back; the Wi-Fi
   editor starts at SSID. Same-page view/rotation updates preserve current focus.
+
+## Neutral surfaces and colored icons
+
+Default bg_dark/bg_light are black/white. Explicit background overrides remain
+supported, but the example uses none. icon_dark/icon_light are optional 24-bit
+RGB values: they default to white/black. The demo gives each app an icon palette,
+with Settings blue. Labels, focus borders and the navigation logo follow the
+theme foreground. Wi-Fi fields, buttons and keyboard also invert.
+nabla_monochrome ignores tile color overrides and renders icons in foreground;
+this is a presentation mode, not validated e-paper hardware support.

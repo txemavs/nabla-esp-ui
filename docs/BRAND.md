@@ -27,8 +27,8 @@ Avoid perpetual motion; preserve the one-second intro duration.
 Do not overwrite the original JPG. Keep geometric sources editable and
 animation logic reusable. Support reduced/disabled motion as a future option.
 
-UI palette: the triangle uses a configurable solid accent (cyan by default).
-Its focused state is white; an error may change the underlying status color.
+UI palette: the navigation triangle uses the high-contrast theme foreground.
+Its normal and focused states use white on black and black on white.
 Ordinary control focus changes borders. App cards may have their own colors.
 The header has no divider. Shared header/footer follow dark/light mode; idle
 brand text is gray, while the startup progress footer is gray/cyan.

@@ -33,5 +33,5 @@ failure, rollback and deliberate persistence. Nabla Net automatic discovery is
 a separate planned adapter using the same application state.
 
 Supported preview: 480x320 and rotated 320x480, es/en labels, dark/light shell.
-Field/key surfaces retain dark backgrounds for contrast. Tiny OLED editing is
+Field/key surfaces follow the same black/white theme as the shell. Tiny OLED editing is
 pending; this composition is not automatically scaled down to 128x64.

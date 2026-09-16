@@ -43,6 +43,19 @@ class CatalogTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 catalog.flatten(t)
 
+    def test_icon_colors_and_neutral_defaults(self):
+        t = self.tree()
+        t["children"][0].update(icon_dark=0x499EFF, icon_light=0x0055BB)
+        node = catalog.flatten(t)[1]
+        self.assertEqual((node["bg_dark"], node["bg_light"]), (0, 0xFFFFFF))
+        self.assertEqual((node["icon_dark"], node["icon_light"]), (0x499EFF, 0x0055BB))
+        for field in ("icon_dark", "icon_light"):
+            for invalid in (-1, 0x1000000, True, "blue"):
+                bad = copy.deepcopy(t)
+                bad["children"][0][field] = invalid
+                with self.assertRaises(ValueError):
+                    catalog.flatten(bad)
+
     def test_invalid_configurations(self):
         cases = []
         t = self.tree(); t["children"][1]["key"] = "settings"; cases.append(t)

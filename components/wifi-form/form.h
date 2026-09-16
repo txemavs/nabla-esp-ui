@@ -7,6 +7,7 @@ struct Editor {
   lv_obj_t *page{}, *ssid{}, *password{}, *keyboard{}, *status{}, *apply{}, *cancel{};
   int focus = 0;
   bool editing_password = false;
+  bool dark_theme = true;
   void clear() {
     lv_textarea_set_text(ssid, "");
     lv_textarea_set_text(password, "");
@@ -25,9 +26,9 @@ struct Editor {
     return n;
   }
   void highlight() {
-    auto mark = [](lv_obj_t *o, bool selected) {
+    auto mark = [&](lv_obj_t *o, bool selected) {
       lv_obj_set_style_border_width(o, selected ? 2 : 1, 0);
-      lv_obj_set_style_border_color(o, lv_color_hex(selected ? 0xFFFFFF : 0x808080), 0);
+      lv_obj_set_style_border_color(o, lv_color_hex(selected ? (dark_theme ? 0xFFFFFF : 0x000000) : 0x808080), 0);
     };
     int n = keys();
     mark(ssid, focus == 0); mark(password, focus == 1);
@@ -68,6 +69,7 @@ struct Editor {
     return 0;
   }
   void render(bool dark) {
+    dark_theme = dark;
     int w = lv_display_get_horizontal_resolution(lv_display_get_default());
     int h = lv_display_get_vertical_resolution(lv_display_get_default());
     bool portrait = w < h;
@@ -87,6 +89,26 @@ struct Editor {
     lv_obj_set_style_bg_color(page, bg, 0);
     lv_obj_set_style_bg_color(keyboard, bg, 0);
     lv_obj_set_style_text_color(status, lv_color_hex(dark ? 0xAAAAAA : 0x505050), 0);
+    auto fg = lv_color_hex(dark ? 0xFFFFFF : 0x000000);
+    for (auto *control : {ssid, password, apply, cancel}) {
+      lv_obj_set_style_bg_color(control, bg, 0);
+      lv_obj_set_style_bg_color(control, bg, LV_STATE_PRESSED);
+      lv_obj_set_style_text_color(control, fg, 0);
+      lv_obj_set_style_border_color(control, fg, LV_STATE_PRESSED);
+    }
+    for (auto *field : {ssid, password}) {
+      lv_obj_set_style_text_color(field, lv_color_hex(0x808080), LV_PART_TEXTAREA_PLACEHOLDER);
+      lv_obj_set_style_bg_color(field, fg, LV_PART_CURSOR);
+    }
+    for (int state : {0, int(LV_STATE_CHECKED), int(LV_STATE_FOCUSED),
+                      int(LV_STATE_PRESSED), int(LV_STATE_FOCUSED | LV_STATE_PRESSED),
+                      int(LV_STATE_CHECKED | LV_STATE_FOCUSED), int(LV_STATE_CHECKED | LV_STATE_PRESSED)}) {
+      lv_obj_set_style_bg_color(keyboard, bg, LV_PART_ITEMS | state);
+      lv_obj_set_style_text_color(keyboard, fg, LV_PART_ITEMS | state);
+      lv_obj_set_style_border_color(keyboard,
+          state & (LV_STATE_FOCUSED | LV_STATE_PRESSED) ? fg : lv_color_hex(0x808080),
+          LV_PART_ITEMS | state);
+    }
     highlight();
   }
 };

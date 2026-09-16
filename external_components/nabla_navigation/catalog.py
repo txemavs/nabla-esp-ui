@@ -9,7 +9,7 @@ def flatten(tree):
     def visit(node, parent, depth):
         if not isinstance(node, dict):
             raise ValueError("Each node must be a mapping")
-        unknown = set(node) - {"key", "title", "icon", "detail", "action", "children", "bg_dark", "bg_light"}
+        unknown = set(node) - {"key", "title", "icon", "detail", "action", "children", "bg_dark", "bg_light", "icon_dark", "icon_light"}
         if unknown:
             raise ValueError("Unknown node fields: " + ", ".join(sorted(unknown)))
         key = node.get("key")
@@ -35,7 +35,7 @@ def flatten(tree):
         if action != "open" and (parent < 0 or children):
             raise ValueError("Actions must be non-root leaves")
         colors = {}
-        for field, default in (("bg_dark", 0x181818), ("bg_light", 0x404040)):
+        for field, default in (("bg_dark", 0x000000), ("bg_light", 0xFFFFFF), ("icon_dark", 0xFFFFFF), ("icon_light", 0x000000)):
             value = node.get(field, default)
             if not isinstance(value, int) or isinstance(value, bool) or not 0 <= value <= 0xFFFFFF:
                 raise ValueError(field + " must be a 24-bit RGB integer")
@@ -59,7 +59,7 @@ def emit(tree):
                   json.dumps(n["detail"], ensure_ascii=False),
                   json.dumps(n["icon"], ensure_ascii=False),
                   str({"open": 0, "dark": 1, "light": 2, "wifi_demo": 3}[n["action"]]),
-                  str(n["bg_dark"]), str(n["bg_light"])]
+                  str(n["bg_dark"]), str(n["bg_light"]), str(n["icon_dark"]), str(n["icon_light"])]
         rows.append("{" + ", ".join(values) + "}")
     return ("namespace nabla { const Node nodes[] = {"
             + ", ".join(rows) + "}; const int count = "
