@@ -32,3 +32,9 @@ font:
       - "\uf185"
       - "\uf0eb"
       - "\uf2c9"
+  - file: ../assets/fonts/DejaVuSans-Bold.ttf
+    id: nabla_font_bold_16
+    size: 16
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€"

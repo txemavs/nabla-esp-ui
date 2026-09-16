@@ -45,7 +45,7 @@ UP/DOWN focus order is content, Home, visible breadcrumbs, X. On the desktop,
 only content and Home participate; X is hidden. ENTER and touch share activation.
 
 The toolbar remains black with a medium-gray divider. Its selected controls
-turn white; focused interior Home points left. Long paths collapse ancestors into
+turn white; focused Home gains a white border. Long paths collapse ancestors into
 a clickable ... parent link. Layout is currently tested at 480 x 320.
 
 ## Validation
@@ -59,3 +59,20 @@ esphome -s ui_language en compile simulator/hello-world.yaml
 
 The tests compile generated C++ and exercise traversal and validation failures.
 See locales/README.md and navigation/INPUT.md for shared contracts.
+
+Current presentation contract: focus changes only borders, never icon, text or
+background colors. Icons and names default to white. The current toolbar title
+is bold white and excluded from focus; ancestors remain regular clickable text.
+The single underline starts just after the logo's lower tip. Startup spins the
+same toolbar logo in place for one second; there is no separate splash page.
+Set nabla_monochrome: "true" to hide unselected control borders. This is a
+presentation option, not validation of physical OLED hardware.
+
+## Per-card colors
+
+Desktop entries accept optional 24-bit integer bg_dark and bg_light fields.
+Settings demonstrates bg_dark: 0x12345A and bg_light: 0x9ABCE3.
+These are presentation values in the navigation YAML, not hardcoded node indices.
+Icons currently use the registered Font Awesome glyph. Arbitrary images and
+animated artwork are planned tile content variants; they are not implemented
+by the catalog yet.

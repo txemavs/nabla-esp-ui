@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 namespace nabla {
-struct Node { const char *title; int parent; const char *detail; const char *icon; int action; };
+struct Node { const char *title; int parent; const char *detail; const char *icon; int action; int bg_dark = 0x181818; int bg_light = 0x404040; };
 extern const Node nodes[];
 extern const int count;
 inline bool valid(int n) { return n >= 0 && n < count; }

@@ -31,3 +31,11 @@ in one solid color; errors may set it red. Other controls and dividers use
 #808080 in both themes, with white focus and white card titles. Cards remain
 dark neutral surfaces even on light pages. Preserve the silver/sky artwork as
 the historical reference. Animation must never overwrite status colors.
+
+Current presentation contract: focus changes only borders, never icon, text or
+background colors. Icons and names default to white. The current toolbar title
+is bold white and excluded from focus; ancestors remain regular clickable text.
+The single underline starts just after the logo's lower tip. Startup spins the
+same toolbar logo in place for one second; there is no separate splash page.
+Set nabla_monochrome: "true" to hide unselected control borders. This is a
+presentation option, not validation of physical OLED hardware.

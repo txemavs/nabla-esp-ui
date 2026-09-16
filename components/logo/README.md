@@ -16,8 +16,7 @@ nabla_logo_spin(target: lv_obj_t*) performs one spindle-like cycle in 1000 ms,
 using horizontal foreshortening with the bottom tip anchored.
 nabla_logo::turn(image, left) performs a centered planar 90-degree transition
 in 180 ms; repeated renders do not restart it.
-The object must remain alive during animation. The splash runs it once and
-opens the desktop at 1600 ms. Actual ESP rendering performance remains untested.
+The object must remain alive during animation. Startup runs it once on the toolbar logo with the desktop already visible. Actual ESP rendering performance remains untested.
 See docs/BRAND.md for the identity and motion rules.
 
 ## Color and status
@@ -38,3 +37,11 @@ Change one instance at runtime, for example on an actual error event:
 
 Use ${nabla_accent} to restore its normal color. Each instance is independent.
 The library exposes this action; automatic error detection is not implemented.
+
+Current presentation contract: focus changes only borders, never icon, text or
+background colors. Icons and names default to white. The current toolbar title
+is bold white and excluded from focus; ancestors remain regular clickable text.
+The single underline starts just after the logo's lower tip. Startup spins the
+same toolbar logo in place for one second; there is no separate splash page.
+Set nabla_monochrome: "true" to hide unselected control borders. This is a
+presentation option, not validation of physical OLED hardware.

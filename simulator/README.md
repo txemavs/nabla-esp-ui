@@ -32,8 +32,8 @@ From the repository root:
 
 The script activates the project environment, compiles, and launches the
 480 x 320 landscape window. It defaults to the X11 SDL backend for WSLg.
-The centered nabla.net splash appears for two seconds, then opens a 4-column,
-2-row launcher: Ajustes, Reloj, Fotos, Música, Vídeo, Tiempo, Luces, Sensores.
+The desktop opens immediately and its toolbar logo spins once in place.
+The 4-column, 2-row launcher contains: Ajustes, Reloj, Fotos, Música, Vídeo, Tiempo, Luces, Sensores.
 Ajustes opens Wi-Fi, Idioma and Acerca de. Sensores opens folders and sensor
 leaves. Breadcrumbs show the route; X returns to the parent and the triangle
 returns to the root. Other applications remain placeholders.
@@ -116,3 +116,11 @@ and opens through the same action, after 120 ms of visual feedback.
 
 The shared toolbar and focus behavior are described in navigation/README.md.
 Set ui_language to es or en; see locales/README.md for CLI overrides.
+
+Current presentation contract: focus changes only borders, never icon, text or
+background colors. Icons and names default to white. The current toolbar title
+is bold white and excluded from focus; ancestors remain regular clickable text.
+The single underline starts just after the logo's lower tip. Startup spins the
+same toolbar logo in place for one second; there is no separate splash page.
+Set nabla_monochrome: "true" to hide unselected control borders. This is a
+presentation option, not validation of physical OLED hardware.

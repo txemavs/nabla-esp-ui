@@ -3,11 +3,10 @@ esphome:
   on_boot:
     priority: -100
     then:
+      - script.execute: nav_home
       - script.execute:
           id: nabla_logo_spin
-          target: !lambda return id(splash_logo_image);
-      - delay: 1600ms
-      - script.execute: nav_home
+          target: !lambda return id(toolbar_logo_image);
 
 packages:
   navigation: !include ../../navigation/logic.yaml
@@ -20,21 +19,6 @@ lvgl:
     widgets:
       - !include ../../components/toolbar.yaml
   pages:
-    - id: splash_page
-      bg_color: ${nabla_background}
-      widgets:
-        - !include
-            file: ../../components/logo/widget.yaml
-            vars:
-              widget_id: splash_logo
-              size: 180
-              image_id: nabla_logo_large
-        - label:
-            text: "nabla.net"
-            text_font: nabla_font_28
-            text_color: 0xFFFFFF
-            align: CENTER
-            y: 108
     - id: home_page
       bg_color: ${nabla_background}
       widgets:
@@ -66,6 +50,7 @@ lvgl:
                   id: nav_row_0
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1
@@ -86,6 +71,7 @@ lvgl:
                   id: nav_row_1
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1
@@ -106,6 +92,7 @@ lvgl:
                   id: nav_row_2
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1
@@ -126,6 +113,7 @@ lvgl:
                   id: nav_row_3
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1
@@ -146,6 +134,7 @@ lvgl:
                   id: nav_row_4
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1
@@ -166,6 +155,7 @@ lvgl:
                   id: nav_row_5
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1
@@ -186,6 +176,7 @@ lvgl:
                   id: nav_row_6
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1
@@ -206,6 +197,7 @@ lvgl:
                   id: nav_row_7
                   width: 440
                   height: 48
+                  shadow_width: 0
                   bg_color: 0x181818
                   border_color: ${nabla_secondary}
                   border_width: 1

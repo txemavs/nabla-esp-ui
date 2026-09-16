@@ -32,7 +32,7 @@ Configuration will initially use **native ESPHome packages, includes, and variab
 
 ### Theme
 
-The initial nabla.net identity uses a black background, gray controls, white focus and labels, and cyan reserved for the triangle (currently #00C8FF), and the original logo in assets/nabla.jpg. Shared colors and the logo resource are defined in theme/nabla.yaml.
+The initial nabla.net identity uses a black background, gray controls, white focus and labels, and accent reserved for the triangle; cards may define their own colors (currently #00C8FF), and the original logo in assets/nabla.jpg. Shared colors and the logo resource are defined in theme/nabla.yaml.
 
 Shared colors, typography, icons, spacing, dimensions, and visual states. Compact, regular, and large variants should maintain a common identity.
 
@@ -146,13 +146,13 @@ Eight desktop positions do not imply eight completed applications. Shortcuts wil
 Start with a minimal desktop example before building the application library:
 
 - Open an SDL2 window with configurable dimensions.
-- Render a centered logo and nabla.net splash, followed by an eight-tile launcher.
+- Render an eight-tile launcher with an in-place toolbar logo intro.
 - Open placeholder application pages from reusable tiles and return to the launcher.
 - Run without a physical board, Home Assistant, or credentials.
 - Keep desktop display/input configuration separate from reusable UI.
 - Document setup and a single command to build and run the example.
 
-Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. The splash transitions after two seconds to a 4 x 2 launcher. Applications share a focusable Home/breadcrumb/close toolbar. Settings and sensor folders demonstrate nested navigation; real application functionality remains planned.
+Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. The 4 x 2 launcher appears immediately with a one-second toolbar logo intro. Applications share a focusable Home/breadcrumb/close toolbar. Settings and sensor folders demonstrate nested navigation; real application functionality remains planned.
 
 ### Success criterion
 
@@ -187,6 +187,5 @@ validated and compiled by a local ESPHome component. See the
 ## Component catalog
 
 See [reusable UI components](components/README.md), including the drawn logo
-and shared toolbar. The accent-colored logo uses editable equilateral geometry, changes orientation with
-focus and performs a one-second intro turn. The original brand image remains
+and shared toolbar. The accent-colored logo uses editable equilateral geometry, performs a one-second intro turn in the toolbar. The original brand image remains
 a reference asset. See [brand identity](docs/BRAND.md).

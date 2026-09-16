@@ -6,7 +6,7 @@ These instructions apply to the whole repository.
 - Read README.md and simulator/README.md before making changes.
 - Build reusable ESPHome + LVGL packages, not separate implementations per device.
 - Use English for documentation, identifiers, and code comments. UI supports build-time Spanish and English.
-- Brand: nabla.net ESP UI, black background, gray controls, white focus and labels; cyan reserved for the triangle.
+- Brand: nabla.net ESP UI, black background, gray controls, white focus and labels; accent reserved for the triangle; cards may define their own colors.
 - Use theme colors, nabla_font_* for text, and registered Font Awesome Free Solid icons.
 - Register extra glyphs in theme/fonts.yaml and icons in theme/icons.yaml.
 - Keep bundled font licenses and brand attribution.
@@ -64,15 +64,15 @@ These instructions apply to the whole repository.
 ## Toolbar and localization
 - Read docs/ARCHITECTURE.md and locales/README.md.
 - Use tr_* locale keys for new visible text; keep en/es keys identical.
-- Toolbar focus order follows content, Home, breadcrumbs, X.
-- Home opens desktop; X follows the parent tree. Do not claim general window history yet.
+- Toolbar focus order follows content, Home, ancestor breadcrumbs, X.
+- Current title is bold white, noninteractive and excluded from focus. Home opens desktop; X follows the parent tree. Do not claim general window history yet.
 - Compile both locales when changing localization or text-dependent layout.
 - Declarative navigation is implemented; real sensor/data bindings remain pending.
 
 ## Persistent toolbar and appearance
 - Toolbar remains black in both light and dark content modes.
 - A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
-- Focused toolbar controls turn white on the black background.
+- Focus changes only the border; content colors never change with focus.
 - Use the shared accent-colored logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
@@ -82,7 +82,7 @@ These instructions apply to the whole repository.
 ## Component catalog
 - Register reusable primitives in components/README.md with per-component docs.
 - Logo uses editable equilateral SVG geometry, compiled into transparent assets.
-- Focused interior Home points left; its action still opens desktop.
+- Home opens the desktop; focus changes only its border.
 - Keep the toolbar black; logo focus does not invert its background.
 
 - Run python3 -m unittest discover -s tests -p 'test_*.py' for catalog changes.
@@ -97,3 +97,11 @@ These instructions apply to the whole repository.
 
 - Separate intro depth-turn approximation (fixed tip) from centered planar toolbar rotation.
 - SVG centroid must match the animation pivot; verify equal sides after geometry changes.
+
+Current presentation contract: focus changes only borders, never icon, text or
+background colors. Icons and names default to white. The current toolbar title
+is bold white and excluded from focus; ancestors remain regular clickable text.
+The single underline starts just after the logo's lower tip. Startup spins the
+same toolbar logo in place for one second; there is no separate splash page.
+Set nabla_monochrome: "true" to hide unselected control borders. This is a
+presentation option, not validation of physical OLED hardware.

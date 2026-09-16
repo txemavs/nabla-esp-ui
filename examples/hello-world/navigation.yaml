@@ -12,6 +12,8 @@ nabla_navigation:
       - key: settings
         title: ${tr_settings}
         icon: ${icon_settings}
+        bg_dark: 0x12345A
+        bg_light: 0x9ABCE3
         children:
           - key: wifi
             title: ${tr_wifi}

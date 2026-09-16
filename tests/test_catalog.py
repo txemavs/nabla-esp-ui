@@ -23,6 +23,16 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual([n["parent"] for n in nodes], [-1, 0, 1, 1, 0])
         self.assertEqual(nodes[3]["action"], "dark")
 
+    def test_tile_colors(self):
+        t = self.tree()
+        t["children"][0].update(bg_dark=0x12345A, bg_light=0x9ABCE3)
+        node = catalog.flatten(t)[1]
+        self.assertEqual((node["bg_dark"], node["bg_light"]), (0x12345A, 0x9ABCE3))
+        for invalid in (-1, 0x1000000, True, "blue"):
+            t["children"][0]["bg_dark"] = invalid
+            with self.assertRaises(ValueError):
+                catalog.flatten(t)
+
     def test_invalid_configurations(self):
         cases = []
         t = self.tree(); t["children"][1]["key"] = "settings"; cases.append(t)

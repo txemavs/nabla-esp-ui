@@ -31,7 +31,7 @@ script:
       - if:
           condition:
             lambda: |-
-              return index >= 0 && index < nabla::children(id(nav_current)) + (id(nav_current) ? 2 + id(nav_crumbs).size() : 1);
+              return index >= 0 && index < nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 1);
           then:
             - lambda: |-
                 id(nav_selection) = index;
@@ -45,7 +45,7 @@ script:
                   if (chosen < total) return nabla::child(n, chosen);
                   if (chosen == total) return 0;
                   chosen -= total + 1;
-                  if (chosen < (int) id(nav_crumbs).size()) return id(nav_crumbs)[chosen];
+                  if (chosen < (int) id(nav_crumbs).size() - 1) return id(nav_crumbs)[chosen];
                   return nabla::nodes[n].parent;
   - id: nav_open
     parameters:
@@ -91,7 +91,7 @@ script:
     then:
       - script.stop: nav_choose
       - lambda: |-
-          int total = nabla::children(id(nav_current)) + (id(nav_current) ? 2 + id(nav_crumbs).size() : 1);
+          int total = nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 1);
           if (total) id(nav_selection) = (id(nav_selection) + delta % total + total) % total;
       - script.execute: nav_render
       - lambda: |-
@@ -111,7 +111,7 @@ script:
           int total = nabla::children(current);
           auto border = [](lv_obj_t *obj, bool selected) {
             lv_obj_set_style_border_color(obj, lv_color_hex(selected ? 0xFFFFFF : ${nabla_secondary}), 0);
-            lv_obj_set_style_border_width(obj, selected ? 2 : 1, 0);
+            lv_obj_set_style_border_width(obj, selected ? 2 : (${nabla_monochrome} ? 0 : 1), 0);
           };
           ESP_LOGI("navigation", "%s [focus %d]", nabla::path(current).c_str(), id(nav_selection));
           lv_obj_remove_flag(id(navigation_toolbar), LV_OBJ_FLAG_HIDDEN);
@@ -133,10 +133,15 @@ script:
               lv_label_set_text(tile_titles[i], nabla::nodes[root_child].title);
             }
             border(tiles[i], id(nav_selection) == i);
-            lv_obj_set_style_bg_color(tiles[i], lv_color_hex(id(nav_dark) ? 0x181818 : 0x404040), 0);
+            if (root_child >= 0) {
+              auto color = lv_color_hex(id(nav_dark) ? nabla::nodes[root_child].bg_dark : nabla::nodes[root_child].bg_light);
+              lv_obj_set_style_bg_color(tiles[i], color, 0);
+              lv_obj_set_style_bg_color(tiles[i], color, LV_STATE_PRESSED);
+            }
             lv_obj_set_style_text_color(tile_titles[i], lv_color_hex(0xFFFFFF), 0);
-            lv_obj_set_style_text_color(tile_icons[i], lv_color_hex(id(nav_selection) == i ? 0xFFFFFF : ${nabla_secondary}), 0);
+            lv_obj_set_style_text_color(tile_icons[i], lv_color_hex(0xFFFFFF), 0);
             lv_obj_set_style_bg_color(rows[i], lv_color_hex(id(nav_dark) ? 0x181818 : 0x404040), 0);
+            lv_obj_set_style_bg_color(rows[i], lv_color_hex(id(nav_dark) ? 0x181818 : 0x404040), LV_STATE_PRESSED);
             lv_obj_set_style_text_color(labels[i], lv_color_hex(0xFFFFFF), 0);
             int n = nabla::child(current, i);
             if (n < 0) lv_obj_add_flag(rows[i], LV_OBJ_FLAG_HIDDEN);
@@ -148,15 +153,13 @@ script:
           }
           auto toolbar_style = [](lv_obj_t *button, lv_obj_t *label, bool selected) {
             lv_obj_set_style_bg_color(button, lv_color_hex(0x000000), 0);
-            lv_obj_set_style_border_width(button, 0, 0);
-            if (label) lv_obj_set_style_text_color(label, lv_color_hex(selected ? 0xFFFFFF : ${nabla_secondary}), 0);
+            lv_obj_set_style_bg_color(button, lv_color_hex(0x000000), LV_STATE_PRESSED);
+            lv_obj_set_style_border_color(button, lv_color_hex(0xFFFFFF), 0);
+            lv_obj_set_style_border_width(button, selected ? 1 : 0, 0);
+            lv_obj_set_style_shadow_width(button, 0, 0);
+            if (label) lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
           };
-          // Home is a drawn brand mark: rotate left on interior focus.
-          toolbar_style(id(toolbar_home), nullptr, false);
-          bool point_left = current != 0 && id(nav_selection) == total;
-          nabla_logo::turn(id(toolbar_logo_image), point_left);
-          lv_obj_set_style_outline_width(id(toolbar_home), current == 0 && id(nav_selection) == total ? 1 : 0, 0);
-          lv_obj_set_style_outline_color(id(toolbar_home), lv_color_hex(0xFFFFFF), 0);
+          toolbar_style(id(toolbar_home), nullptr, id(nav_selection) == total);
           id(nav_crumbs).clear();
           if (current) {
             lv_obj_remove_flag(id(toolbar_close), LV_OBJ_FLAG_HIDDEN);
@@ -164,7 +167,7 @@ script:
             std::vector<int> ancestors;
             for (int n = nabla::nodes[current].parent; n > 0; n = nabla::nodes[n].parent)
               ancestors.insert(ancestors.begin(), n);
-            const lv_font_t *font = lv_obj_get_style_text_font(id(toolbar_crumb_label_0), LV_PART_MAIN);
+            const lv_font_t *font = id(nabla_font_bold_16)->get_lv_font();
             auto width = [font](const char *text) {
               lv_point_t size;
               lv_text_get_size(&size, text, font, 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
@@ -189,10 +192,14 @@ script:
               lv_obj_set_x(buttons[i], x);
               lv_obj_set_width(buttons[i], w);
               lv_label_set_text(texts[i], title);
-              toolbar_style(buttons[i], texts[i], id(nav_selection) == total + 1 + i);
+              bool is_current = id(nav_crumbs)[i] == current;
+              if (is_current) lv_obj_remove_flag(buttons[i], LV_OBJ_FLAG_CLICKABLE);
+              else lv_obj_add_flag(buttons[i], LV_OBJ_FLAG_CLICKABLE);
+              lv_obj_set_style_text_font(texts[i], is_current ? id(nabla_font_bold_16)->get_lv_font() : id(nabla_font_16)->get_lv_font(), 0);
+              toolbar_style(buttons[i], texts[i], !is_current && id(nav_selection) == total + 1 + i);
               x += w; available -= w;
             }
-            toolbar_style(id(toolbar_close), id(toolbar_close_label), id(nav_selection) == total + 1 + (int) id(nav_crumbs).size());
+            toolbar_style(id(toolbar_close), id(toolbar_close_label), id(nav_selection) == total + (int) id(nav_crumbs).size());
           } else {
             lv_obj_add_flag(id(toolbar_close), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_crumb_1), LV_OBJ_FLAG_HIDDEN);
@@ -201,7 +208,9 @@ script:
             lv_obj_set_x(id(toolbar_crumb_0), 54);
             lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 60);
             lv_label_set_text(id(toolbar_crumb_label_0), nabla::nodes[0].title);
-            toolbar_style(id(toolbar_crumb_0), id(toolbar_crumb_label_0), true);
+            lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_CLICKABLE);
+            lv_obj_set_style_text_font(id(toolbar_crumb_label_0), id(nabla_font_bold_16)->get_lv_font(), 0);
+            toolbar_style(id(toolbar_crumb_0), id(toolbar_crumb_label_0), false);
           }
       - if:
           condition:

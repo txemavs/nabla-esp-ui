@@ -9,7 +9,7 @@ def flatten(tree):
     def visit(node, parent, depth):
         if not isinstance(node, dict):
             raise ValueError("Each node must be a mapping")
-        unknown = set(node) - {"key", "title", "icon", "detail", "action", "children"}
+        unknown = set(node) - {"key", "title", "icon", "detail", "action", "children", "bg_dark", "bg_light"}
         if unknown:
             raise ValueError("Unknown node fields: " + ", ".join(sorted(unknown)))
         key = node.get("key")
@@ -34,10 +34,16 @@ def flatten(tree):
             raise ValueError("Unknown action: " + str(action))
         if action != "open" and (parent < 0 or children):
             raise ValueError("Theme actions must be non-root leaves")
+        colors = {}
+        for field, default in (("bg_dark", 0x181818), ("bg_light", 0x404040)):
+            value = node.get(field, default)
+            if not isinstance(value, int) or isinstance(value, bool) or not 0 <= value <= 0xFFFFFF:
+                raise ValueError(field + " must be a 24-bit RGB integer")
+            colors[field] = value
         index = len(result)
         result.append(dict(key=key, title=node["title"], parent=parent,
                            icon=node.get("icon", ""), detail=node.get("detail", ""),
-                           action=action))
+                           action=action, **colors))
         for child in children:
             if depth == 0 and (not isinstance(child, dict) or not child.get("icon")):
                 raise ValueError("Desktop entries require an icon")
@@ -52,7 +58,8 @@ def emit(tree):
         values = [json.dumps(n["title"], ensure_ascii=False), str(n["parent"]),
                   json.dumps(n["detail"], ensure_ascii=False),
                   json.dumps(n["icon"], ensure_ascii=False),
-                  str({"open": 0, "dark": 1, "light": 2}[n["action"]])]
+                  str({"open": 0, "dark": 1, "light": 2}[n["action"]]),
+                  str(n["bg_dark"]), str(n["bg_light"])]
         rows.append("{" + ", ".join(values) + "}")
     return ("namespace nabla { const Node nodes[] = {"
             + ", ".join(rows) + "}; const int count = "
