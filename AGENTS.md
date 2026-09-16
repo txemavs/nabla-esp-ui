@@ -137,3 +137,8 @@ Negative progress restores this route-specific state rather than hiding all foot
 Compact layout: shared bars are 36 px tall; launcher outer padding is 5 px
 horizontally and 6 px vertically. Internal tile gaps stay 10 px. Idle footer
 follows the header theme; gray/cyan is reserved for the startup progress state.
+
+Triangle alignment: the visible left edge aligns with the 5 px content margin;
+titles start at x=40. Triangle focus recolors the mark white, never draws a
+button frame, and retains the interior back rotation. Clearing focus restores
+the configured base/status color using LVGL state styling.

@@ -198,7 +198,12 @@ script:
             lv_obj_set_style_shadow_width(button, 0, 0);
             if (label) lv_obj_set_style_text_color(label, toolbar_fg, 0);
           };
-          toolbar_style(id(toolbar_home), nullptr, current == 0 && id(nav_selection) == total);
+          toolbar_style(id(toolbar_home), nullptr, false);
+          // Focus recolors only the mark; preserve the configured base/status color.
+          lv_obj_set_style_image_recolor(id(toolbar_logo_image), lv_color_hex(0xFFFFFF), LV_STATE_FOCUSED);
+          lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, LV_STATE_FOCUSED);
+          if (id(nav_selection) == total) lv_obj_add_state(id(toolbar_logo_image), LV_STATE_FOCUSED);
+          else lv_obj_remove_state(id(toolbar_logo_image), LV_STATE_FOCUSED);
           // Optical alignment: keep the logo slightly above its geometric center.
           lv_obj_set_y(id(toolbar_logo), -3);
           nabla_logo::turn(id(toolbar_logo_image), current != 0 && id(nav_selection) == total);
@@ -215,7 +220,7 @@ script:
               lv_text_get_size(&size, text, font, 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
               return (int) size.x + 22;
             };
-            int available = ${screen_width} - 108;
+            int available = ${screen_width} - 94;
             int needed = width(nabla::nodes[current].title);
             for (int n : ancestors) needed += width(nabla::nodes[n].title);
             bool collapsed = ancestors.size() > 2 || needed > available;
@@ -224,7 +229,7 @@ script:
             id(nav_crumbs).push_back(current);
             lv_obj_t *buttons[] = {id(toolbar_crumb_0), id(toolbar_crumb_1), id(toolbar_crumb_2)};
             lv_obj_t *texts[] = {id(toolbar_crumb_label_0), id(toolbar_crumb_label_1), id(toolbar_crumb_label_2)};
-            int x = 54;
+            int x = 40;
             for (int i = 0; i < 3; i++) {
               if (i >= (int) id(nav_crumbs).size()) { lv_obj_add_flag(buttons[i], LV_OBJ_FLAG_HIDDEN); continue; }
               lv_obj_remove_flag(buttons[i], LV_OBJ_FLAG_HIDDEN);
@@ -247,8 +252,8 @@ script:
             lv_obj_add_flag(id(toolbar_crumb_1), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_crumb_2), LV_OBJ_FLAG_HIDDEN);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_HIDDEN);
-            lv_obj_set_x(id(toolbar_crumb_0), 54);
-            lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 148);
+            lv_obj_set_x(id(toolbar_crumb_0), 40);
+            lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 134);
             lv_label_set_text(id(toolbar_crumb_label_0), nabla::nodes[0].title);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_text_font(id(toolbar_crumb_label_0), id(nabla_font_bold_16)->get_lv_font(), 0);

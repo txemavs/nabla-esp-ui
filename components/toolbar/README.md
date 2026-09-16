@@ -18,3 +18,8 @@ footer, 0..100 display it. See ../progress/README.md.
 
 The logo container has a -3 px optical vertical offset relative to its centered
 position. Its hit area stays fixed; rotation keeps the same local pivot.
+
+Triangle alignment: the visible left edge aligns with the 5 px content margin;
+titles start at x=40. Triangle focus recolors the mark white, never draws a
+button frame, and retains the interior back rotation. Clearing focus restores
+the configured base/status color using LVGL state styling.
