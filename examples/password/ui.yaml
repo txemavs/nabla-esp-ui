@@ -1,0 +1,124 @@
+# Native LVGL password editor fixture; never persists or transmits input.
+script:
+  - id: password_cancel
+    then:
+      - lvgl.textarea.update:
+          id: password_input
+          text: ""
+      - lvgl.label.update:
+          id: password_status
+          text: "${tr_password_cancelled}"
+  - id: password_accept
+    then:
+      - lvgl.textarea.update:
+          id: password_input
+          text: ""
+      - lvgl.label.update:
+          id: password_status
+          text: "${tr_password_done}"
+  - id: password_move
+    parameters:
+      delta: int
+    then:
+      - lambda: |-
+          auto *kb = id(password_keyboard)->obj;
+          uint32_t count = 0;
+          while (lv_buttonmatrix_get_button_text(kb, count) != nullptr) ++count;
+          if (!count) return;
+          auto selected = lv_buttonmatrix_get_selected_button(kb);
+          int next = selected == LV_BUTTONMATRIX_BUTTON_NONE ? 0 :
+              (static_cast<int>(selected) + delta + count) % count;
+          lv_obj_add_state(kb, LV_STATE_FOCUSED);
+          lv_buttonmatrix_set_selected_button(kb, next);
+  - id: password_press
+    then:
+      - lambda: |-
+          auto *kb = id(password_keyboard)->obj;
+          if (lv_buttonmatrix_get_selected_button(kb) != LV_BUTTONMATRIX_BUTTON_NONE)
+            lv_obj_send_event(kb, LV_EVENT_VALUE_CHANGED, nullptr);
+
+lvgl:
+  buffer_size: 100%
+  default_font: nabla_font_16
+  pages:
+    - id: password_page
+      bg_color: 0x000000
+      text_color: 0xFFFFFF
+      pad_all: 0
+      widgets:
+        - image:
+            src: nabla_logo_small
+            x: 0
+            y: -3
+            image_recolor: 0x00C8FF
+            image_recolor_opa: COVER
+        - label:
+            x: 40
+            y: 9
+            text_font: nabla_font_bold_16
+            text: "${tr_password_title}"
+        - label:
+            x: 8
+            y: 43
+            text_color: 0x808080
+            text: "Wi-Fi: Nabla Demo"
+        - textarea:
+            id: password_input
+            x: 8
+            y: 66
+            width: 464
+            height: 42
+            one_line: true
+            password_mode: true
+            max_length: 63
+            on_ready:
+              - script.execute: password_accept
+            on_value:
+              - lvgl.label.update:
+                  id: password_status
+                  text: "${tr_password_demo}"
+            placeholder_text: "${tr_password_hint}"
+            bg_color: 0x181818
+            text_color: 0xFFFFFF
+            border_color: 0x808080
+            border_width: 1
+            radius: 6
+            pad_all: 8
+        - label:
+            id: password_status
+            x: 8
+            y: 114
+            text_font: nabla_font_12
+            text_color: 0x808080
+            text: "${tr_password_demo}"
+        - keyboard:
+            id: password_keyboard
+            textarea: password_input
+            align: TOP_LEFT
+            mode: TEXT_LOWER
+            x: 4
+            y: 138
+            width: 472
+            height: 178
+            bg_color: 0x000000
+            border_width: 0
+            pad_all: 2
+            text_font: montserrat_16
+            items:
+              bg_color: 0x181818
+              text_color: 0xFFFFFF
+              border_color: 0x808080
+              border_width: 1
+              radius: 5
+              shadow_width: 0
+              pressed:
+                border_color: 0xFFFFFF
+                border_width: 2
+                bg_color: 0x181818
+              focused:
+                border_color: 0xFFFFFF
+                border_width: 2
+            on_ready:
+              - script.execute: password_accept
+            on_cancel:
+              - script.execute: password_cancel

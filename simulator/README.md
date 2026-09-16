@@ -132,3 +132,24 @@ rotation, reachable via Up/Down and Enter. The SDL window remains physically
 For the larger platform design and proposed keyboard/128x64 fixtures, see
 [the platform roadmap](../docs/platform/ROADMAP.md). These profiles and forms
 are not implemented by changing screen dimensions in the current example.
+
+## Password keyboard preview
+
+Run the native LVGL keyboard fixture in a separate 480x320 window:
+
+```sh
+source .venv/bin/activate
+SDL_VIDEODRIVER=x11 esphome run simulator/password.yaml
+```
+
+Click letters, shift/case, symbols, backspace and the native confirm/cancel keys.
+Up/Down traverses the keyboard buttons; Enter activates the selected button.
+Escape cancels and clears the field. Confirm also clears it and reports demo
+completion. Neither path connects to Wi-Fi, stores input, or logs its contents.
+This fixture previews the native keyboard; it is not yet the integrated settings
+editor, a Wi-Fi credential validator, or the compact OLED character picker.
+The stock keyboard has its built-in character repertoire; translated labels
+do not imply an accented keyboard layout. Use a dummy password for the preview.
+
+For English, use `esphome -s ui_language en run simulator/password.yaml`.
+Source: examples/password/ui.yaml. Fonts and colors follow the shared theme.

@@ -24,3 +24,8 @@ substitutions:
   tr_appearance: "Appearance"
   tr_dark: "Dark"
   tr_light: "Light"
+  tr_password_title: "Wi-Fi / Password"
+  tr_password_hint: "Enter password"
+  tr_password_demo: "Demo: no connection or password storage"
+  tr_password_cancelled: "Cancelled - field cleared"
+  tr_password_done: "Demo completed - field cleared"

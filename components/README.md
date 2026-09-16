@@ -21,3 +21,15 @@ duplicate application titles, icons or numeric targets in component includes.
 
 The [planned component families and extension recipe](../docs/platform/COMPONENTS-AND-INPUT.md)
 describe future controls. Inclusion there is not a claim of implementation.
+
+## Native password keyboard preview
+
+The experimental composition in examples/password/ui.yaml uses ESPHome's
+native LVGL textarea and keyboard. See simulator/password.yaml and
+simulator/README.md to run it. It is a fixed 480x320 fixture, not a registered
+production editor or a compact OLED renderer.
+Input: touch or sequential Up/Down/Enter; Escape clears/cancels.
+States: editing, demo accepted, cancelled. Input is masked and limited to 63
+characters; accepting/cancelling clears it. No persistence, network or logging
+of entered text. Uses the shared fonts/logo and native Montserrat keyboard
+symbols. Spanish/English labels compile; native keys keep the stock repertoire.
