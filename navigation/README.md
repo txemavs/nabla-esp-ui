@@ -1,30 +1,34 @@
 # Shared navigation
 
-The current prototype declares nodes in tree.h. Each node has a title, parent
-index and optional leaf description. Node 0 is Inicio. Settings has Wi-Fi,
-Idioma and Acerca de. Sensores demonstrates two folder levels.
+The current static catalog is in tree.h; translations are applied from
+translations.yaml using locales/es.yaml or locales/en.yaml. Declarative
+navigation YAML remains planned; see docs/ARCHITECTURE.md.
 
-logic.yaml provides nav_open(node), nav_back, nav_home, nav_move(delta),
-nav_activate and nav_render. The touchscreen opens a node directly.
-A future encoder can call move and activate rather than define another tree.
-The list highlights the selected row. The home tiles currently select directly;
-the desktop and list both show sequential keyboard focus.
+logic.yaml supplies open, back, home, move, activate, choose and render actions.
+Touch and keyboard use the same activation path with 120 ms feedback.
+Focus and content scroll position are saved per node and restored on return.
 
-The breadcrumb displays the complete route. Inicio goes to the root and Volver
-goes to the parent. Intermediate breadcrumb segments are not individually clickable.
-The list supports up to eight children per node and scrolls vertically.
+Applications use components/toolbar.yaml:
+- Left triangle: return to the desktop.
+- Breadcrumbs: open an ancestor or stay at the current node.
+- Right X: close to the parent; at application root this returns to desktop.
+- Paths are measured using the actual font. When space is insufficient, earlier
+  ancestors become a clickable ... link to the immediate parent.
+- The current title is retained and truncated with dots only if needed.
+- Toolbar is hidden on the splash and desktop.
 
-The root icon grid is currently composed in launcher.yaml with node indices.
-Keep titles and root entries consistent with tree.h; a unified declarative
-catalog is a future improvement. This is a prototype contract.
+Sequential focus order is content items, Home, visible breadcrumbs, X.
+Up/Down wraps, Enter activates, Escape returns, Home opens the desktop.
+Left/Right remains reserved. All displayed toolbar actions are touchable and
+reachable without a physical Escape key.
 
-Wi-Fi and language pages report pending implementation. They do not change
-network settings or language. About is informational. Sensor leaves have no
-connected entity and must not pretend to show real readings.
+The initial profile is 480 x 320. Breadcrumbs have up to three slots.
+Lists support eight children and scroll. Root tiles still duplicate catalog
+titles through translation keys; a unified YAML catalog is the next milestone.
+Settings pages are informational placeholders; sensors are not connected.
 
-## Keyboard and touch
-
-Focus the simulator window. Up/Down selects the previous/next item (wrapping
-at the ends), Enter opens it, Escape goes back, Home returns to the desktop.
-The selected border is white; other actionable borders are cyan. Touch selects
-and opens through the same action, after 120 ms of visual feedback.
+Validation:
+```sh
+g++ -std=c++17 tests/navigation.cpp -o /tmp/nabla-navigation-test
+/tmp/nabla-navigation-test
+```

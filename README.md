@@ -152,7 +152,7 @@ Start with a minimal desktop example before building the application library:
 - Keep desktop display/input configuration separate from reusable UI.
 - Document setup and a single command to build and run the example.
 
-Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. The splash transitions after two seconds to a 4 x 2 launcher. Each tile opens a placeholder page with a back button; application functionality remains planned.
+Implemented in simulator/hello-world.yaml. Compilation and graphical startup have been verified on Ubuntu 24.04 under WSLg. The splash transitions after two seconds to a 4 x 2 launcher. Applications share a focusable Home/breadcrumb/close toolbar. Settings and sensor folders demonstrate nested navigation; real application functionality remains planned.
 
 ### Success criterion
 
@@ -174,3 +174,10 @@ Documentation, code comments, identifiers, and development instructions use Engl
 - [ESPHome Modular LVGL Buttons](https://github.com/agillis/esphome-modular-lvgl-buttons)
 
 These projects serve as design references. Any reused code must preserve its applicable license and attribution.
+
+## Architecture, toolbar and languages
+
+See [architecture and extension philosophy](docs/ARCHITECTURE.md),
+[toolbar/navigation behavior](navigation/README.md) and
+[build-time English/Spanish localization](locales/README.md).
+The static C++ node catalog has not yet been replaced by declarative YAML.

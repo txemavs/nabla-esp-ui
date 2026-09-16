@@ -47,8 +47,8 @@ focusable route back. A physical Home button is optional.
 SDL Up/Down calls nav_move(-1/+1), Enter calls nav_activate, Escape calls
 nav_back, and Home calls nav_home. Touch uses nav_choose(index).
 Hardware encoder and joystick adapters are not implemented yet.
-Left/Right control-specific behavior, edit mode, focusable shared toolbar,
-and restoration of focus/scroll on return remain to be implemented.
+Left/Right control-specific behavior and edit mode remain pending.
+The toolbar is focusable and per-node focus/scroll restoration is implemented.
 
 ## Required device profiles
 
@@ -69,7 +69,7 @@ ESC closes the current view and restores the previous context.
 The triangle always goes directly to the desktop.
 The desktop has no view to close: ESC there is a no-op and the X is hidden.
 
-The shared toolbar, its focusable X, and physical adapters are requirements,
-not yet implemented. Current prototypes still use Inicio/Volver controls.
+The shared toolbar and focusable X are implemented in the landscape profile.
+Physical adapters remain pending.
 No view may require LEFT/RIGHT exclusively: rotary-only devices must have a
 sequentially reachable way to perform the equivalent operation.

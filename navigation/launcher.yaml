@@ -17,7 +17,7 @@ obj:
         vars:
           tile_id: menu_tile_0
           node: 1
-          title: "Ajustes"
+          title: "${tr_settings}"
           icon: "${icon_settings}"
           column: 0
           row: 0
@@ -26,7 +26,7 @@ obj:
         vars:
           tile_id: menu_tile_1
           node: 2
-          title: "Reloj"
+          title: "${tr_clock}"
           icon: "${icon_clock}"
           column: 1
           row: 0
@@ -35,7 +35,7 @@ obj:
         vars:
           tile_id: menu_tile_2
           node: 3
-          title: "Fotos"
+          title: "${tr_photos}"
           icon: "${icon_photos}"
           column: 2
           row: 0
@@ -44,7 +44,7 @@ obj:
         vars:
           tile_id: menu_tile_3
           node: 4
-          title: "Música"
+          title: "${tr_music}"
           icon: "${icon_music}"
           column: 3
           row: 0
@@ -53,7 +53,7 @@ obj:
         vars:
           tile_id: menu_tile_4
           node: 5
-          title: "Vídeo"
+          title: "${tr_video}"
           icon: "${icon_video}"
           column: 0
           row: 1
@@ -62,7 +62,7 @@ obj:
         vars:
           tile_id: menu_tile_5
           node: 6
-          title: "Tiempo"
+          title: "${tr_weather}"
           icon: "${icon_weather}"
           column: 1
           row: 1
@@ -71,7 +71,7 @@ obj:
         vars:
           tile_id: menu_tile_6
           node: 7
-          title: "Luces"
+          title: "${tr_lights}"
           icon: "${icon_lights}"
           column: 2
           row: 1
@@ -80,7 +80,7 @@ obj:
         vars:
           tile_id: menu_tile_7
           node: 8
-          title: "Sensores"
+          title: "${tr_sensors}"
           icon: "${icon_sensors}"
           column: 3
           row: 1

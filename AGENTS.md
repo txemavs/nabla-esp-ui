@@ -5,7 +5,7 @@ These instructions apply to the whole repository.
 ## Purpose and conventions
 - Read README.md and simulator/README.md before making changes.
 - Build reusable ESPHome + LVGL packages, not separate implementations per device.
-- Use English for documentation, identifiers, and code comments. UI currently uses Spanish.
+- Use English for documentation, identifiers, and code comments. UI supports build-time Spanish and English.
 - Brand: nabla.net ESP UI, black background, cyan accents, original triangle logo.
 - Use theme colors, nabla_font_* for text, and registered Font Awesome Free Solid icons.
 - Register extra glyphs in theme/fonts.yaml and icons in theme/icons.yaml.
@@ -59,3 +59,11 @@ These instructions apply to the whole repository.
 - The top-right X invokes ESC and must be reachable by sequential focus and ENTER.
 - Never require physical ESC or LEFT/RIGHT without an on-screen accessible equivalent.
 - Triangle means desktop; X/ESC means close current view. ESC at desktop is a no-op.
+
+## Toolbar and localization
+- Read docs/ARCHITECTURE.md and locales/README.md.
+- Use tr_* locale keys for new visible text; keep en/es keys identical.
+- Toolbar focus order follows content, Home, breadcrumbs, X.
+- Home opens desktop; X follows the parent tree. Do not claim general window history yet.
+- Compile both locales when changing localization or text-dependent layout.
+- Declarative navigation YAML is pending; do not describe the current static catalog as final.

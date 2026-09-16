@@ -8,6 +8,7 @@ esphome:
 
 packages:
   navigation: !include ../../navigation/logic.yaml
+  translations: !include ../../navigation/translations.yaml
 
 lvgl:
   buffer_size: 100%
@@ -33,46 +34,13 @@ lvgl:
       bg_color: ${nabla_background}
       text_color: ${nabla_text}
       widgets:
-        - button:
-            x: 8
-            y: 6
-            width: 90
-            height: 36
-            bg_color: 0x124456
-            widgets:
-              - label:
-                  text: "Inicio"
-                  align: CENTER
-                  text_font: nabla_font_16
-            on_click:
-              - script.execute: nav_home
-        - button:
-            x: 382
-            y: 6
-            width: 90
-            height: 36
-            bg_color: 0x124456
-            widgets:
-              - label:
-                  text: "Volver"
-                  align: CENTER
-                  text_font: nabla_font_16
-            on_click:
-              - script.execute: nav_back
-        - label:
-            id: nav_breadcrumb
-            x: 12
-            y: 50
-            width: 456
-            text_font: nabla_font_16
-            text_color: ${nabla_accent}
-            long_mode: SCROLL_CIRCULAR
-            text: ""
+        - !include ../../components/toolbar.yaml
         - obj:
+            id: navigation_content
             x: 8
-            y: 82
+            y: 56
             width: 464
-            height: 230
+            height: 256
             pad_all: 4
             bg_opa: TRANSP
             border_width: 0

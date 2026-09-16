@@ -2,7 +2,7 @@
 #include <string>
 namespace nabla {
 struct Node { const char *title; int parent; const char *detail; };
-static constexpr Node nodes[] = {
+static Node nodes[] = {
   {"Inicio", -1, ""},
   {"Ajustes", 0, ""}, {"Reloj", 0, "Aplicación pendiente"},
   {"Fotos", 0, "Aplicación pendiente"}, {"Música", 0, "Aplicación pendiente"},
@@ -20,6 +20,11 @@ inline bool valid(int n) { return n >= 0 && n < count; }
 inline int child(int parent, int index) {
   for (int n = 1; n < count; n++) if (nodes[n].parent == parent && index-- == 0) return n;
   return -1;
+}
+inline int children(int n) {
+  int total = 0;
+  while (child(n, total) >= 0) total++;
+  return total;
 }
 inline std::string path(int n) {
   if (!valid(n)) return "";

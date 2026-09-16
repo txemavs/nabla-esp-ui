@@ -35,7 +35,7 @@ The script activates the project environment, compiles, and launches the
 The centered nabla.net splash appears for two seconds, then opens a 4-column,
 2-row launcher: Ajustes, Reloj, Fotos, Música, Vídeo, Tiempo, Luces, Sensores.
 Ajustes opens Wi-Fi, Idioma and Acerca de. Sensores opens folders and sensor
-leaves. Breadcrumbs show the route; Volver returns to the parent and Inicio
+leaves. Breadcrumbs show the route; X returns to the parent and the triangle
 returns to the root. Other applications remain placeholders.
 These are navigation demonstrations, not implemented applications.
 The UI currently uses Spanish labels; source documentation remains English.
@@ -113,3 +113,6 @@ Focus the simulator window. Up/Down selects the previous/next item (wrapping
 at the ends), Enter opens it, Escape goes back, Home returns to the desktop.
 The selected border is white; other actionable borders are cyan. Touch selects
 and opens through the same action, after 120 ms of visual feedback.
+
+The shared toolbar and focus behavior are described in navigation/README.md.
+Set ui_language to es or en; see locales/README.md for CLI overrides.
