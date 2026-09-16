@@ -13,3 +13,22 @@ compete with text. Logs need one bounded message at a time, not the desktop
 paragraph. The existing compact menu/forms implement these primitives, but
 this new light editor is still regular-only; the compact light adapter and
 its state/command mapping have not yet been implemented or hardware-tested.
+
+## Optional grid integration
+
+panel.yaml reuses the eight navigation rows as a 4x2 or 2x4 light grid.
+Import it after the regular shell. Configure nabla_light_slot_base to return the
+first state slot for the current route, or -1 for a normal page.
+nabla_light_state is a State expression with base and slot in scope;
+nabla_light_pending returns whether that slot has an outstanding command.
+nabla_light_footer supplies the status text. The package never creates fake
+device state or connects to a broker; those belong to the private adapter.
+
+The package delegates U/D/ENTER and Back to the brightness editor while open.
+When composing with another view, explicitly combine nabla_view_refresh and
+nabla_back_intercept in the root YAML; do not let package order silently replace
+another application's hook. For example, call light_panel_render followed by
+camera_render, and test editor.active() before camera_fullscreen in Back.
+
+The recovered private Control composition still uses simulated acknowledgements
+and displays DEMO | MQTT simulado. Real MQTT binding is a separate integration.

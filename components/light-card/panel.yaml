@@ -1,0 +1,56 @@
+# Optional light grid renderer. Bindings and routes belong to the consumer.
+substitutions:
+  nabla_light_slot_base: "-1"
+  nabla_light_state: "nabla_light::State{false,0,false,false}"
+  nabla_light_pending: "false"
+  nabla_light_footer: "Lights"
+  nabla_view_refresh: "id(light_panel_render).execute();"
+  nabla_input_captured: "nabla_light::editor.active()"
+  nabla_move_handler: "nabla_light::editor.move(delta);"
+  nabla_activate_handler: "nabla_light::editor.activate();"
+  nabla_back_intercept: "if(nabla_light::editor.active()) {nabla_light::editor.close();return true;}"
+packages:
+  light_widget: !include widget.yaml
+script:
+  - id: light_panel_render
+    then:
+      - lambda: |-
+          const int base=${nabla_light_slot_base};
+          const bool panel=base>=0;
+          const int w=lv_display_get_horizontal_resolution(lv_display_get_default());
+          const int h=lv_display_get_vertical_resolution(lv_display_get_default());
+          lv_obj_set_flex_flow(id(navigation_content),panel?LV_FLEX_FLOW_ROW_WRAP:LV_FLEX_FLOW_COLUMN);
+          const int gap=id(nav_borders)?10:4;
+          lv_obj_set_pos(id(navigation_content),panel?0:4,panel?36:38);
+          lv_obj_set_width(id(navigation_content),panel?w:w-4);
+          lv_obj_set_style_pad_left(id(navigation_content),panel?5:2,0);
+          lv_obj_set_style_pad_right(id(navigation_content),panel?5:6,0);
+          lv_obj_set_style_pad_top(id(navigation_content),panel?6:2,0);
+          lv_obj_set_style_pad_bottom(id(navigation_content),panel?6:2,0);
+          lv_obj_set_style_pad_column(id(navigation_content),panel?gap:6,0);
+          if(panel)lv_obj_set_style_pad_row(id(navigation_content),gap,0);
+          lv_obj_t *rows[]={id(nav_row_0),id(nav_row_1),id(nav_row_2),id(nav_row_3),id(nav_row_4),id(nav_row_5),id(nav_row_6),id(nav_row_7)};
+          lv_obj_t *labels[]={id(nav_row_label_0),id(nav_row_label_1),id(nav_row_label_2),id(nav_row_label_3),id(nav_row_label_4),id(nav_row_label_5),id(nav_row_label_6),id(nav_row_label_7)};
+          lv_label_set_text(id(footer_brand),panel?"${nabla_light_footer}":"Soluciones lógicas NABLA");
+          for(int i=0;i<8;i++) {
+            if(!panel) {
+              for(uint32_t j=2;j<lv_obj_get_child_count(rows[i]);j++)
+                lv_obj_add_flag(lv_obj_get_child(rows[i],j),LV_OBJ_FLAG_HIDDEN);
+            }
+          }
+          if(panel) {
+            lv_obj_add_flag(id(nav_detail),LV_OBJ_FLAG_HIDDEN);
+            lv_obj_remove_flag(id(progress_footer),LV_OBJ_FLAG_HIDDEN);
+            lv_obj_set_height(id(navigation_content),h-72);
+            int columns=w>h?4:2;
+            for(int i=0;i<nabla::children(id(nav_current));i++) {
+              int slot=base+i;
+              int node=nabla::child(id(nav_current),i);
+              nabla_light::card(rows[i],labels[i],nabla::nodes[node].title,
+                ${nabla_light_state},
+                {"On","Off","Sin red","Brillo","Aplicar","Cancelar"},
+                id(nav_dark),id(nav_selection)==i,(w-10-gap*(columns-1))/columns,(h-84-gap*(8/columns-1))/(8/columns),id(nabla_icons_32)->get_lv_font());
+              lv_obj_set_style_text_font(labels[i],id(nabla_ubuntu_16)->get_lv_font(),0);
+              if(${nabla_light_pending})lv_label_set_text_fmt(labels[i],"%s\n...",nabla::nodes[node].title);
+            }
+          }

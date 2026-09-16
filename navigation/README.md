@@ -129,4 +129,9 @@ Physical e-paper rendering/refresh remains unverified; this is a host UI preview
 
 ## Optional view integration
 
-Generated nabla::routes::node_KEY constants refer to declared routes without numeric indices or translated titles. Regular shell hooks nabla_view_refresh (statement) and nabla_back_intercept (optional early-return statement) default to no-ops. Import optional views after the shell; one hook owner is supported currently.
+Generated nabla::routes::node_KEY constants refer to declared routes without numeric indices or translated titles. Regular shell hooks nabla_view_refresh (statement) and nabla_back_intercept (optional early-return statement) default to no-ops. Import optional views after the shell; combine hooks explicitly when composing multiple views.
+
+Optional editors can capture U/D/ENTER through nabla_input_captured,
+nabla_move_handler and nabla_activate_handler; defaults preserve shell behavior.
+When multiple views are imported, the root composition must explicitly chain
+their refresh/Back hooks. A package import alone must not silently remove a view.

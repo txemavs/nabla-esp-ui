@@ -24,7 +24,7 @@ Hosts need a CA certificate path and JPEGDEC's Linux build flag.
 
 Loading, waiting, error and stale states use the normal footer.
 The module owns the nabla_view_refresh and nabla_back_intercept shell hooks.
-Only one optional view hook owner is supported currently. The viewer contains
+Multiple views require an explicit root-level refresh and Back hook composition; see the light-card panel integration. The viewer contains
 no installation address or entity; homeassistant.yaml is an optional adapter.
 
 Actual images from three sources and fullscreen touch passed in SDL. The previous
