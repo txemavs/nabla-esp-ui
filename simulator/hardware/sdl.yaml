@@ -33,7 +33,7 @@ binary_sensor:
   - platform: sdl
     id: key_previous
     sdl_id: simulator_display
-    key: SDLK_LEFT
+    key: SDLK_UP
     on_press:
       - script.execute:
           id: nav_move
@@ -41,7 +41,7 @@ binary_sensor:
   - platform: sdl
     id: key_next
     sdl_id: simulator_display
-    key: SDLK_RIGHT
+    key: SDLK_DOWN
     on_press:
       - script.execute:
           id: nav_move

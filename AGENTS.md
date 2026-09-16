@@ -46,5 +46,10 @@ These instructions apply to the whole repository.
 ## Input contract
 - Normal actionable borders are cyan; selected and pressed borders are white.
 - Touch and encoder confirmation share nav_choose with 120 ms feedback.
-- SDL Left/Right moves sequential focus, Enter confirms, Escape goes back, Home opens desktop.
+- SDL Up/Down moves sequential focus, Enter confirms, Escape goes back, Home opens desktop.
 - Test mixed mouse/keyboard navigation; keep input bindings outside shared UI.
+
+- Treat navigation/INPUT.md as the input contract for all devices.
+- Sequential movement is Up/Down, not Left/Right. Encoder rotation maps to it.
+- Five-way joystick center means Confirm; optional Escape means Back.
+- Keep implemented behavior and planned adapters clearly distinguished.

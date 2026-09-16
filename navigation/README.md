@@ -24,7 +24,7 @@ connected entity and must not pretend to show real readings.
 
 ## Keyboard and touch
 
-Focus the simulator window. Left/Right selects the previous/next item (wrapping
+Focus the simulator window. Up/Down selects the previous/next item (wrapping
 at the ends), Enter opens it, Escape goes back, Home returns to the desktop.
 The selected border is white; other actionable borders are cyan. Touch selects
 and opens through the same action, after 120 ms of visual feedback.
