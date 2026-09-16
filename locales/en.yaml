@@ -1,10 +1,10 @@
 substitutions:
   tr_home: "Home"
   tr_settings: "Settings"
-  tr_clock: "Clock"
+  tr_communications: "Communications"
   tr_photos: "Photos"
   tr_music: "Music"
-  tr_video: "Video"
+  tr_cameras: "Cameras"
   tr_weather: "Weather"
   tr_lights: "Lights"
   tr_sensors: "Sensors"

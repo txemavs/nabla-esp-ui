@@ -13,7 +13,7 @@ obj:
         align: LEFT_MID
         x: 6
         width: ${(screen_width | int) - 96}
-        text: "Soluciones Lógicas Nabla"
+        text: "Soluciones lógicas NABLA"
         text_font: nabla_font_16
         text_color: 0xFFFFFF
         long_mode: DOT

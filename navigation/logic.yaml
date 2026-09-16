@@ -131,6 +131,13 @@ script:
               lv_obj_remove_flag(tiles[i], LV_OBJ_FLAG_HIDDEN);
               lv_label_set_text(tile_icons[i], nabla::nodes[root_child].icon);
               lv_label_set_text(tile_titles[i], nabla::nodes[root_child].title);
+              lv_obj_update_layout(tiles[i]);
+              lv_point_t title_size;
+              lv_text_get_size(&title_size, nabla::nodes[root_child].title,
+                              id(nabla_font_16)->get_lv_font(), 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
+              lv_obj_set_style_text_font(tile_titles[i],
+                title_size.x > lv_obj_get_width(tiles[i]) - 8
+                  ? id(nabla_font_12)->get_lv_font() : id(nabla_font_16)->get_lv_font(), 0);
             }
             border(tiles[i], id(nav_selection) == i);
             if (root_child >= 0) {
@@ -164,7 +171,7 @@ script:
           lv_obj_set_style_bg_color(id(navigation_toolbar), toolbar_bg, 0);
           const bool footer_visible = loading || current == 0;
           lv_obj_set_style_bg_color(id(progress_footer), loading ? lv_color_hex(0x404040) : toolbar_bg, 0);
-          lv_obj_set_style_text_color(id(footer_brand), toolbar_fg, 0);
+          lv_obj_set_style_text_color(id(footer_brand), lv_color_hex(${nabla_secondary}), 0);
           lv_obj_set_style_text_color(id(footer_clock), toolbar_fg, 0);
           lv_obj_t *idle_widgets[] = {id(footer_brand), id(footer_clock)};
           for (auto *widget : idle_widgets) {

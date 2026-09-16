@@ -33,9 +33,9 @@ nabla_navigation:
               - key: light
                 title: ${tr_light}
                 action: light
-      - key: clock
-        title: ${tr_clock}
-        icon: ${icon_clock}
+      - key: communications
+        title: ${tr_communications}
+        icon: ${icon_communications}
         detail: ${tr_pending}
       - key: photos
         title: ${tr_photos}
@@ -45,8 +45,8 @@ nabla_navigation:
         title: ${tr_music}
         icon: ${icon_music}
         detail: ${tr_pending}
-      - key: video
-        title: ${tr_video}
+      - key: cameras
+        title: ${tr_cameras}
         icon: ${icon_video}
         detail: ${tr_pending}
       - key: weather

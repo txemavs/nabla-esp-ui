@@ -25,7 +25,7 @@ font:
     glyphsets: []
     glyphs:
       - "\uf013"
-      - "\uf017"
+      - "\uf086"
       - "\uf03e"
       - "\uf001"
       - "\uf03d"
@@ -51,3 +51,9 @@ font:
     bpp: 4
     glyphsets: []
     glyphs: ["\uf293"]
+  - file: ../assets/fonts/DejaVuSans.ttf
+    id: nabla_font_12
+    size: 12
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€"
