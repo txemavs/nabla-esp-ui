@@ -21,6 +21,10 @@ Motion has two distinct forms:
 - Toolbar: a 180 ms in-plane 180-degree rotation around the triangle centroid.
   It turns in the same direction to point upward toward the parent.
   The SVG centroid and rotation pivot both lie at the canvas center.
+  A per-frame translation holds the visible outer bounding-box center at the
+  down-facing baseline. At 36 px, the upward pose settles about 8 px lower;
+  the sideways pose is compensated on both axes. Returning removes the offset.
+  The toolbar layout and hit target remain fixed; offsets never accumulate.
 The historical GIF may guide a later, more faithful depth animation.
 Avoid perpetual motion; preserve the one-second intro duration.
 
