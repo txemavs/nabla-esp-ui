@@ -41,10 +41,7 @@ Develop reusable behavior in this repository and validate it before advancing th
 private installation's pin. Updating a public module must not publish the private
 configuration or update unrelated devices.
 
-Camera rendering and live entity bindings remain planned. A generic camera widget
-will accept a binding through its documented adapter contract; it must not embed a
-specific installation's URL or entity. Do not introduce unimplemented YAML keys
-to imply that this binding contract is already available.
+The experimental [camera viewer](../components/camera-viewer/README.md) accepts private HA camera bindings. RTSP decoding and compact camera rendering remain unimplemented.
 
 ## Device Builder with a GitHub library
 

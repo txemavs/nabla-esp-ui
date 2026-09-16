@@ -1,4 +1,6 @@
 substitutions:
+  nabla_view_refresh: ";"
+  nabla_back_intercept: ""
   nabla_resource_root: ".."
   nabla_initial_rotation: "0"
   nabla_initial_dark: "true"
@@ -130,7 +132,7 @@ script:
       - script.stop: nav_choose
       - if:
           condition:
-            lambda: return nabla::nodes[id(nav_current)].action==4 && !nabla_forms::regular_form.back();
+            lambda: ${nabla_back_intercept} return nabla::nodes[id(nav_current)].action==4 && !nabla_forms::regular_form.back();
           then:
             - lambda: return;
           else:
@@ -237,6 +239,13 @@ script:
           for (int i = 0; i < 8; i++) {
             lv_obj_set_width(rows[i], screen_w - 16);
             lv_obj_set_height(rows[i], base_geometry.row_height);
+            // Reset card geometry before reusing a slot as a normal list row.
+            lv_obj_set_style_pad_left(rows[i],10,0);
+            lv_obj_set_style_pad_right(rows[i],10,0);
+            lv_obj_set_width(labels[i],screen_w-40);
+            lv_obj_set_style_text_align(labels[i],LV_TEXT_ALIGN_LEFT,0);
+            lv_obj_align(labels[i],LV_ALIGN_LEFT_MID,0,0);
+            lv_label_set_long_mode(labels[i],LV_LABEL_LONG_DOT);
             lv_obj_set_style_pad_top(rows[i],id(nav_borders)?8:4,0);
             lv_obj_set_style_pad_bottom(rows[i],id(nav_borders)?8:4,0);
             int root_child = nabla::child(0, i);
@@ -281,6 +290,18 @@ script:
               lv_obj_remove_flag(rows[i], LV_OBJ_FLAG_HIDDEN);
               lv_label_set_text(labels[i], nabla::row_title(n, id(nav_dark), id(nav_font_choice), id(nav_borders)).c_str());
               border(rows[i], id(nav_selection) == i);
+              const bool show_icon=screen_w>=240 && nabla::nodes[n].icon[0];
+              lv_obj_t *icon=lv_obj_get_child_count(rows[i])>1?lv_obj_get_child(rows[i],1):nullptr;
+              if(show_icon) {
+                if(!icon)icon=lv_label_create(rows[i]);
+                lv_obj_remove_flag(icon,LV_OBJ_FLAG_HIDDEN);
+                lv_label_set_text(icon,nabla::nodes[n].icon);
+                lv_obj_set_style_text_font(icon,id(nabla_icons_32)->get_lv_font(),0);
+                lv_obj_set_style_text_color(icon,foreground,0);
+                lv_obj_align(icon,LV_ALIGN_LEFT_MID,0,0);
+                lv_obj_align(labels[i],LV_ALIGN_LEFT_MID,42,0);
+                lv_obj_set_width(labels[i],screen_w-82);
+              } else if(icon)lv_obj_add_flag(icon,LV_OBJ_FLAG_HIDDEN);
             }
           }
           if (current) {
@@ -351,7 +372,7 @@ script:
           lv_obj_set_style_image_recolor(id(toolbar_logo_image), foreground, 0);
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, 0);
           lv_obj_set_style_image_recolor(id(toolbar_logo_image), foreground, LV_STATE_FOCUSED);
-          lv_obj_set_style_text_color(id(toolbar_close_label), ${nabla_monochrome} ? foreground : lv_color_hex(${nabla_error}), 0);
+          lv_obj_set_style_text_color(id(toolbar_close_label), id(nav_selection) == total + (int) id(nav_crumbs).size() ? foreground : nabla_style::idle(id(nav_dark)), 0);
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, LV_STATE_FOCUSED);
           if (id(nav_selection) == total) lv_obj_add_state(id(toolbar_logo_image), LV_STATE_FOCUSED);
           else lv_obj_remove_state(id(toolbar_logo_image), LV_STATE_FOCUSED);
@@ -448,6 +469,8 @@ script:
           for (auto *page : {id(home_page)->obj, id(navigation_page)->obj,
                              id(wifi_form_page)->obj, id(form_gallery_page)->obj})
             nabla_appearance::apply(page,pairs,5,id(nav_font_choice));
+
+      - lambda: ${nabla_view_refresh}
 
 # Export helpers from the same checkout as the external component.
 nabla_runtime:

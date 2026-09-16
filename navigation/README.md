@@ -126,3 +126,7 @@ LVGL menus, toolbar controls, forms, Wi-Fi fields and keyboard use the shared
 control_style.h helper. Compact profiles use binary fill inversion.
 The setting changes decoration, not the display color capability or font.
 Physical e-paper rendering/refresh remains unverified; this is a host UI preview.
+
+## Optional view integration
+
+Generated nabla::routes::node_KEY constants refer to declared routes without numeric indices or translated titles. Regular shell hooks nabla_view_refresh (statement) and nabla_back_intercept (optional early-return statement) default to no-ops. Import optional views after the shell; one hook owner is supported currently.

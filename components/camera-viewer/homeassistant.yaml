@@ -1,0 +1,20 @@
+text_sensor:
+  - platform: homeassistant
+    id: ${binding_id}
+    entity_id: ${entity}
+    attribute: entity_picture
+    internal: true
+    on_value:
+      - lambda: |-
+          static_assert(${index} >= 0 && ${index} < ${nabla_camera_count}, "Camera index outside configured slots");
+          const std::string prefix="/api/camera_proxy/${entity}?";
+          bool valid=x.compare(0,prefix.size(),prefix)==0;
+          id(camera_urls)[${index}]=valid ? "${origin}"+x : "";
+          if(id(camera_opened) && id(camera_selected)==${index}) {
+            id(camera_ready)=valid;
+            if(valid)id(camera_image).set_url(id(camera_urls)[${index}]);
+            else {
+              lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(footer_brand),"${tr_camera_unavailable}");
+            }
+          }

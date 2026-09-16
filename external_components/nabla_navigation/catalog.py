@@ -70,4 +70,6 @@ def emit(tree):
         rows.append("{" + ", ".join(values) + "}")
     return ("namespace nabla { const Node nodes[] = {"
             + ", ".join(rows) + "}; const int count = "
-            + str(len(nodes)) + "; }")
+            + str(len(nodes)) + "; namespace routes { "
+            + " ".join("constexpr int node_" + n["key"] + " = " + str(i) + ";" for i, n in enumerate(nodes))
+            + " } }")

@@ -1,0 +1,3 @@
+nabla_runtime:
+  - headers:
+      - components/light-card/light_card.h

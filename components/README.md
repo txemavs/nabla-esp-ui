@@ -88,3 +88,7 @@ shell, Wi-Fi and native API; credentials stay in the consumer configuration.
 [Device-owned commands](../navigation/COMMANDS.md) bind a menu leaf to native
 ESPHome actions with live state and availability. No installation entities are
 part of the library. Supports shared touch/keyboard/compact activation.
+
+- light-card/widget.yaml: experimental light state card and transactional brightness editor; see light-card/README.md for input and limitations.
+
+- [Camera viewer](camera-viewer/README.md): experimental regular-profile JPEG snapshots, shared footer and fullscreen touch; private bindings required.

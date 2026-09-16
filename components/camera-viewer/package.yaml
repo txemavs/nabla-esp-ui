@@ -1,0 +1,223 @@
+substitutions:
+  nabla_camera_count: "3"
+  nabla_camera_route: "-1"
+  nabla_view_refresh: "id(camera_render).execute();"
+  nabla_back_intercept: "if(id(camera_fullscreen)) {id(camera_toggle_fullscreen).execute(); return true;}"
+# Experimental JPEG snapshot viewer; installation bindings are supplied separately.
+http_request:
+  verify_ssl: true
+  timeout: 5s
+logger:
+  logs:
+    text_sensor: NONE
+    homeassistant.text_sensor: NONE
+    http_request.idf: NONE
+    http_request.host: NONE
+    online_image: NONE
+    http_request: NONE
+globals:
+  - id: camera_urls
+    type: std::vector<std::string>
+    initial_value: 'std::vector<std::string>(${nabla_camera_count})'
+  - id: camera_fullscreen
+    type: bool
+    initial_value: 'false'
+  - id: camera_selected
+    type: int
+    initial_value: '-1'
+  - id: camera_ready
+    type: bool
+    initial_value: 'false'
+  - id: camera_opened
+    type: bool
+    initial_value: 'false'
+  - id: camera_received
+    type: uint32_t
+    initial_value: '0'
+image:
+  - platform: online_image
+    id: camera_image
+    url: https://example.invalid/camera.jpg
+    format: JPEG
+    type: RGB565
+    resize: 416x234
+    buffer_size: 32768
+    update_interval: never
+    on_download_finished:
+      - lambda: |-
+          id(camera_received)=millis();
+          if(id(camera_opened)) {
+            lv_image_set_src(id(camera_picture),id(camera_image)->get_lv_image_dsc());
+            lv_obj_remove_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+            id(camera_layout).execute();
+            lv_label_set_text_fmt(id(footer_brand),"${tr_camera_updated} - %lus",millis()/1000);
+          }
+    on_error:
+      - lambda: |-
+          if(id(camera_opened)) {
+            lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+            lv_label_set_text(id(footer_brand),"${tr_camera_error}");
+          }
+lvgl:
+  top_layer:
+    widgets:
+      - obj:
+          id: camera_overlay
+          width: 100%
+          height: 248
+          y: 36
+          hidden: true
+          bg_color: 0x000000
+          border_width: 0
+          pad_all: 0
+          scrollbar_mode: "OFF"
+          widgets:
+            - image:
+                id: camera_picture
+                src: camera_image
+                align: CENTER
+                hidden: true
+                clickable: true
+                on_click:
+                  - script.execute: camera_toggle_fullscreen
+      - obj:
+          id: camera_footer_icons
+          width: 84
+          height: 36
+          align: BOTTOM_RIGHT
+          hidden: true
+          bg_opa: TRANSP
+          border_width: 0
+          pad_all: 0
+          scrollbar_mode: "OFF"
+          widgets:
+            - button:
+                id: camera_retry_button
+                x: 0
+                width: 36
+                height: 36
+                pad_all: 0
+                bg_opa: TRANSP
+                border_width: 0
+                shadow_width: 0
+                radius: 0
+                widgets:
+                  - label:
+                      text: "\uf1eb"
+                      text_font: camera_icons
+                      text_color: 0x808080
+                      align: CENTER
+                on_click:
+                  - lambda: |-
+                      if(id(camera_ready)) {
+                        lv_label_set_text(id(footer_brand),"${tr_camera_refresh}");
+                        id(camera_image).update();
+                      }
+            - button:
+                x: 42
+                width: 36
+                height: 36
+                pad_all: 0
+                bg_opa: TRANSP
+                border_width: 0
+                shadow_width: 0
+                radius: 0
+                widgets:
+                  - label:
+                      text: "\uf03d"
+                      text_font: camera_icons
+                      text_color: 0x808080
+                      align: CENTER
+                on_click:
+                  - script.execute: camera_toggle_fullscreen
+script:
+  - id: camera_render
+    then:
+      - lambda: |-
+          int selected=${nabla_camera_route};
+          if(selected<0 || selected>=int(id(camera_urls).size())) {
+            if(id(camera_opened))id(camera_close).execute();
+          } else {
+            if(selected!=id(camera_selected)) {
+              id(camera_selected)=selected;
+              id(camera_open).execute();
+            }
+            int w=lv_display_get_horizontal_resolution(lv_display_get_default());
+            int h=lv_display_get_vertical_resolution(lv_display_get_default());
+            lv_obj_set_size(id(camera_overlay),w,h-72);
+            lv_obj_set_style_bg_color(id(camera_overlay),lv_color_hex(id(nav_dark)?0:0xFFFFFF),0);
+            lv_obj_remove_flag(id(progress_footer),LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(footer_clock),LV_OBJ_FLAG_HIDDEN);
+            lv_obj_remove_flag(id(camera_footer_icons),LV_OBJ_FLAG_HIDDEN);
+            lv_obj_move_foreground(id(camera_footer_icons));
+            id(camera_layout).execute();
+          }
+  - id: camera_toggle_fullscreen
+    then:
+      - lambda: id(camera_fullscreen)=!id(camera_fullscreen);
+      - script.execute: camera_layout
+  - id: camera_layout
+    then:
+      - lambda: |-
+          if(!id(camera_opened))return;
+          int w=lv_display_get_horizontal_resolution(lv_display_get_default());
+          int h=lv_display_get_vertical_resolution(lv_display_get_default());
+          int bar=id(camera_fullscreen)?0:36;
+          lv_obj_set_pos(id(camera_overlay),0,bar);
+          lv_obj_set_size(id(camera_overlay),w,h-2*bar);
+          for(auto *obj : {id(navigation_toolbar),id(progress_footer),id(camera_footer_icons)}) {
+            if(id(camera_fullscreen))lv_obj_add_flag(obj,LV_OBJ_FLAG_HIDDEN);
+            else {lv_obj_remove_flag(obj,LV_OBJ_FLAG_HIDDEN);lv_obj_move_foreground(obj);}
+          }
+          auto *img=id(camera_image)->get_lv_image_dsc();
+          if(img && img->header.w && img->header.h) {
+            int scale=std::min(w*256/int(img->header.w),(h-2*bar)*256/int(img->header.h));
+            lv_image_set_scale(id(camera_picture),scale);
+            lv_obj_center(id(camera_picture));
+          }
+  - id: camera_open
+    then:
+      - lambda: |-
+          id(camera_fullscreen)=false;
+          id(camera_ready)=false;
+          if(id(camera_selected)>=0 && id(camera_selected)<int(id(camera_urls).size()) && !id(camera_urls)[id(camera_selected)].empty()) {
+            id(camera_image).set_url(id(camera_urls)[id(camera_selected)]);
+            id(camera_ready)=true;
+          }
+          id(camera_received)=0;
+          lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+          id(camera_opened)=true;
+          lv_obj_remove_flag(id(camera_overlay),LV_OBJ_FLAG_HIDDEN);
+          lv_obj_move_foreground(id(camera_overlay));
+          lv_obj_remove_flag(id(progress_footer),LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(footer_clock),LV_OBJ_FLAG_HIDDEN);
+          lv_obj_remove_flag(id(camera_footer_icons),LV_OBJ_FLAG_HIDDEN);
+          lv_label_set_text(id(footer_brand),id(camera_ready)?"${tr_camera_loading}":"${tr_camera_waiting}");
+          if(id(camera_ready)) id(camera_image).update();
+  - id: camera_close
+    then:
+      - lambda: |-
+          id(camera_fullscreen)=false;
+          id(camera_opened)=false;
+          id(camera_selected)=-1;
+          lv_obj_add_flag(id(camera_footer_icons),LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(camera_overlay),LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+interval:
+  - interval: 2s
+    then:
+      - lambda: |-
+          if(id(camera_opened) && id(camera_ready)) {
+            if(id(camera_received) && millis()-id(camera_received)>8000) {
+              lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(id(footer_brand),"${tr_camera_stale}");
+            }
+            id(camera_image).update();
+          }
+
+font:
+  - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
+    id: camera_icons
+    size: 22
+    glyphsets: []
+    glyphs: ["\uf1eb", "\uf03d"]
