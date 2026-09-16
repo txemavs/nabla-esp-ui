@@ -331,12 +331,22 @@ script:
             if (!id(nav_borders)) nabla_style::control(button,selected,id(nav_dark));
 
           };
-          toolbar_style(id(toolbar_home), nullptr, !id(nav_borders) && id(nav_selection)==total);
+          // Logo focus fills the mark itself, never its rectangular hit area.
+          for (int state : {int(LV_STATE_DEFAULT), int(LV_STATE_FOCUSED), int(LV_STATE_PRESSED),
+                             int(LV_STATE_FOCUSED | LV_STATE_PRESSED)}) {
+            lv_obj_set_style_bg_opa(id(toolbar_home), LV_OPA_TRANSP, state);
+            lv_obj_set_style_border_width(id(toolbar_home), 0, state);
+            lv_obj_set_style_outline_width(id(toolbar_home), 0, state);
+            lv_obj_set_style_shadow_width(id(toolbar_home), 0, state);
+          }
+          lv_image_set_src(id(toolbar_logo_image), id(nav_selection) == total
+            ? id(nabla_logo_filled_small)->get_lv_image_dsc()
+            : id(nabla_logo_small)->get_lv_image_dsc());
           toolbar_style(id(toolbar_rotate), id(toolbar_rotate_label), !current && id(nav_selection) == total + 1);
           // Focus recolors only the mark; preserve the configured base/status color.
-          lv_obj_set_style_image_recolor(id(toolbar_logo_image), !id(nav_borders) && id(nav_selection)==total ? background : foreground, 0);
+          lv_obj_set_style_image_recolor(id(toolbar_logo_image), foreground, 0);
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, 0);
-          lv_obj_set_style_image_recolor(id(toolbar_logo_image), !id(nav_borders) && id(nav_selection)==total ? background : foreground, LV_STATE_FOCUSED);
+          lv_obj_set_style_image_recolor(id(toolbar_logo_image), foreground, LV_STATE_FOCUSED);
           lv_obj_set_style_text_color(id(toolbar_close_label), ${nabla_monochrome} ? foreground : lv_color_hex(${nabla_error}), 0);
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, LV_STATE_FOCUSED);
           if (id(nav_selection) == total) lv_obj_add_state(id(toolbar_logo_image), LV_STATE_FOCUSED);

@@ -45,3 +45,10 @@ The single underline starts just after the logo's lower tip. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a
 presentation option, not validation of physical OLED hardware.
+
+## Focus fill
+
+The toolbar swaps to filled.svg while selected. It shares the outline canvas,
+centroid and outer vertices, so the fill rotates with the mark in every screen
+orientation. Focus never paints the rectangular hit area, including borderless
+mode. Foreground follows the theme: white in dark mode, black in light mode.

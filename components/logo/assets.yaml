@@ -16,6 +16,13 @@ image:
     transparency: alpha_channel
     resize: 36x36
 
+  - platform: file
+    file: ${nabla_resource_root}/components/logo/filled.svg
+    id: nabla_logo_filled_small
+    type: RGB565
+    transparency: alpha_channel
+    resize: 36x36
+
 
 script:
   - id: nabla_logo_set_color

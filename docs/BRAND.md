@@ -29,6 +29,8 @@ animation logic reusable. Support reduced/disabled motion as a future option.
 
 UI palette: the navigation triangle uses the high-contrast theme foreground.
 Its normal and focused states use white on black and black on white.
+Logo focus fills the triangular interior, with no rectangular border or background.
+The filled source shares the outline canvas and pivot, including during rotation.
 Ordinary control focus changes borders. App cards may have their own colors.
 The header has no divider. Shared header/footer follow dark/light mode; idle
 brand text is gray, while the startup progress footer is gray/cyan.
