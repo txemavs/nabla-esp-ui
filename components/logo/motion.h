@@ -7,7 +7,7 @@ inline void planar_frame(void *object, int32_t angle) {
 }
 inline void turn(lv_obj_t *image, bool up) {
   if (!image) return;
-  const int target = up ? 1800 : 0;
+  const int target = up ? 600 : 0;
   // Do not restart a running transition on unrelated UI refreshes.
   lv_anim_t *running = lv_anim_get(image, planar_frame);
   if (running && running->end_value == target) return;

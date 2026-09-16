@@ -92,7 +92,7 @@ not credential persistence or live network configuration.
 
 Toolbar breadcrumbs use compact measured labels separated by non-focusable gray
 chevrons. The current title stays bold; collapsed ancestors retain a parent link.
-The focused parent triangle rotates 180 degrees from down to up.
+The focused parent triangle rotates 60 degrees so the next vertex points up.
 
 - Entering a child menu focuses its first content option and starts at the top.
   Returning may restore a content selection, but never a saved toolbar control

@@ -18,7 +18,7 @@ Motion has two distinct forms:
 - Intro: a 1000 ms spindle-like depth-turn approximation. Horizontal
   foreshortening changes; vertical coordinates and bottom tip remain
   fixed. This is not a full perspective 3D mesh.
-- Toolbar: a 180 ms in-plane 180-degree rotation around the triangle centroid.
+- Toolbar: a 180 ms in-plane 60-degree rotation around the triangle centroid.
   It turns in the same direction to point upward toward the parent.
   The SVG centroid and rotation pivot both lie at the canvas center.
 The historical GIF may guide a later, more faithful depth animation.
