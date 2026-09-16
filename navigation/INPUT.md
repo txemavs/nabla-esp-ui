@@ -49,3 +49,27 @@ nav_back, and Home calls nav_home. Touch uses nav_choose(index).
 Hardware encoder and joystick adapters are not implemented yet.
 Left/Right control-specific behavior, edit mode, focusable shared toolbar,
 and restoration of focus/scroll on return remain to be implemented.
+
+## Required device profiles
+
+The canonical action vocabulary is UP, DOWN, LEFT, RIGHT, ENTER, ESC.
+Home is a separate UI destination (the triangle), not a required physical key.
+
+- Touch: on-screen controls provide U/D/L/R/E-equivalent operations;
+  an on-screen ESC is always available in an application.
+- Rotary encoder: rotation provides UP/DOWN and press provides ENTER.
+  The top-right X must be reachable in the sequential focus order and ENTER
+  on it invokes ESC.
+- Rotary encoder + ESC: the same controls plus a physical ESC button.
+- Five-way joystick: UP/DOWN/LEFT/RIGHT and center press as ENTER.
+  Without a separate physical ESC, use the focusable on-screen X.
+- Keyboard: arrow keys, Enter and Escape map to the six canonical actions.
+
+ESC closes the current view and restores the previous context.
+The triangle always goes directly to the desktop.
+The desktop has no view to close: ESC there is a no-op and the X is hidden.
+
+The shared toolbar, its focusable X, and physical adapters are requirements,
+not yet implemented. Current prototypes still use Inicio/Volver controls.
+No view may require LEFT/RIGHT exclusively: rotary-only devices must have a
+sequentially reachable way to perform the equivalent operation.

@@ -53,3 +53,9 @@ These instructions apply to the whole repository.
 - Sequential movement is Up/Down, not Left/Right. Encoder rotation maps to it.
 - Five-way joystick center means Confirm; optional Escape means Back.
 - Keep implemented behavior and planned adapters clearly distinguished.
+
+- Canonical input actions: UP DOWN LEFT RIGHT ENTER ESC.
+- Support touch, rotary U/D/ENTER, rotary+physical ESC, five-way joystick, keyboard.
+- The top-right X invokes ESC and must be reachable by sequential focus and ENTER.
+- Never require physical ESC or LEFT/RIGHT without an on-screen accessible equivalent.
+- Triangle means desktop; X/ESC means close current view. ESC at desktop is a no-op.
