@@ -1,14 +1,107 @@
 #pragma once
 #include "lvgl.h"
+#include "wifi_flow.h"
 #include <cstring>
 namespace nabla_wifi_form {
 // Bounded, local editor state. Credentials live only in the textarea.
 struct Editor {
   lv_obj_t *page{}, *ssid{}, *password{}, *keyboard{}, *status{}, *apply{}, *cancel{};
+  lv_obj_t *scan{}, *open_box{}, *scan_panel{}, *scan_title{};
+  lv_obj_t *scan_rows[5]{};
+  const char *const *words{};
+  nabla_forms::WifiFlow flow;
+  int scan_index=0;
+  struct RowContext {Editor *self;int index;} row_context[5];
+  void setup_scan() {
+    if(scan_panel)return;
+    scan_panel=lv_obj_create(page);
+    lv_obj_set_style_radius(scan_panel,0,0);lv_obj_set_style_pad_all(scan_panel,4,0);
+    lv_obj_set_style_border_width(scan_panel,0,0);
+    scan_title=lv_label_create(scan_panel);
+    for(int i=0;i<5;i++){
+      scan_rows[i]=lv_button_create(scan_panel);
+      lv_obj_set_style_shadow_width(scan_rows[i],0,0);
+      lv_label_create(scan_rows[i]);row_context[i]={this,i};
+      lv_obj_add_event_cb(scan_rows[i],[](lv_event_t *e){
+        auto *ctx=static_cast<RowContext *>(lv_event_get_user_data(e));
+        ctx->self->select_scan(ctx->index);
+      },LV_EVENT_CLICKED,&row_context[i]);
+    }
+    lv_obj_add_flag(scan_panel,LV_OBJ_FLAG_HIDDEN);
+  }
+  bool scanning() const {
+    return flow.stage==nabla_forms::Stage::SCANNING || flow.stage==nabla_forms::Stage::RESULTS;
+  }
+  void start_scan() {
+    flow.scan(esphome::millis());scan_index=0;poll();
+  }
+  void select_scan(int index) {
+    if(flow.stage==nabla_forms::Stage::RESULTS && index<flow.results()){
+      flow.choose(index);
+      lv_textarea_set_text(ssid,flow.ssid.c_str());
+      lv_textarea_set_text(password,"");
+      if(flow.open)lv_obj_add_state(open_box,LV_STATE_CHECKED);
+      else lv_obj_remove_state(open_box,LV_STATE_CHECKED);
+      edit(!flow.open);
+    }else flow.cancel();
+    poll();
+  }
+  void submit() {
+    flow.ssid=lv_textarea_get_text(ssid);
+    flow.password=lv_textarea_get_text(password);
+    flow.open=lv_obj_has_state(open_box,LV_STATE_CHECKED);
+    if(flow.connect(esphome::millis()))lv_textarea_set_text(password,"");
+    else {
+      edit(flow.error==nabla_forms::Error::PASSWORD);
+      flow.wipe_password();
+    }
+    poll();
+  }
+  void poll() {
+    using namespace nabla_forms;
+    flow.tick(esphome::millis());
+    if((flow.stage==Stage::SUCCESS || flow.stage==Stage::FAILURE) &&
+       flow.open!=lv_obj_has_state(open_box,LV_STATE_CHECKED))flow.cancel();
+    auto fg=lv_color_hex(dark_theme?0xFFFFFF:0),bg=lv_color_hex(dark_theme?0:0xFFFFFF);
+    bool busy=flow.stage==Stage::CONNECTING;
+    for(auto *o:{ssid,password,keyboard,apply,scan,open_box}){
+      if(busy)lv_obj_add_state(o,LV_STATE_DISABLED);else lv_obj_remove_state(o,LV_STATE_DISABLED);
+    }
+    int title=flow.error==Error::SSID?15:flow.error==Error::PASSWORD?16:
+      flow.stage==Stage::CONNECTING?12:flow.stage==Stage::SUCCESS?13:
+      flow.stage==Stage::FAILURE?14:0;
+    if(words)lv_label_set_text(status,words[title]);
+    if(!scan_panel)return;
+    if(!scanning()){lv_obj_add_flag(scan_panel,LV_OBJ_FLAG_HIDDEN);return;}
+    lv_obj_remove_flag(scan_panel,LV_OBJ_FLAG_HIDDEN);
+    lv_obj_move_foreground(scan_panel);
+    lv_obj_set_style_bg_color(scan_panel,bg,0);
+    lv_obj_set_style_text_color(scan_panel,fg,0);
+    int w=lv_display_get_horizontal_resolution(lv_display_get_default());
+    int h=lv_display_get_vertical_resolution(lv_display_get_default())-40;
+    lv_obj_set_pos(scan_panel,0,38);lv_obj_set_size(scan_panel,w,h);
+    lv_label_set_text(scan_title,words[flow.stage==Stage::SCANNING?11:0]);
+    int count=flow.stage==Stage::SCANNING?1:flow.results()+1;
+    scan_index=std::min(scan_index,count-1);
+    for(int i=0;i<5;i++){
+      auto *b=scan_rows[i];
+      if(i>=count){lv_obj_add_flag(b,LV_OBJ_FLAG_HIDDEN);continue;}
+      lv_obj_remove_flag(b,LV_OBJ_FLAG_HIDDEN);
+      lv_obj_set_pos(b,0,25+i*((h-30)/5));lv_obj_set_size(b,w-8,(h-30)/5-3);
+      lv_obj_set_style_bg_color(b,bg,0);lv_obj_set_style_text_color(b,fg,0);
+      lv_obj_set_style_border_width(b,i==scan_index?2:1,0);
+      lv_obj_set_style_border_color(b,i==scan_index?fg:lv_color_hex(0x808080),0);
+      auto *label=lv_obj_get_child(b,0);
+      lv_label_set_text(label,flow.stage==Stage::RESULTS && i<flow.results()?networks[i].ssid:words[6]);
+      lv_obj_center(label);
+    }
+  }
   int focus = 0;
   bool editing_password = false;
   bool dark_theme = true;
   void clear() {
+    flow.clear();
+    if(open_box)lv_obj_remove_state(open_box,LV_STATE_CHECKED);
     lv_textarea_set_text(ssid, "");
     lv_textarea_set_text(password, "");
     focus = 0;
@@ -32,7 +125,7 @@ struct Editor {
     };
     int n = keys();
     mark(ssid, focus == 0); mark(password, focus == 1);
-    mark(apply, focus == n + 2); mark(cancel, focus == n + 3);
+    mark(apply, focus == n + 2); mark(scan, focus == n + 3); mark(open_box, focus == n + 4); mark(cancel, focus == n + 5);
     if (focus >= 2 && focus < n + 2) {
       lv_obj_add_state(keyboard, LV_STATE_FOCUSED);
       lv_buttonmatrix_set_selected_button(keyboard, focus - 2);
@@ -42,11 +135,18 @@ struct Editor {
     }
   }
   void move(int delta) {
-    int total = keys() + 4;
+    if(scanning()){
+      int n=flow.stage==nabla_forms::Stage::SCANNING?1:flow.results()+1;
+      scan_index=(scan_index+delta%n+n)%n;poll();return;
+    }
+    if(flow.stage==nabla_forms::Stage::CONNECTING){focus=keys()+5;highlight();return;}
+    int total = keys() + 6;
     focus = (focus + delta % total + total) % total;
     highlight();
   }
   void activate() {
+    if(scanning()){select_scan(scan_index);return;}
+    if(flow.stage==nabla_forms::Stage::CONNECTING){lv_obj_send_event(cancel,LV_EVENT_CLICKED,nullptr);return;}
     int n = keys();
     if (focus < 2) {
       edit(focus == 1);
@@ -58,7 +158,10 @@ struct Editor {
       if (focus >= keys() + 2) focus = 2;
       highlight();
     } else {
-      lv_obj_send_event(focus == n + 2 ? apply : cancel, LV_EVENT_CLICKED, nullptr);
+      if(focus==n+4){
+        if(lv_obj_has_state(open_box,LV_STATE_CHECKED))lv_obj_remove_state(open_box,LV_STATE_CHECKED);
+        else lv_obj_add_state(open_box,LV_STATE_CHECKED);
+      }else lv_obj_send_event(focus==n+2?apply:focus==n+3?scan:cancel,LV_EVENT_CLICKED,nullptr);
     }
   }
   int validation() const {
@@ -78,19 +181,21 @@ struct Editor {
     lv_obj_set_pos(password, portrait ? 6 : field_w + 12, portrait ? 86 : 42);
     lv_obj_set_size(password, field_w, 40);
     int status_y = portrait ? 132 : 88;
-    lv_obj_set_pos(status, 6, status_y); lv_obj_set_width(status, w - 12);
+    lv_obj_set_pos(status, 6, status_y); lv_obj_set_width(status, w - 122);
+    lv_obj_set_pos(open_box,w-115,status_y);lv_obj_set_width(open_box,110);
     int keyboard_y = status_y + 24;
     lv_obj_set_pos(keyboard, 4, keyboard_y);
     lv_obj_set_size(keyboard, w - 8, h - keyboard_y - 42);
-    lv_obj_set_pos(apply, 6, h - 37); lv_obj_set_size(apply, (w - 18) / 2, 32);
-    lv_obj_set_pos(cancel, (w - 18) / 2 + 12, h - 37);
-    lv_obj_set_size(cancel, (w - 18) / 2, 32);
+    lv_obj_set_pos(apply, 6, h - 37); lv_obj_set_size(apply, (w - 24) / 3, 32);
+    lv_obj_set_pos(scan,(w-24)/3+12,h-37);lv_obj_set_size(scan,(w-24)/3,32);
+    lv_obj_set_pos(cancel, 2*(w-24)/3+18, h - 37);
+    lv_obj_set_size(cancel, (w - 24) / 3, 32);
     auto bg = lv_color_hex(dark ? 0 : 0xFFFFFF);
     lv_obj_set_style_bg_color(page, bg, 0);
     lv_obj_set_style_bg_color(keyboard, bg, 0);
     lv_obj_set_style_text_color(status, lv_color_hex(dark ? 0xAAAAAA : 0x505050), 0);
     auto fg = lv_color_hex(dark ? 0xFFFFFF : 0x000000);
-    for (auto *control : {ssid, password, apply, cancel}) {
+    for (auto *control : {ssid, password, apply, scan, open_box, cancel}) {
       lv_obj_set_style_bg_color(control, bg, 0);
       lv_obj_set_style_bg_color(control, bg, LV_STATE_PRESSED);
       lv_obj_set_style_text_color(control, fg, 0);
@@ -109,6 +214,10 @@ struct Editor {
           state & (LV_STATE_FOCUSED | LV_STATE_PRESSED) ? fg : lv_color_hex(0x808080),
           LV_PART_ITEMS | state);
     }
+    lv_obj_set_style_bg_color(open_box,bg,LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(open_box,fg,LV_PART_INDICATOR | LV_STATE_CHECKED);
+    lv_obj_set_style_border_color(open_box,fg,LV_PART_INDICATOR);
+    lv_obj_set_style_text_color(open_box,bg,LV_PART_INDICATOR | LV_STATE_CHECKED);
     highlight();
   }
 };

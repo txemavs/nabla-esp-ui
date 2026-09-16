@@ -1,15 +1,20 @@
 # Local simulated Wi-Fi form, composed by the demo navigation.
 esphome:
   includes:
+    - ../components/forms/wifi_flow.h
     - ../components/wifi-form/form.h
 
 script:
   - id: wifi_form_bind
     then:
       - lambda: |-
-          nabla_wifi_form::editor = {id(wifi_form_page)->obj, id(wifi_form_ssid),
-            id(wifi_form_password), id(wifi_form_keyboard)->obj, id(wifi_form_status),
-            id(wifi_form_apply), id(wifi_form_cancel)};
+          auto &e=nabla_wifi_form::editor;
+          e.page=id(wifi_form_page)->obj;e.ssid=id(wifi_form_ssid);
+          e.password=id(wifi_form_password);e.keyboard=id(wifi_form_keyboard)->obj;
+          e.status=id(wifi_form_status);e.apply=id(wifi_form_apply);e.cancel=id(wifi_form_cancel);
+          e.scan=id(wifi_form_scan);e.open_box=id(wifi_form_open);
+          static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}"};
+          e.words=words;e.setup_scan();
           nabla_wifi_form::editor.clear();
       - lvgl.label.update:
           id: wifi_form_status
@@ -17,16 +22,7 @@ script:
   - id: wifi_form_accept
     then:
       - lambda: |-
-          int error = nabla_wifi_form::editor.validation();
-          if (error) {
-            lv_label_set_text(id(wifi_form_status), error == 1 ?
-              "${tr_wifi_form_ssid_error}" : "${tr_wifi_form_password_error}");
-            nabla_wifi_form::editor.edit(error == 2);
-            nabla_wifi_form::editor.highlight();
-            return;
-          }
-          lv_textarea_set_text(id(wifi_form_password), "");
-          lv_label_set_text(id(wifi_form_status), "${tr_wifi_form_success}");
+          nabla_wifi_form::editor.submit();
   - id: wifi_form_ready
     then:
       - if:
@@ -38,6 +34,13 @@ script:
                 nabla_wifi_form::editor.highlight();
           else:
             - script.execute: wifi_form_accept
+
+interval:
+  - interval: 100ms
+    then:
+      - lambda: |-
+          if(nabla_wifi_form::editor.page && nabla::nodes[id(nav_current)].action==3)
+            nabla_wifi_form::editor.poll();
 
 lvgl:
   pages:
@@ -65,6 +68,10 @@ lvgl:
             on_ready:
               - script.execute: wifi_form_ready
             on_value:
+              - lambda: |-
+                  auto &flow=nabla_wifi_form::editor.flow;
+                  if(flow.stage==nabla_forms::Stage::SUCCESS || flow.stage==nabla_forms::Stage::FAILURE)flow.cancel();
+                  flow.error=nabla_forms::Error::NONE;
               - lvgl.label.update:
                   id: wifi_form_status
                   text: "${tr_wifi_form_demo}"
@@ -88,6 +95,10 @@ lvgl:
             on_ready:
               - script.execute: wifi_form_ready
             on_value:
+              - lambda: |-
+                  auto &flow=nabla_wifi_form::editor.flow;
+                  if(flow.stage==nabla_forms::Stage::SUCCESS || flow.stage==nabla_forms::Stage::FAILURE)flow.cancel();
+                  flow.error=nabla_forms::Error::NONE;
               - lvgl.label.update:
                   id: wifi_form_status
                   text: "${tr_wifi_form_demo}"
@@ -147,3 +158,19 @@ lvgl:
                   align: CENTER
             on_click:
               - script.execute: nav_back
+        - button:
+            id: wifi_form_scan
+            bg_color: 0x000000
+            border_width: 1
+            shadow_width: 0
+            widgets:
+              - label:
+                  text: "${tr_flow_3}"
+                  text_font: nabla_font_12
+                  align: CENTER
+            on_click:
+              - lambda: nabla_wifi_form::editor.start_scan();
+        - checkbox:
+            id: wifi_form_open
+            text: "${tr_flow_2}"
+            text_font: nabla_font_12

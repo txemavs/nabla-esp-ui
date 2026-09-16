@@ -49,3 +49,8 @@ Default surfaces are black/white; focus and text invert with the theme.
 [Compact shell](compact-shell/README.md) renders the shared catalog at 128x64
 with three-row and readable single-row profiles, one-bit fonts and shared focus
 policies. Host-verified; physical OLED and GPIO adapters remain pending.
+
+## M2 Wi-Fi workflow and compact editor
+
+[Forms primitives](forms/README.md): local scan/connect state machine and bounded
+UTF-8 draft used by regular and compact Wi-Fi demos. No live network adapter.

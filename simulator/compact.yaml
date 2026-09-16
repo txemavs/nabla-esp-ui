@@ -38,28 +38,28 @@ binary_sensor:
     sdl_id: compact_display
     key: SDLK_UP
     on_press:
-      - lambda: nabla::compact_shell.menu.move(-1);
+      - lambda: nabla::compact_shell.move(-1);
   - platform: sdl
     id: compact_down
     sdl_id: compact_display
     key: SDLK_DOWN
     on_press:
-      - lambda: nabla::compact_shell.menu.move(1);
+      - lambda: nabla::compact_shell.move(1);
   - platform: sdl
     id: compact_enter
     sdl_id: compact_display
     key: SDLK_RETURN
     on_press:
-      - lambda: nabla::compact_shell.menu.activate();
+      - lambda: nabla::compact_shell.activate();
   - platform: sdl
     id: compact_back
     sdl_id: compact_display
     key: SDLK_ESCAPE
     on_press:
-      - lambda: nabla::compact_shell.menu.back();
+      - lambda: nabla::compact_shell.back();
   - platform: sdl
     id: compact_home
     sdl_id: compact_display
     key: SDLK_HOME
     on_press:
-      - lambda: nabla::compact_shell.menu.home();
+      - lambda: nabla::compact_shell.home();

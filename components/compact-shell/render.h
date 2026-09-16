@@ -1,5 +1,6 @@
 #pragma once
 #include "model.h"
+#include "compact_wifi.h"
 #include "geometry.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
@@ -7,6 +8,59 @@ namespace nabla {
 class CompactShell {
  public:
   CompactMenu menu;
+  nabla_forms::CompactWifi wifi;
+  bool in_wifi() const {return nodes[menu.current].action==3;}
+  void move(int delta) {if(in_wifi())wifi.move(delta);else menu.move(delta);}
+  void activate() {
+    if(in_wifi()) {if(wifi.activate(esphome::millis())) menu.back();}
+    else {menu.activate();if(in_wifi())wifi.clear();}
+  }
+  void back() {if(in_wifi()) {if(wifi.back())menu.back();}else menu.back();}
+  void home() {wifi.clear();menu.home();}
+  void render_wifi(esphome::display::Display &d, esphome::font::Font *small,
+                   esphome::font::Font *body, esphome::font::Font *large) {
+    using namespace esphome;using namespace nabla_forms;
+    wifi.flow.tick(millis());
+    Color fg=menu.dark?Color::WHITE:Color::BLACK,bg=menu.dark?Color::BLACK:Color::WHITE;
+    d.fill(bg);
+    auto t=wifi.text;
+    if(wifi.editing) {
+      d.print(2,0,small,fg,wifi.secret?t[1]:"SSID");
+      std::string value=wifi.secret?std::string(wifi.draft.value.size(),'*'):wifi.draft.value;
+      size_t pos=value.size()>18?value.size()-18:0;
+      while(pos<value.size() && (static_cast<unsigned char>(value[pos])&0xC0)==0x80)++pos;
+      d.start_clipping(2,12,126,25);
+      d.print(2,12,body,fg,(value.substr(pos)+"_").c_str());d.end_clipping();
+      const auto &keys=wifi.glyphs();
+      std::string key=wifi.key<4?t[7+wifi.key]:keys[wifi.key-4];
+      if(wifi.key==3)key="Aa / 12 / !?";
+      if(key==" ")key="_";
+      d.rectangle(0,27,128,25,fg);d.print(64,29,large,fg,display::TextAlign::TOP_CENTER,key.c_str());
+      d.printf(2,54,small,fg,"%d/%d",wifi.key+1,wifi.total());
+      d.printf(126,54,small,fg,display::TextAlign::TOP_RIGHT,"%d/%d",
+        static_cast<int>(wifi.draft.value.size()),static_cast<int>(wifi.draft.limit));
+      return;
+    }
+    int title=0;
+    switch(wifi.flow.stage) {
+      case Stage::SCANNING:title=11;break;case Stage::CONNECTING:title=12;break;
+      case Stage::SUCCESS:title=13;break;case Stage::FAILURE:title=14;break;
+      case Stage::RESULTS:if(!wifi.flow.results())title=17;break;
+      default:if(wifi.flow.error==Error::SSID)title=15;
+        else if(wifi.flow.error==Error::PASSWORD)title=16;break;
+    }
+    d.print(2,0,small,fg,t[title]);
+    int total=wifi.total();
+    wifi.focus=std::min(wifi.focus,total-1);
+    wifi.top=nabla::scroll_anchor(wifi.focus,wifi.top,3,total);
+    for(int r=0;r<3;r++){
+      int index=wifi.top+r;if(index>=total)break;
+      int y=13+r*17;
+      if(index==wifi.focus)d.rectangle(0,y,128,17,fg);
+      d.start_clipping(3,y+1,124,y+15);
+      d.print(4,y+2,body,fg,wifi.row(index).c_str());d.end_clipping();
+    }
+  }
   bool app_footer = false;
   int last_node = -1, last_focus = -1;
   bool last_readable = false;
@@ -15,6 +69,7 @@ class CompactShell {
               esphome::font::Font *body, esphome::font::Font *large,
               const char *back_text, const char *pending) {
     using namespace esphome;
+    if(in_wifi()){render_wifi(d,small,body,large);return;}
     if (last_node != menu.current || last_focus != menu.focus || last_readable != menu.readable) {
       last_node = menu.current; last_focus = menu.focus; last_readable = menu.readable;
       focus_since = millis();
@@ -72,12 +127,19 @@ class CompactShell {
     }
   }
   void touch(int x, int y) {
+    if(in_wifi()) {
+      if(y<12) {back();return;}
+      if(wifi.editing) {if(y>=27 && y<52)activate();else if(y>=52)move(x<64?-1:1);return;}
+      int row=(y-13)/17;
+      if(y>=13 && row<3 && wifi.top+row<wifi.total()){wifi.focus=wifi.top+row;activate();}
+      return;
+    }
     if (y < 12) { if (x < 16) menu.touch_option(children(menu.current)); return; }
     if (!children(menu.current)) { if (y >= 64-(app_footer ? 12 : 0)-14 && y < 64-(app_footer ? 12 : 0)) menu.back(); return; }
     auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer);
     if (y >= 64-g.footer) return;
     int row = (y-12)/g.row_height;
-    if (row < g.rows) menu.touch_option(menu.top + row);
+    if (row < g.rows) {menu.touch_option(menu.top + row);if(in_wifi())wifi.clear();}
   }
 };
 inline CompactShell compact_shell;

@@ -182,4 +182,17 @@ Up/Down/Enter and Escape navigate. At compact root, select the triangle after
 the eight options (or touch it) to switch density. A parent triangle/Back row
 remains reachable without a physical Escape key.
 See [profiles](../profiles/README.md) and [M1 evidence](../docs/platform/M1-VERIFICATION.md).
-Compact Wi-Fi editing is explicitly pending M2; the full editor remains in regular.
+Compact Wi-Fi editing now uses the M2 character selector; see ../components/forms/README.md.
+
+## M2 Wi-Fi workflow
+
+In regular, portrait, tiny or readable, open Settings > Connections > Wi-Fi.
+Regular offers Scan beside Connect/Cancel. Compact offers Scan and an additional
+empty-scan fixture in the list. Choose Invitados Demo to try success without
+typing a password; choose Demo sin servicio and an 8-character dummy password
+to try failure. Other protected fixtures accept any valid-length dummy password.
+Both scan and connection are simulations; there are no network side effects.
+
+In the compact field editor, use Up/Down/Enter for Done, Delete, Cancel, the
+character group and individual characters. Escape cancels only the field edit;
+Back from the form discards all data. See ../components/forms/README.md.

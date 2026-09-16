@@ -37,7 +37,8 @@ Applies to the entire nabla-esp-ui repository.
 - Apply validates locally and clears the password; no Wi-Fi or persistence yet.
 - M1 tiny/readable profiles render the same tree at real 128x64, monochrome.
 - profiles/README.md documents geometry, launch commands and host-only evidence.
-- Compact forms, real data bindings, GPIO adapters and peers remain planned.
+- M2 Wi-Fi forms work in compact and regular with a shared simulated scan/connect flow.
+- Generic forms, real data bindings, GPIO adapters and peers remain planned.
 
 ## Extension rules
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.

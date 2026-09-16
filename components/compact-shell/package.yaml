@@ -1,5 +1,7 @@
 esphome:
   includes:
+    - ../components/forms/wifi_flow.h
+    - ../components/forms/compact_wifi.h
     - ../navigation/focus.h
     - ../profiles/geometry.h
     - ../components/compact-shell/model.h
@@ -9,6 +11,8 @@ esphome:
     then:
       - lambda: |-
           App.set_loop_interval(1);
+          static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}"};
+          nabla::compact_shell.wifi.text = words;
           nabla::compact_shell.menu.readable = ${compact_readable};
           nabla::compact_shell.app_footer = ${compact_app_footer};
           id(compact_up).publish_state(false);

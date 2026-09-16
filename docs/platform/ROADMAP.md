@@ -29,6 +29,10 @@ list and a large-text single-item variant. Record measured font legibility.
 
 ## M2 — Forms vertical slice
 
+Status: local Wi-Fi slice delivered on regular and compact profiles. Shared
+scan/connection states and UTF-8 draft tests are implemented; the broader
+forms catalog and remaining fixtures below are still in progress.
+
 Implement text/password, numeric, selection, checkbox/toggle, validation and
 dialog primitives. Settings > Wi-Fi uses a mock scan adapter and the same form
 on touch, five-way keys and U/D/ENTER. Add long SSIDs, accents, empty results,
@@ -136,7 +140,8 @@ There are nine milestones, M0 through M8: the design baseline plus eight
 delivery phases. They are completion gates rather than an inflexible order.
 M0 is documented. M1 now has regular/portrait and native 128x64 tiny/readable
 fixtures with shared catalog and tested focus policies.
-M2 has started with the native keyboard and integrated manual Wi-Fi form.
+M2 now includes native and compact editors plus a shared deterministic
+scan/connect workflow; eight tests cover draft and asynchronous state behavior.
 
 Current demo path: Settings > Connections > Wi-Fi. Enter SSID/password,
 validate locally and cancel through the standard navigation. action: wifi_demo
@@ -144,9 +149,9 @@ is accepted prototype syntax; it is not a working network configuration action.
 The standalone password preview remains available for isolated keyboard work.
 
 Next steps:
-1. Refine the integrated form through touch and encoder-emulated input.
-2. Add deterministic scan/results and connecting/failure/retry fixtures to M2.
-3. Add the M2 compact character picker to the completed M1 128x64 list.
+1. Refine the tested regular and compact Wi-Fi flows through user feedback.
+2. Add duplicate-network/scan-error cases and the remaining generic form primitives.
+3. Extend compact editing ergonomics and dialog composition.
 4. Finish M2's form lifecycle and adapter contract before M3 real Wi-Fi writes.
 5. Progress through M4 provisioning, M5 peer control, M6 integrations, M7
    vehicle pilot and M8 public release using the gates above.

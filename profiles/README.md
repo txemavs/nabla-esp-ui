@@ -51,8 +51,8 @@ is used in the compact renderer.
 
 ## Boundaries
 
-Wi-Fi is the same route in all profiles. On regular it opens the local demo
-editor; on compact it explicitly says the compact editor belongs to M2.
+Wi-Fi is the same route in all profiles. Regular uses the native keyboard;
+compact now uses the M2 character selector and shared simulated Wi-Fi workflow.
 No radio, credentials or backend is needed for M1. The compact header presents
 the current location; wide-screen clickable ancestor breadcrumbs remain a
 regular-profile feature. Leaf descriptions are clipped to the compact detail
