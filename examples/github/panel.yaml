@@ -1,6 +1,6 @@
 # Copy into your private ESPHome directory; keep the full menu editable here.
 substitutions:
-  nabla_ui_ref: REPLACE_WITH_TESTED_COMMIT
+  nabla_ui_ref: 4acd4ecdca042eedbaa3824ca5492abf805fd4aa
   ui_language: en
   screen_width: "480"
   screen_height: "320"

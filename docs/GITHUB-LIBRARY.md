@@ -56,3 +56,9 @@ Fonts and artwork retain their bundled licenses.
 
 Validate a remote consumer from a separate directory with no sibling checkout.
 A successful build there catches accidental dependencies on ../ or .nabla-ui.
+
+## Verification
+
+Revision 4acd4ecdca042eedbaa3824ca5492abf805fd4aa passed a clean GitHub-only host build on
+ESPHome 2026.8.2, from a separate consumer directory. Local composition, compact
+and password builds and all 12 unit tests also passed. No firmware was uploaded.
