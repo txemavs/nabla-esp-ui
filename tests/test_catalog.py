@@ -23,6 +23,16 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual([n["parent"] for n in nodes], [-1, 0, 1, 1, 0])
         self.assertEqual(nodes[3]["action"], "dark")
 
+    def test_editor_action_is_a_leaf_and_preserves_parent(self):
+        t = self.tree()
+        t["children"][0]["children"][0]["action"] = "wifi_demo"
+        nodes = catalog.flatten(t)
+        self.assertEqual(nodes[2]["parent"], 1)
+        self.assertEqual(nodes[2]["action"], "wifi_demo")
+        t["children"][0]["action"] = "wifi_demo"
+        with self.assertRaises(ValueError):
+            catalog.flatten(t)
+
     def test_tile_colors(self):
         t = self.tree()
         t["children"][0].update(bg_dark=0x12345A, bg_light=0x9ABCE3)

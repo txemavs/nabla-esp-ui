@@ -34,7 +34,7 @@ The script activates the project environment, compiles, and launches the
 480 x 320 landscape window. It defaults to the X11 SDL backend for WSLg.
 The desktop opens immediately and its toolbar logo spins once in place.
 The 4-column, 2-row launcher contains: Ajustes, Comunicaciones, Fotos, Música, Cámaras, Tiempo, Luces, Sensores.
-Ajustes opens Wi-Fi, Idioma and Acerca de. Sensores opens folders and sensor
+Ajustes opens Conexiones (then Wi-Fi), Idioma, Acerca de and Apariencia. Sensores opens folders and sensor
 leaves. Breadcrumbs show the route; X returns to the parent and the triangle
 returns to the parent; at the root it toggles tiles/list. Other applications remain placeholders.
 These are navigation demonstrations, not implemented applications.
@@ -153,3 +153,15 @@ do not imply an accented keyboard layout. Use a dummy password for the preview.
 
 For English, use `esphome -s ui_language en run simulator/password.yaml`.
 Source: examples/password/ui.yaml. Fonts and colors follow the shared theme.
+
+## Integrated manual Wi-Fi form
+
+Open the main demo with ./simulator/run.sh, then
+Ajustes > Conexiones > Wi-Fi (Settings > Connections > Wi-Fi in English).
+Enter an SSID and password manually. Test connection validates the draft locally;
+it does not change the host network or persist credentials.
+Cancel, X, triangle, breadcrumbs, Escape and Home discard the draft on departure.
+Touch fields to switch the keyboard target, or use Up/Down and Enter.
+The keyboard Ready key advances to password, then validates.
+See [the form contract](../components/wifi-form/README.md) for supported inputs,
+validation limits and pending real Wi-Fi/Nabla Net adapters.

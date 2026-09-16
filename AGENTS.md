@@ -32,7 +32,10 @@ Applies to the entire nabla-esp-ui repository.
 - Gray idle borders, white selected borders; monochrome option hides idle borders.
 - Dark/light toolbar and footer; app tile colors remain independent.
 - Use runtime logical dimensions when rendering rotated layouts.
-- Small 128x64 profile, forms, real data bindings and peer protocol are planned.
+- Settings > Connections > Wi-Fi hosts a manual SSID/password demo (wifi_demo).
+- Its component owns editor focus and draft clearing; routes keep shared toolbar.
+- Apply validates locally and clears the password; no Wi-Fi or persistence yet.
+- Small 128x64 profile, complete forms, real data bindings and peers are planned.
 
 ## Extension rules
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.

@@ -1,7 +1,7 @@
 import json
 import re
 
-ACTIONS = {"open", "dark", "light"}
+ACTIONS = {"open", "dark", "light", "wifi_demo"}
 
 def flatten(tree):
     result = []
@@ -33,7 +33,7 @@ def flatten(tree):
         if action not in ACTIONS:
             raise ValueError("Unknown action: " + str(action))
         if action != "open" and (parent < 0 or children):
-            raise ValueError("Theme actions must be non-root leaves")
+            raise ValueError("Actions must be non-root leaves")
         colors = {}
         for field, default in (("bg_dark", 0x181818), ("bg_light", 0x404040)):
             value = node.get(field, default)
@@ -58,7 +58,7 @@ def emit(tree):
         values = [json.dumps(n["title"], ensure_ascii=False), str(n["parent"]),
                   json.dumps(n["detail"], ensure_ascii=False),
                   json.dumps(n["icon"], ensure_ascii=False),
-                  str({"open": 0, "dark": 1, "light": 2}[n["action"]]),
+                  str({"open": 0, "dark": 1, "light": 2, "wifi_demo": 3}[n["action"]]),
                   str(n["bg_dark"]), str(n["bg_light"])]
         rows.append("{" + ", ".join(values) + "}")
     return ("namespace nabla { const Node nodes[] = {"

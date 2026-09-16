@@ -79,3 +79,13 @@ esphome -s ui_language en compile simulator/hello-world.yaml
 For input/layout changes also test root toggle, last-row scroll, nested return,
 rotation and rotated touch in the actual simulator. Long-title fitting is a
 prototype behavior; readable minimum font policies belong to the future profiles.
+
+## Manual Wi-Fi editor route
+
+The demo tree contains Settings > Connections > Wi-Fi. A leaf with
+action: wifi_demo opens the packaged form instead of the generic leaf page.
+Theme actions remain dark/light and still return to their parent.
+While the form is open, sequential input is routed to its editor; toolbar
+navigation remains available by touch, with Cancel reachable sequentially.
+See ../components/wifi-form/README.md. This is simulated local validation,
+not credential persistence or live network configuration.

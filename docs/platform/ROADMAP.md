@@ -127,10 +127,26 @@ for headless targets; permitted credential-storage policy; project license.
 Collect these before their dependent hardware milestones. Do not guess pins,
 vehicle PIDs, peer UUIDs or production security guarantees.
 
-## First implementation batch
+## Current implementation batch
 
-Start M1 with an input/focus trace fixture and the compact list shell, while
-M2 prototypes one text editor against fake state. Keep the demo tree unchanged.
-The first reviewable result is the same mock Wi-Fi form on regular and tiny
-profiles, with all cancel/error paths and no required network. Only after that
-passes should the actual Wi-Fi adapter and credential persistence be connected.
+There are nine milestones, M0 through M8: the design baseline plus eight
+delivery phases. They are completion gates rather than an inflexible order.
+M0 is documented. M1 is partial (regular shell exists; tiny profiles remain).
+M2 has started with the native keyboard and integrated manual Wi-Fi form.
+
+Current demo path: Settings > Connections > Wi-Fi. Enter SSID/password,
+validate locally and cancel through the standard navigation. action: wifi_demo
+is accepted prototype syntax; it is not a working network configuration action.
+The standalone password preview remains available for isolated keyboard work.
+
+Next steps:
+1. Refine the integrated form through touch and encoder-emulated input.
+2. Add deterministic scan/results and connecting/failure/retry fixtures to M2.
+3. Complete M1's 128x64 list and character-picker counterpart.
+4. Finish M2's form lifecycle and adapter contract before M3 real Wi-Fi writes.
+5. Progress through M4 provisioning, M5 peer control, M6 integrations, M7
+   vehicle pilot and M8 public release using the gates above.
+
+The remote Nabla Config menu can be prototyped with fixtures alongside M2;
+its real BLE/Pi operation layer belongs to M4-M6. Do not require Home Assistant
+or a ready Nabla Net router to operate the local settings interface.

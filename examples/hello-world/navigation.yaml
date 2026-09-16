@@ -15,9 +15,12 @@ nabla_navigation:
         bg_dark: 0x12345A
         bg_light: 0x9ABCE3
         children:
-          - key: wifi
-            title: ${tr_wifi}
-            detail: ${tr_wifi_detail}
+          - key: connections
+            title: ${tr_wifi_form_connections}
+            children:
+              - key: wifi
+                title: ${tr_wifi}
+                action: wifi_demo
           - key: language
             title: ${tr_language}
             detail: ${tr_language_detail}

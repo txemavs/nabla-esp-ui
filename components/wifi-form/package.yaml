@@ -1,0 +1,149 @@
+# Local simulated Wi-Fi form, composed by the demo navigation.
+esphome:
+  includes:
+    - ../components/wifi-form/form.h
+
+script:
+  - id: wifi_form_bind
+    then:
+      - lambda: |-
+          nabla_wifi_form::editor = {id(wifi_form_page)->obj, id(wifi_form_ssid),
+            id(wifi_form_password), id(wifi_form_keyboard)->obj, id(wifi_form_status),
+            id(wifi_form_apply), id(wifi_form_cancel)};
+          nabla_wifi_form::editor.clear();
+      - lvgl.label.update:
+          id: wifi_form_status
+          text: "${tr_wifi_form_demo}"
+  - id: wifi_form_accept
+    then:
+      - lambda: |-
+          int error = nabla_wifi_form::editor.validation();
+          if (error) {
+            lv_label_set_text(id(wifi_form_status), error == 1 ?
+              "${tr_wifi_form_ssid_error}" : "${tr_wifi_form_password_error}");
+            nabla_wifi_form::editor.edit(error == 2);
+            nabla_wifi_form::editor.highlight();
+            return;
+          }
+          lv_textarea_set_text(id(wifi_form_password), "");
+          lv_label_set_text(id(wifi_form_status), "${tr_wifi_form_success}");
+  - id: wifi_form_ready
+    then:
+      - if:
+          condition:
+            lambda: return !nabla_wifi_form::editor.editing_password;
+          then:
+            - lambda: |-
+                nabla_wifi_form::editor.edit(true);
+                nabla_wifi_form::editor.highlight();
+          else:
+            - script.execute: wifi_form_accept
+
+lvgl:
+  pages:
+    - id: wifi_form_page
+      bg_color: 0x000000
+      pad_all: 0
+      scrollbar_mode: "OFF"
+      widgets:
+        - textarea:
+            id: wifi_form_ssid
+            one_line: true
+            max_length: 32
+            placeholder_text: "${tr_wifi_form_ssid}"
+            text_font: nabla_font_16
+            bg_color: 0x181818
+            text_color: 0xFFFFFF
+            border_color: 0x808080
+            border_width: 1
+            radius: 5
+            pad_all: 7
+            on_click:
+              - lambda: |-
+                  nabla_wifi_form::editor.edit(false);
+                  nabla_wifi_form::editor.highlight();
+            on_ready:
+              - script.execute: wifi_form_ready
+            on_value:
+              - lvgl.label.update:
+                  id: wifi_form_status
+                  text: "${tr_wifi_form_demo}"
+        - textarea:
+            id: wifi_form_password
+            one_line: true
+            password_mode: true
+            max_length: 63
+            placeholder_text: "${tr_password_hint}"
+            text_font: nabla_font_16
+            bg_color: 0x181818
+            text_color: 0xFFFFFF
+            border_color: 0x808080
+            border_width: 1
+            radius: 5
+            pad_all: 7
+            on_click:
+              - lambda: |-
+                  nabla_wifi_form::editor.edit(true);
+                  nabla_wifi_form::editor.highlight();
+            on_ready:
+              - script.execute: wifi_form_ready
+            on_value:
+              - lvgl.label.update:
+                  id: wifi_form_status
+                  text: "${tr_wifi_form_demo}"
+        - label:
+            id: wifi_form_status
+            text: "${tr_wifi_form_demo}"
+            text_font: nabla_font_12
+            long_mode: DOT
+        - keyboard:
+            id: wifi_form_keyboard
+            textarea: wifi_form_ssid
+            align: TOP_LEFT
+            mode: TEXT_LOWER
+            text_font: montserrat_16
+            bg_color: 0x000000
+            border_width: 0
+            pad_all: 2
+            items:
+              bg_color: 0x181818
+              text_color: 0xFFFFFF
+              border_color: 0x808080
+              border_width: 1
+              radius: 5
+              shadow_width: 0
+              pressed:
+                bg_color: 0x181818
+                border_color: 0xFFFFFF
+                border_width: 2
+              focused:
+                border_color: 0xFFFFFF
+                border_width: 2
+            on_cancel:
+              - script.execute: nav_back
+        - button:
+            id: wifi_form_apply
+            bg_color: 0x181818
+            border_color: 0x808080
+            border_width: 1
+            shadow_width: 0
+            widgets:
+              - label:
+                  text: "${tr_wifi_form_apply}"
+                  text_font: nabla_font_16
+                  align: CENTER
+            on_click:
+              - script.execute: wifi_form_accept
+        - button:
+            id: wifi_form_cancel
+            bg_color: 0x181818
+            border_color: 0x808080
+            border_width: 1
+            shadow_width: 0
+            widgets:
+              - label:
+                  text: "${tr_wifi_form_cancel}"
+                  text_font: nabla_font_16
+                  align: CENTER
+            on_click:
+              - script.execute: nav_back

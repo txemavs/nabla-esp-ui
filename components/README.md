@@ -33,3 +33,10 @@ States: editing, demo accepted, cancelled. Input is masked and limited to 63
 characters; accepting/cancelling clears it. No persistence, network or logging
 of entered text. Uses the shared fonts/logo and native Montserrat keyboard
 symbols. Spanish/English labels compile; native keys keep the stock repertoire.
+
+## Manual Wi-Fi form
+
+[Wi-Fi form](wifi-form/README.md): packaged two-field SSID/password editor,
+native keyboard, validation, sequential focus and cancel/return lifecycle.
+Selected by action: wifi_demo in the demo tree. Current support is host-only
+480x320/320x480, with no connection or persistence; see its contract for details.
