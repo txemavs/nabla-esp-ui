@@ -10,3 +10,7 @@ image:
     id: nabla_logo
     type: RGB565
     resize: 160x134
+
+packages:
+  fonts: !include fonts.yaml
+  icons: !include icons.yaml

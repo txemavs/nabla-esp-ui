@@ -8,7 +8,7 @@ esphome:
 
 lvgl:
   buffer_size: 100%
-  default_font: montserrat_20
+  default_font: nabla_font_20
   pages:
     - id: splash_page
       bg_color: ${nabla_background}
@@ -18,7 +18,7 @@ lvgl:
             align: CENTER
         - label:
             text: "nabla.net"
-            text_font: montserrat_28
+            text_font: nabla_font_28
             text_color: ${nabla_accent}
             align: CENTER
             y: 95
@@ -33,7 +33,7 @@ lvgl:
         - label:
             id: app_title
             text: ""
-            text_font: montserrat_28
+            text_font: nabla_font_28
             text_color: ${nabla_accent}
             align: CENTER
             y: -35

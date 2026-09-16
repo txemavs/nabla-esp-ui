@@ -1,0 +1,9 @@
+substitutions:
+  icon_settings: "\uf013"
+  icon_clock: "\uf017"
+  icon_photos: "\uf03e"
+  icon_music: "\uf001"
+  icon_video: "\uf03d"
+  icon_weather: "\uf185"
+  icon_lights: "\uf0eb"
+  icon_sensors: "\uf2c9"

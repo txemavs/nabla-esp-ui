@@ -1,4 +1,4 @@
-# Reusable launcher tile. Parameters: tile_id, title, marker, column, row.
+# Reusable launcher tile. Parameters: tile_id, title, icon, column, row.
 button:
   id: ${tile_id}
   grid_cell_column_pos: ${column}
@@ -13,14 +13,14 @@ button:
     bg_color: 0x124456
   widgets:
     - label:
-        text: "${marker}"
+        text: "${icon}"
         text_color: ${nabla_accent}
-        text_font: montserrat_28
+        text_font: nabla_icons_32
         align: CENTER
         y: -16
     - label:
         text: "${title}"
-        text_font: montserrat_16
+        text_font: nabla_font_16
         align: BOTTOM_MID
         y: -8
   on_click:

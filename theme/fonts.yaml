@@ -1,0 +1,34 @@
+# Explicit glyphs keep firmware font data bounded.
+font:
+  - file: ../assets/fonts/DejaVuSans.ttf
+    id: nabla_font_16
+    size: 16
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€"
+  - file: ../assets/fonts/DejaVuSans.ttf
+    id: nabla_font_20
+    size: 20
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€"
+  - file: ../assets/fonts/DejaVuSans.ttf
+    id: nabla_font_28
+    size: 28
+    bpp: 4
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°€"
+  - file: ../assets/fonts/fa-solid-900.ttf
+    id: nabla_icons_32
+    size: 32
+    bpp: 4
+    glyphsets: []
+    glyphs:
+      - "\uf013"
+      - "\uf017"
+      - "\uf03e"
+      - "\uf001"
+      - "\uf03d"
+      - "\uf185"
+      - "\uf0eb"
+      - "\uf2c9"

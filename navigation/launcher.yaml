@@ -17,7 +17,7 @@ obj:
         vars:
           tile_id: menu_tile_0
           title: "Ajustes"
-          marker: "01"
+          icon: "${icon_settings}"
           column: 0
           row: 0
     - !include
@@ -25,7 +25,7 @@ obj:
         vars:
           tile_id: menu_tile_1
           title: "Reloj"
-          marker: "02"
+          icon: "${icon_clock}"
           column: 1
           row: 0
     - !include
@@ -33,7 +33,7 @@ obj:
         vars:
           tile_id: menu_tile_2
           title: "Fotos"
-          marker: "03"
+          icon: "${icon_photos}"
           column: 2
           row: 0
     - !include
@@ -41,7 +41,7 @@ obj:
         vars:
           tile_id: menu_tile_3
           title: "Música"
-          marker: "04"
+          icon: "${icon_music}"
           column: 3
           row: 0
     - !include
@@ -49,7 +49,7 @@ obj:
         vars:
           tile_id: menu_tile_4
           title: "Vídeo"
-          marker: "05"
+          icon: "${icon_video}"
           column: 0
           row: 1
     - !include
@@ -57,7 +57,7 @@ obj:
         vars:
           tile_id: menu_tile_5
           title: "Tiempo"
-          marker: "06"
+          icon: "${icon_weather}"
           column: 1
           row: 1
     - !include
@@ -65,7 +65,7 @@ obj:
         vars:
           tile_id: menu_tile_6
           title: "Luces"
-          marker: "07"
+          icon: "${icon_lights}"
           column: 2
           row: 1
     - !include
@@ -73,6 +73,6 @@ obj:
         vars:
           tile_id: menu_tile_7
           title: "Sensores"
-          marker: "08"
+          icon: "${icon_sensors}"
           column: 3
           row: 1
