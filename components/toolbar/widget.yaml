@@ -7,6 +7,27 @@ obj:
       anchor: ${nabla_toolbar_align}
       background: ${nabla_background}
   widgets:
+    - button:
+        id: toolbar_rotate
+        x: ${(screen_width | int) - 126}
+        y: 0
+        width: 36
+        height: ${nabla_bar_height}
+        bg_opa: TRANSP
+        border_width: 0
+        shadow_width: 0
+        pad_all: 0
+        radius: 0
+        widgets:
+          - label:
+              id: toolbar_rotate_label
+              text: "\uf2f1"
+              text_font: nabla_toolbar_icons
+              align: CENTER
+        on_click:
+          - script.execute:
+              id: nav_choose
+              index: !lambda return nabla::children(0) + 1;
     - label:
         id: toolbar_wifi
         x: ${(screen_width | int) - 84}

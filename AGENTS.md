@@ -142,3 +142,8 @@ Triangle alignment: the visible left edge aligns with the 5 px content margin;
 titles start at x=40. Triangle focus recolors the mark white, never draws a
 button frame, and retains the interior back rotation. Clearing focus restores
 the configured base/status color using LVGL state styling.
+
+Root triangle now toggles tile/list presentation; root rotation button follows
+it in sequential focus. Use runtime LVGL dimensions for layout. Verify list
+scroll, returning from a child, touch after rotation, and 4x2/2x4 reflow.
+Do not claim 128x64 support until a compact profile is implemented and tested.

@@ -81,3 +81,19 @@ The brand triangle is the focus exception: inside a view it rotates 90 degrees
 left over 180 ms, without a focus box. Activating it returns to the parent,
 just like X/ESC. Removing focus restores its downward orientation. At the root
 it remains the Home mark. The underline meets its resting lower tip.
+
+## Launcher views and orientation
+
+At the root, the triangle toggles tiles/list. Both use the same YAML tree.
+Up/Down traverses items, then the triangle and rotation button; Enter activates.
+List focus scrolls into view and the root scroll position survives application
+entry and Back. Inside applications the triangle retains its Back behavior.
+The circular-arrow button at the root rotates by 90 degrees, cycling all four
+orientations. LVGL software rotation changes the logical viewport; SDL retains
+its physical 480x320 window. Tiles reflow 4x2 in landscape and 2x4 in portrait.
+Input mapping is handled by ESPHome; orientation.h bounds stale released
+pointer coordinates after rotation without altering pressed touch coordinates.
+
+This is not yet a validated 128x64 profile: that needs compact bars/fonts,
+reduced status content and a physical display/input adapter. The shared list
+and navigation are the reusable basis, not evidence of hardware support.

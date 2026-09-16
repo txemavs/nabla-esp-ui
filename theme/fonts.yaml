@@ -44,7 +44,7 @@ font:
     size: 22
     bpp: 4
     glyphsets: []
-    glyphs: ["\uf00d", "\uf1eb"]
+    glyphs: ["\uf00d", "\uf1eb", "\uf2f1"]
   - file: ../assets/fonts/fa-brands-400.ttf
     id: nabla_toolbar_brands
     size: 22

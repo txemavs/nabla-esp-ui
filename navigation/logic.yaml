@@ -1,8 +1,15 @@
 esphome:
   includes:
     - ../navigation/tree.h
+    - ../navigation/orientation.h
 
 globals:
+  - id: nav_list_view
+    type: bool
+    initial_value: 'false'
+  - id: nav_angle
+    type: int
+    initial_value: '0'
   - id: nav_dark
     type: bool
     restore_value: true
@@ -23,6 +30,13 @@ globals:
     initial_value: 'std::vector<int>(nabla::count, 0)'
 
 script:
+  - id: nav_rotate
+    then:
+      - lambda: |-
+          nabla_orientation::prepare();
+          id(nav_angle) = (id(nav_angle) + 90) % 360;
+          id(nabla_lvgl).set_rotation(id(nav_angle));
+      - script.execute: nav_render
   - id: nav_choose
     mode: restart
     parameters:
@@ -31,7 +45,7 @@ script:
       - if:
           condition:
             lambda: |-
-              return index >= 0 && index < nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 1);
+              return index >= 0 && index < nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 2);
           then:
             - lambda: |-
                 id(nav_selection) = index;
@@ -43,7 +57,11 @@ script:
                   int n = id(nav_current), chosen = id(nav_selection);
                   int total = nabla::children(n);
                   if (chosen < total) return nabla::child(n, chosen);
-                  if (chosen == total) return n ? nabla::nodes[n].parent : 0;
+                  if (!n && chosen == total + 1) { id(nav_rotate).execute(); return -1; }
+                  if (chosen == total) {
+                    if (!n) id(nav_list_view) = !id(nav_list_view);
+                    return n ? nabla::nodes[n].parent : 0;
+                  }
                   chosen -= total + 1;
                   if (chosen < (int) id(nav_crumbs).size() - 1) return id(nav_crumbs)[chosen];
                   return nabla::nodes[n].parent;
@@ -63,12 +81,12 @@ script:
                 }
                 int old = id(nav_current);
                 id(nav_saved_focus)[old] = id(nav_selection);
-                if (old) id(nav_saved_scroll)[old] = lv_obj_get_scroll_y(id(navigation_content));
+                if (old || id(nav_list_view)) id(nav_saved_scroll)[old] = lv_obj_get_scroll_y(id(navigation_content));
                 id(nav_current) = node;
                 id(nav_selection) = id(nav_saved_focus)[node];
             - script.execute: nav_render
             - lambda: |-
-                if (node) {
+                if (node || id(nav_list_view)) {
                   lv_obj_update_layout(id(navigation_content));
                   lv_obj_scroll_to_y(id(navigation_content), id(nav_saved_scroll)[node], LV_ANIM_OFF);
                 }
@@ -91,12 +109,12 @@ script:
     then:
       - script.stop: nav_choose
       - lambda: |-
-          int total = nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 1);
+          int total = nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 2);
           if (total) id(nav_selection) = (id(nav_selection) + delta % total + total) % total;
       - script.execute: nav_render
       - lambda: |-
           lv_obj_t *rows[] = {id(nav_row_0), id(nav_row_1), id(nav_row_2), id(nav_row_3), id(nav_row_4), id(nav_row_5), id(nav_row_6), id(nav_row_7)};
-          if (id(nav_current) && id(nav_selection) < nabla::children(id(nav_current)))
+          if ((id(nav_current) || id(nav_list_view)) && id(nav_selection) < nabla::children(id(nav_current)))
             lv_obj_scroll_to_view(rows[id(nav_selection)], LV_ANIM_OFF);
   - id: nav_activate
     then:
@@ -108,6 +126,22 @@ script:
     then:
       - lambda: |-
           int current = id(nav_current);
+          int screen_w = lv_display_get_horizontal_resolution(lv_display_get_default());
+          int screen_h = lv_display_get_vertical_resolution(lv_display_get_default());
+          const bool portrait = screen_w < screen_h;
+          static const int32_t grid_four[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+          static const int32_t grid_two[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+          lv_obj_set_grid_dsc_array(id(launcher_content), portrait ? grid_two : grid_four, portrait ? grid_four : grid_two);
+          lv_obj_set_width(id(navigation_content), screen_w - 8);
+          lv_obj_set_width(id(nav_detail), screen_w - 16);
+          if (nabla::nodes[current].detail[0]) lv_obj_remove_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
+          else lv_obj_add_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_set_x(id(toolbar_wifi), screen_w - 84);
+          lv_obj_set_x(id(toolbar_bluetooth), screen_w - 42);
+          lv_obj_set_x(id(toolbar_rotate), screen_w - 126);
+          lv_obj_set_width(id(footer_brand), screen_w - 96);
+          lv_obj_set_width(id(footer_progress_track), screen_w - 88);
+
           int total = nabla::children(current);
           auto border = [](lv_obj_t *obj, bool selected) {
             lv_obj_set_style_border_color(obj, lv_color_hex(selected ? 0xFFFFFF : ${nabla_secondary}), 0);
@@ -125,6 +159,9 @@ script:
           lv_obj_t *tile_icons[] = {id(menu_tile_0_icon), id(menu_tile_1_icon), id(menu_tile_2_icon), id(menu_tile_3_icon), id(menu_tile_4_icon), id(menu_tile_5_icon), id(menu_tile_6_icon), id(menu_tile_7_icon)};
           lv_obj_t *tile_titles[] = {id(menu_tile_0_title), id(menu_tile_1_title), id(menu_tile_2_title), id(menu_tile_3_title), id(menu_tile_4_title), id(menu_tile_5_title), id(menu_tile_6_title), id(menu_tile_7_title)};
           for (int i = 0; i < 8; i++) {
+            int columns = portrait ? 2 : 4;
+            lv_obj_set_grid_cell(tiles[i], LV_GRID_ALIGN_STRETCH, i % columns, 1, LV_GRID_ALIGN_STRETCH, i / columns, 1);
+            lv_obj_set_width(rows[i], screen_w - 16);
             int root_child = nabla::child(0, i);
             if (root_child < 0) lv_obj_add_flag(tiles[i], LV_OBJ_FLAG_HIDDEN);
             else {
@@ -159,9 +196,11 @@ script:
             }
           }
           if (current) {
+            lv_obj_add_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
           } else {
+            lv_obj_remove_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
             lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
             lv_obj_remove_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
           }
@@ -186,7 +225,7 @@ script:
           if (loading) {
             lv_obj_remove_flag(id(progress_footer), LV_OBJ_FLAG_HIDDEN);
             lv_label_set_text_fmt(id(footer_progress_label), "%d%%", id(toolbar_progress));
-            int width = (${screen_width} - 88) * id(toolbar_progress) / 100;
+            int width = (screen_w - 88) * id(toolbar_progress) / 100;
             if (width == 0) lv_obj_add_flag(id(footer_progress_fill), LV_OBJ_FLAG_HIDDEN);
             else {
               lv_obj_remove_flag(id(footer_progress_fill), LV_OBJ_FLAG_HIDDEN);
@@ -195,8 +234,8 @@ script:
           } else if (footer_visible) lv_obj_remove_flag(id(progress_footer), LV_OBJ_FLAG_HIDDEN);
           else lv_obj_add_flag(id(progress_footer), LV_OBJ_FLAG_HIDDEN);
           int footer_height = footer_visible ? ${nabla_bar_height} : 0;
-          lv_obj_set_height(id(launcher_content), ${screen_height} - ${nabla_bar_height} - footer_height);
-          lv_obj_set_height(id(navigation_content), ${screen_height} - ${nabla_bar_height} - 6 - footer_height);
+          lv_obj_set_height(id(launcher_content), screen_h - ${nabla_bar_height} - footer_height);
+          lv_obj_set_height(id(navigation_content), screen_h - ${nabla_bar_height} - 6 - footer_height);
           auto toolbar_style = [toolbar_fg](lv_obj_t *button, lv_obj_t *label, bool selected) {
             lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, 0);
             lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, LV_STATE_PRESSED);
@@ -206,6 +245,7 @@ script:
             if (label) lv_obj_set_style_text_color(label, toolbar_fg, 0);
           };
           toolbar_style(id(toolbar_home), nullptr, false);
+          toolbar_style(id(toolbar_rotate), id(toolbar_rotate_label), !current && id(nav_selection) == total + 1);
           // Focus recolors only the mark; preserve the configured base/status color.
           lv_obj_set_style_image_recolor(id(toolbar_logo_image), lv_color_hex(0xFFFFFF), LV_STATE_FOCUSED);
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, LV_STATE_FOCUSED);
@@ -227,7 +267,7 @@ script:
               lv_text_get_size(&size, text, font, 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
               return (int) size.x + 22;
             };
-            int available = ${screen_width} - 94;
+            int available = screen_w - 94;
             int needed = width(nabla::nodes[current].title);
             for (int n : ancestors) needed += width(nabla::nodes[n].title);
             bool collapsed = ancestors.size() > 2 || needed > available;
@@ -260,7 +300,7 @@ script:
             lv_obj_add_flag(id(toolbar_crumb_2), LV_OBJ_FLAG_HIDDEN);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_HIDDEN);
             lv_obj_set_x(id(toolbar_crumb_0), 40);
-            lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 134);
+            lv_obj_set_width(id(toolbar_crumb_0), screen_w - 174);
             lv_label_set_text(id(toolbar_crumb_label_0), nabla::nodes[0].title);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_text_font(id(toolbar_crumb_label_0), id(nabla_font_bold_16)->get_lv_font(), 0);
@@ -269,7 +309,7 @@ script:
       - if:
           condition:
             lambda: |-
-              return id(nav_current) == 0;
+              return id(nav_current) == 0 && !id(nav_list_view);
           then:
             - lvgl.page.show: home_page
           else:

@@ -124,3 +124,7 @@ The single underline starts just after the logo's lower tip. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a
 presentation option, not validation of physical OLED hardware.
+
+Root triangle toggles tile/list. The circular-arrow button cycles 90-degree
+rotation, reachable via Up/Down and Enter. The SDL window remains physically
+480x320; its contents rotate as on a fixed physical panel. See navigation/README.md.
