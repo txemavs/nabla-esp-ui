@@ -58,6 +58,20 @@ The ROM path avoids the fast-stub transfer issue previously seen on this unit.
 esptool 5.3.0 wrote the image and reported Hash of data verified, then reset the
 board. No eFuses were changed and no whole-flash erase was required.
 
+## Optional private Wi-Fi and OTA deployment
+
+On 2026-09-16 the same board also passed a network-enabled private build:
+USB writing was verified, Wi-Fi connected, and authenticated OTA completed.
+A separate Home Assistant Device Builder then validated and compiled the private
+composition using a pinned local library checkout, uploaded it successfully over
+the routed network and reported the device online again. Its OTA transfer took
+7.29 seconds. No private credentials or addresses are part of this repository.
+
+See [private installations](../docs/PRIVATE-INSTALLATIONS.md) for composition.
+This proves the static Wi-Fi/OTA deployment path, not runtime credential editing,
+fallback/reconnect fault tests or completion of M3. The on-screen Wi-Fi editor
+and header radio indicators remain the documented simulation/placeholders.
+
 ## Recovery
 
 Before replacing existing firmware, retain a full flash backup outside Git.
