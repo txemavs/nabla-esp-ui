@@ -106,3 +106,10 @@ polling to 5 ms to reduce mouse-event backlog and missed short presses.
 These settings are host-only and must not be copied into device profiles blindly.
 Mouse input and nested back navigation have been exercised under WSLg.
 See navigation/README.md for the current tree and its limitations.
+
+## Keyboard and touch
+
+Focus the simulator window. Left/Right selects the previous/next item (wrapping
+at the ends), Enter opens it, Escape goes back, Home returns to the desktop.
+The selected border is white; other actionable borders are cyan. Touch selects
+and opens through the same action, after 120 ms of visual feedback.

@@ -42,3 +42,9 @@ These instructions apply to the whole repository.
 - Run git diff --check; never commit .venv, build products, or credentials.
 - Do not invent sensor readings or claim placeholder settings are functional.
 - Update documentation and this file when architecture or workflows change.
+
+## Input contract
+- Normal actionable borders are cyan; selected and pressed borders are white.
+- Touch and encoder confirmation share nav_choose with 120 ms feedback.
+- SDL Left/Right moves sequential focus, Enter confirms, Escape goes back, Home opens desktop.
+- Test mixed mouse/keyboard navigation; keep input bindings outside shared UI.

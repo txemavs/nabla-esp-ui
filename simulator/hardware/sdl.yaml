@@ -4,7 +4,13 @@ esphome:
   on_boot:
     priority: 800
     then:
-      - lambda: App.set_loop_interval(1);
+      - lambda: |-
+          App.set_loop_interval(1);
+          id(key_previous).publish_state(false);
+          id(key_next).publish_state(false);
+          id(key_confirm).publish_state(false);
+          id(key_back).publish_state(false);
+          id(key_home).publish_state(false);
 
 logger:
 
@@ -22,3 +28,39 @@ touchscreen:
     id: simulator_touch
     display: simulator_display
     update_interval: 5ms
+
+binary_sensor:
+  - platform: sdl
+    id: key_previous
+    sdl_id: simulator_display
+    key: SDLK_LEFT
+    on_press:
+      - script.execute:
+          id: nav_move
+          delta: -1
+  - platform: sdl
+    id: key_next
+    sdl_id: simulator_display
+    key: SDLK_RIGHT
+    on_press:
+      - script.execute:
+          id: nav_move
+          delta: 1
+  - platform: sdl
+    id: key_confirm
+    sdl_id: simulator_display
+    key: SDLK_RETURN
+    on_press:
+      - script.execute: nav_activate
+  - platform: sdl
+    id: key_back
+    sdl_id: simulator_display
+    key: SDLK_ESCAPE
+    on_press:
+      - script.execute: nav_back
+  - platform: sdl
+    id: key_home
+    sdl_id: simulator_display
+    key: SDLK_HOME
+    on_press:
+      - script.execute: nav_home

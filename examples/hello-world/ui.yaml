@@ -92,7 +92,10 @@ lvgl:
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_0
@@ -101,15 +104,18 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 0);
+                        id: nav_choose
+                        index: 0
               - button:
                   id: nav_row_1
                   width: 440
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_1
@@ -118,15 +124,18 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 1);
+                        id: nav_choose
+                        index: 1
               - button:
                   id: nav_row_2
                   width: 440
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_2
@@ -135,15 +144,18 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 2);
+                        id: nav_choose
+                        index: 2
               - button:
                   id: nav_row_3
                   width: 440
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_3
@@ -152,15 +164,18 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 3);
+                        id: nav_choose
+                        index: 3
               - button:
                   id: nav_row_4
                   width: 440
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_4
@@ -169,15 +184,18 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 4);
+                        id: nav_choose
+                        index: 4
               - button:
                   id: nav_row_5
                   width: 440
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_5
@@ -186,15 +204,18 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 5);
+                        id: nav_choose
+                        index: 5
               - button:
                   id: nav_row_6
                   width: 440
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_6
@@ -203,15 +224,18 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 6);
+                        id: nav_choose
+                        index: 6
               - button:
                   id: nav_row_7
                   width: 440
                   height: 48
                   bg_color: 0x07141C
                   border_color: ${nabla_accent}
-                  border_width: 0
+                  border_width: 1
+                  pressed:
+                    border_color: 0xFFFFFF
+                    border_width: 2
                   widgets:
                     - label:
                         id: nav_row_label_7
@@ -220,5 +244,5 @@ lvgl:
                         text_font: nabla_font_20
                   on_click:
                     - script.execute:
-                        id: nav_open
-                        node: !lambda return nabla::child(id(nav_current), 7);
+                        id: nav_choose
+                        index: 7

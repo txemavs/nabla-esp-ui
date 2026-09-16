@@ -11,6 +11,8 @@ button:
   radius: 12
   pressed:
     bg_color: 0x124456
+    border_color: 0xFFFFFF
+    border_width: 2
   widgets:
     - label:
         text: "${icon}"
@@ -25,5 +27,5 @@ button:
         y: -8
   on_click:
     - script.execute:
-        id: nav_open
-        node: ${node}
+        id: nav_choose
+        index: !lambda return ${node} - 1;
