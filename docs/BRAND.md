@@ -21,10 +21,6 @@ Motion has two distinct forms:
 - Toolbar: a 180 ms in-plane 180-degree rotation around the triangle centroid.
   It turns in the same direction to point upward toward the parent.
   The SVG centroid and rotation pivot both lie at the canvas center.
-  A per-frame translation holds the visible outer bounding-box center at the
-  down-facing baseline. At 36 px, the upward pose settles about 8 px lower;
-  the sideways pose is compensated on both axes. Returning removes the offset.
-  The toolbar layout and hit target remain fixed; offsets never accumulate.
 The historical GIF may guide a later, more faithful depth animation.
 Avoid perpetual motion; preserve the one-second intro duration.
 
@@ -38,3 +34,6 @@ The header has no divider. Shared header/footer follow dark/light mode; idle
 brand text is gray, while the startup progress footer is gray/cyan.
 Preserve the silver/sky artwork as historical reference, not a mandatory raster
 texture on every display. Monochrome/readable profiles must preserve recognizability.
+
+Navigation rotation uses a fixed pivot with no per-angle translation. The toolbar
+logo is placed 3 px lower than the previous -3 px optical offset (now y = 0).

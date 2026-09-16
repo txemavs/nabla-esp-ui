@@ -277,8 +277,8 @@ script:
           lv_obj_set_style_image_recolor_opa(id(toolbar_logo_image), LV_OPA_COVER, LV_STATE_FOCUSED);
           if (id(nav_selection) == total) lv_obj_add_state(id(toolbar_logo_image), LV_STATE_FOCUSED);
           else lv_obj_remove_state(id(toolbar_logo_image), LV_STATE_FOCUSED);
-          // Optical alignment: keep the logo slightly above its geometric center.
-          lv_obj_set_y(id(toolbar_logo), -3);
+          // Fixed optical offset: lower the logo 3 px from its previous position.
+          lv_obj_set_y(id(toolbar_logo), 0);
           nabla_logo::turn(id(toolbar_logo_image), current != 0 && id(nav_selection) == total);
           lv_obj_t *separators[] = {id(toolbar_separator_0), id(toolbar_separator_1)};
           for (auto *separator : separators) lv_obj_add_flag(separator, LV_OBJ_FLAG_HIDDEN);
