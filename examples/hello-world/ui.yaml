@@ -13,6 +13,9 @@ packages:
 lvgl:
   buffer_size: 100%
   default_font: nabla_font_20
+  top_layer:
+    widgets:
+      - !include ../../components/toolbar.yaml
   pages:
     - id: splash_page
       bg_color: ${nabla_background}
@@ -34,7 +37,6 @@ lvgl:
       bg_color: ${nabla_background}
       text_color: ${nabla_text}
       widgets:
-        - !include ../../components/toolbar.yaml
         - obj:
             id: navigation_content
             x: 8

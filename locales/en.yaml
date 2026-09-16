@@ -20,3 +20,7 @@ substitutions:
   tr_wifi_detail: "Simulator: host networking. ESP Wi-Fi setup is pending."
   tr_language_detail: "Language: English. Selected at build time."
   tr_about_detail: "nabla.net ESP UI - ESPHome + LVGL"
+  tr_main_menu: "Main menu"
+  tr_appearance: "Appearance"
+  tr_dark: "Dark"
+  tr_light: "Light"

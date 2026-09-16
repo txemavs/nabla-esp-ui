@@ -4,7 +4,7 @@ esphome:
     priority: 700
     then:
       - lambda: |-
-          nabla::nodes[0].title = "${tr_home}";
+          nabla::nodes[0].title = "${tr_main_menu}";
           nabla::nodes[1].title = "${tr_settings}";
           nabla::nodes[2].title = "${tr_clock}";
           nabla::nodes[3].title = "${tr_photos}";
@@ -33,3 +33,6 @@ esphome:
           nabla::nodes[9].detail = "${tr_wifi_detail}";
           nabla::nodes[10].detail = "${tr_language_detail}";
           nabla::nodes[11].detail = "${tr_about_detail}";
+          nabla::nodes[17].title = "${tr_appearance}";
+          nabla::nodes[18].title = "${tr_dark}";
+          nabla::nodes[19].title = "${tr_light}";

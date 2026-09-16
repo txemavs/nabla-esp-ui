@@ -20,3 +20,7 @@ substitutions:
   tr_wifi_detail: "Simulador: red del ordenador. Wi-Fi del ESP pendiente."
   tr_language_detail: "Idioma: Español. Selección al compilar."
   tr_about_detail: "nabla.net ESP UI - ESPHome + LVGL"
+  tr_main_menu: "Menú principal"
+  tr_appearance: "Apariencia"
+  tr_dark: "Oscuro"
+  tr_light: "Claro"

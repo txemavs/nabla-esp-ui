@@ -73,3 +73,13 @@ The shared toolbar and focusable X are implemented in the landscape profile.
 Physical adapters remain pending.
 No view may require LEFT/RIGHT exclusively: rotary-only devices must have a
 sequentially reachable way to perform the equivalent operation.
+
+## Persistent toolbar and appearance
+- Toolbar remains black in both light and dark content modes.
+- A continuous cyan bottom line separates toolbar and content; no boxed borders.
+- Focused toolbar sections invert to white background and black text.
+- Keep the original multicolor logo artwork; do not flatten it with recoloring.
+- Desktop title is translated Main menu; X is hidden there. Splash remains clean.
+- Settings > Appearance switches dark/light at runtime. The preference is stored
+  through ESPHome globals; persistence follows the platform save interval.
+- Content focus retains the white/cyan border convention.

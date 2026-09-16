@@ -15,7 +15,7 @@ Applications use components/toolbar.yaml:
 - Paths are measured using the actual font. When space is insufficient, earlier
   ancestors become a clickable ... link to the immediate parent.
 - The current title is retained and truncated with dots only if needed.
-- Toolbar is hidden on the splash and desktop.
+- Toolbar is hidden only during splash; the desktop shows Home and its title, without X.
 
 Sequential focus order is content items, Home, visible breadcrumbs, X.
 Up/Down wraps, Enter activates, Escape returns, Home opens the desktop.
@@ -32,3 +32,13 @@ Validation:
 g++ -std=c++17 tests/navigation.cpp -o /tmp/nabla-navigation-test
 /tmp/nabla-navigation-test
 ```
+
+## Persistent toolbar and appearance
+- Toolbar remains black in both light and dark content modes.
+- A continuous cyan bottom line separates toolbar and content; no boxed borders.
+- Focused toolbar sections invert to white background and black text.
+- Keep the original multicolor logo artwork; do not flatten it with recoloring.
+- Desktop title is translated Main menu; X is hidden there. Splash remains clean.
+- Settings > Appearance switches dark/light at runtime. The preference is stored
+  through ESPHome globals; persistence follows the platform save interval.
+- Content focus retains the white/cyan border convention.

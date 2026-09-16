@@ -1,9 +1,13 @@
-# Shared application toolbar. Hidden on desktop and splash.
+# Persistent black toolbar. Hidden only during splash.
 obj:
+  id: navigation_toolbar
+  hidden: true
   width: 100%
   height: 52
   bg_color: ${nabla_background}
-  border_width: 0
+  border_width: 1
+  border_side: BOTTOM
+  border_color: ${nabla_accent}
   pad_all: 0
   widgets:
     - button:
@@ -15,9 +19,11 @@ obj:
         pad_all: 0
         bg_color: ${nabla_background}
         border_color: ${nabla_accent}
-        border_width: 1
+        border_width: 0
+        radius: 0
         widgets:
           - image:
+              id: toolbar_home_image
               src: nabla_toolbar_logo
               align: CENTER
         on_click:
@@ -33,7 +39,8 @@ obj:
         pad_all: 4
         bg_color: ${nabla_background}
         border_color: ${nabla_accent}
-        border_width: 1
+        border_width: 0
+        radius: 0
         widgets:
           - label:
               id: toolbar_crumb_label_0
@@ -46,7 +53,7 @@ obj:
         on_click:
           - script.execute:
               id: nav_choose
-              index: !lambda return nabla::children(id(nav_current)) + 1 + 0;
+              index: !lambda 'return id(nav_current) ? nabla::children(id(nav_current)) + 1 : -1;'
     - button:
         id: toolbar_crumb_1
         x: 54
@@ -56,7 +63,8 @@ obj:
         pad_all: 4
         bg_color: ${nabla_background}
         border_color: ${nabla_accent}
-        border_width: 1
+        border_width: 0
+        radius: 0
         widgets:
           - label:
               id: toolbar_crumb_label_1
@@ -79,7 +87,8 @@ obj:
         pad_all: 4
         bg_color: ${nabla_background}
         border_color: ${nabla_accent}
-        border_width: 1
+        border_width: 0
+        radius: 0
         widgets:
           - label:
               id: toolbar_crumb_label_2
@@ -102,9 +111,11 @@ obj:
         height: 44
         bg_color: ${nabla_background}
         border_color: ${nabla_accent}
-        border_width: 1
+        border_width: 0
+        radius: 0
         widgets:
           - label:
+              id: toolbar_close_label
               text: "X"
               text_color: ${nabla_accent}
               align: CENTER

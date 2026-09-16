@@ -67,3 +67,13 @@ These instructions apply to the whole repository.
 - Home opens desktop; X follows the parent tree. Do not claim general window history yet.
 - Compile both locales when changing localization or text-dependent layout.
 - Declarative navigation YAML is pending; do not describe the current static catalog as final.
+
+## Persistent toolbar and appearance
+- Toolbar remains black in both light and dark content modes.
+- A continuous cyan bottom line separates toolbar and content; no boxed borders.
+- Focused toolbar sections invert to white background and black text.
+- Keep the original multicolor logo artwork; do not flatten it with recoloring.
+- Desktop title is translated Main menu; X is hidden there. Splash remains clean.
+- Settings > Appearance switches dark/light at runtime. The preference is stored
+  through ESPHome globals; persistence follows the platform save interval.
+- Content focus retains the white/cyan border convention.

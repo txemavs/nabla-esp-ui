@@ -13,7 +13,8 @@ static Node nodes[] = {
   {"Acerca de", 1, "nabla.net ESP UI\nESPHome + LVGL\nSimulador de escritorio"},
   {"Salón", 8, ""}, {"Exterior", 8, ""},
   {"Temperatura", 12, "Sin sensor conectado"}, {"Humedad", 12, "Sin sensor conectado"},
-  {"Temperatura", 13, "Sin sensor conectado"}
+  {"Temperatura", 13, "Sin sensor conectado"},
+  {"Apariencia", 1, ""}, {"Oscuro", 17, ""}, {"Claro", 17, ""}
 };
 constexpr int count = sizeof(nodes) / sizeof(nodes[0]);
 inline bool valid(int n) { return n >= 0 && n < count; }

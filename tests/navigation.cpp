@@ -12,7 +12,8 @@ int main() {
   }
   assert(nabla::child(1, 0) == 9);
   assert(nabla::child(1, 2) == 11);
-  assert(nabla::child(1, 3) == -1);
+  assert(nabla::child(1, 3) == 17);
+  assert(nabla::child(1, 4) == -1);
   assert(nabla::path(9) == "Inicio > Ajustes > Wi-Fi");
   assert(nabla::path(14) == "Inicio > Sensores > Salón > Temperatura");
   assert(nabla::path(-1).empty());
