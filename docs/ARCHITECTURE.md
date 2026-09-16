@@ -28,8 +28,8 @@ Application views hide the idle footer. See navigation/README.md.
 ## Boundary and migration
 
 The current example still uses fixed widget IDs, eight row slots and some
-profile-specific metrics. General module manifests, typed bindings, forms,
-actual peer services are not implemented. M1 now supplies a separate 128x64
+profile-specific metrics. General module manifests, typed bindings and actual peer services are not
+implemented. M2 provides bounded form metadata and host-only transactional editors. M1 now supplies a separate 128x64
 ESPHome display renderer with shared catalog and focus policies.
 Do not describe these as completed because an illustrative YAML file exists.
 

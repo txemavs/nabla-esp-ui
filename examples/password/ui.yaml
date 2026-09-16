@@ -1,3 +1,9 @@
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - lambda: lv_textarea_set_password_show_time(id(password_input),0);
+
 # Native LVGL password editor fixture; never persists or transmits input.
 script:
   - id: password_cancel

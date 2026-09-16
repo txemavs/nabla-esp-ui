@@ -8,7 +8,7 @@ and cooperation between large and small screens. Local operation must not depend
 on a server being available.
 
 **Status:** working desktop prototype on ESPHome 2026.8.2 / LVGL 9.5.
-Physical boards, editable settings and device-to-device links are not validated.
+Physical boards, persistent settings and device-to-device links are not validated.
 Start with [the simulator](simulator/README.md).
 
 ## Platform plan
@@ -18,8 +18,8 @@ component catalog, readable/tiny display profiles, keyboards and forms, Wi-Fi
 commissioning, peer control, and the vehicle panel with a Raspberry Pi 4.
 The [roadmap](docs/platform/ROADMAP.md) defines implementation order and exit gates.
 
-The next slice is a shared Wi-Fi form with mock scans and text/password input,
-tested with touch and sequential controls before connecting real radios.
+M1 adaptive profiles and M2 local forms are implemented on the host. Try the
+Wi-Fi simulation or Settings > Controls (demo); real radios are the next milestone.
 Draft YAML in docs/platform/ is explicitly illustrative, not accepted firmware.
 
 ## What works today
@@ -32,6 +32,9 @@ Draft YAML in docs/platform/ is explicitly illustrative, not accepted firmware.
 - Shared compact header/footer, configurable logo and status icon assets.
 - Simulated startup progress followed by brand and HH:MM desktop footer.
 - Dark/light appearance and build-time Spanish/English with accent glyphs.
+- Native 128x64 tiny/readable and 320x480 portrait profiles.
+- Shared simulated Wi-Fi scans, masked password editing and failure/retry states.
+- YAML-defined numeric, choice and toggle fields with cancel/confirm transactions.
 
 The current desktop contains Settings, Communications, Photos, Music, Cameras,
 Weather, Lights and Sensors. Most are placeholders; Settings demonstrates
@@ -66,7 +69,7 @@ Add a new capability as a documented module with a runnable example.
 A stable core still receives maintenance; it is not a promise of zero future edits.
 
 The first physical target is **JC3248W535CN**, pending board-specific validation.
-A true 128x64 profile, larger OLED profiles and physical input adapters are planned.
+The 128x64 host profiles are implemented; physical OLED and input adapters remain planned.
 Host rendering does not establish ESP memory, radio, touch or display support.
 
 ## Brand and contributions

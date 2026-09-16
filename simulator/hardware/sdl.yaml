@@ -65,6 +65,22 @@ binary_sensor:
     on_press:
       - script.execute: nav_home
 
+  - platform: sdl
+    id: key_left
+    sdl_id: simulator_display
+    key: SDLK_LEFT
+    on_press:
+      - lambda: |-
+          if(nabla::nodes[id(nav_current)].action==4)nabla_forms::regular_form.adjust(-1);
+
+  - platform: sdl
+    id: key_right
+    sdl_id: simulator_display
+    key: SDLK_RIGHT
+    on_press:
+      - lambda: |-
+          if(nabla::nodes[id(nav_current)].action==4)nabla_forms::regular_form.adjust(1);
+
 # Host clock is a simulator adapter; device profiles supply their own clock.
 time:
   - platform: host

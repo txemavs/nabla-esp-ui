@@ -10,7 +10,8 @@ struct Editor {
   lv_obj_t *scan_rows[5]{};
   const char *const *words{};
   nabla_forms::WifiFlow flow;
-  int scan_index=0;
+  int scan_index=0, scan_top=0;
+  bool scan_picker=false;
   struct RowContext {Editor *self;int index;} row_context[5];
   void setup_scan() {
     if(scan_panel)return;
@@ -24,33 +25,40 @@ struct Editor {
       lv_label_create(scan_rows[i]);row_context[i]={this,i};
       lv_obj_add_event_cb(scan_rows[i],[](lv_event_t *e){
         auto *ctx=static_cast<RowContext *>(lv_event_get_user_data(e));
-        ctx->self->select_scan(ctx->index);
+        ctx->self->select_scan(ctx->self->scan_top+ctx->index);
       },LV_EVENT_CLICKED,&row_context[i]);
     }
     lv_obj_add_flag(scan_panel,LV_OBJ_FLAG_HIDDEN);
   }
   bool scanning() const {
-    return flow.stage==nabla_forms::Stage::SCANNING || flow.stage==nabla_forms::Stage::RESULTS;
+    return scan_picker || flow.stage==nabla_forms::Stage::SCANNING || flow.stage==nabla_forms::Stage::RESULTS || flow.stage==nabla_forms::Stage::SCAN_ERROR;
   }
-  void start_scan() {
-    flow.scan(esphome::millis());scan_index=0;poll();
+  int scan_count() const {
+    return scan_picker?4:flow.stage==nabla_forms::Stage::RESULTS?flow.results()+1:1;
   }
+  void start_scan() {scan_picker=true;scan_index=scan_top=0;poll();}
   void select_scan(int index) {
-    if(flow.stage==nabla_forms::Stage::RESULTS && index<flow.results()){
+    if(scan_picker){
+      scan_picker=false;
+      if(index<3)flow.scan(esphome::millis(),static_cast<nabla_forms::ScanMode>(index));
+      scan_index=scan_top=0;
+    }else if(flow.stage==nabla_forms::Stage::RESULTS && index<flow.results()){
       flow.choose(index);
-      lv_textarea_set_text(ssid,flow.ssid.c_str());
-      lv_textarea_set_text(password,"");
+      lv_textarea_set_text(ssid,flow.ssid.c_str());lv_textarea_set_text(password,"");
       if(flow.open)lv_obj_add_state(open_box,LV_STATE_CHECKED);
       else lv_obj_remove_state(open_box,LV_STATE_CHECKED);
       edit(!flow.open);
-    }else flow.cancel();
+    }else {flow.cancel();focus=keys()+3;}
     poll();
   }
   void submit() {
+    if(flow.stage==nabla_forms::Stage::CONNECTING || flow.stage==nabla_forms::Stage::SUCCESS || scanning())return;
     flow.ssid=lv_textarea_get_text(ssid);
     flow.password=lv_textarea_get_text(password);
     flow.open=lv_obj_has_state(open_box,LV_STATE_CHECKED);
-    if(flow.connect(esphome::millis()))lv_textarea_set_text(password,"");
+    if(flow.connect(esphome::millis())){
+      lv_textarea_set_text(password,"");focus=keys()+5;highlight();
+    }
     else {
       edit(flow.error==nabla_forms::Error::PASSWORD);
       flow.wipe_password();
@@ -80,19 +88,29 @@ struct Editor {
     int w=lv_display_get_horizontal_resolution(lv_display_get_default());
     int h=lv_display_get_vertical_resolution(lv_display_get_default())-40;
     lv_obj_set_pos(scan_panel,0,38);lv_obj_set_size(scan_panel,w,h);
-    lv_label_set_text(scan_title,words[flow.stage==Stage::SCANNING?11:0]);
-    int count=flow.stage==Stage::SCANNING?1:flow.results()+1;
-    scan_index=std::min(scan_index,count-1);
+    int heading=scan_picker?21:flow.stage==Stage::SCANNING?11:
+      flow.stage==Stage::SCAN_ERROR?18:flow.stage==Stage::RESULTS && !flow.results()?17:0;
+    lv_label_set_text(scan_title,words[heading]);
+    int count=scan_count();
+    scan_index=std::clamp(scan_index,0,count-1);
+    scan_top=std::clamp(scan_top,0,std::max(0,count-5));
+    if(scan_index<scan_top)scan_top=scan_index;
+    if(scan_index>=scan_top+5)scan_top=scan_index-4;
     for(int i=0;i<5;i++){
       auto *b=scan_rows[i];
-      if(i>=count){lv_obj_add_flag(b,LV_OBJ_FLAG_HIDDEN);continue;}
+      int index=scan_top+i;
+      if(index>=count){lv_obj_add_flag(b,LV_OBJ_FLAG_HIDDEN);continue;}
       lv_obj_remove_flag(b,LV_OBJ_FLAG_HIDDEN);
       lv_obj_set_pos(b,0,25+i*((h-30)/5));lv_obj_set_size(b,w-8,(h-30)/5-3);
       lv_obj_set_style_bg_color(b,bg,0);lv_obj_set_style_text_color(b,fg,0);
-      lv_obj_set_style_border_width(b,i==scan_index?2:1,0);
-      lv_obj_set_style_border_color(b,i==scan_index?fg:lv_color_hex(0x808080),0);
+      lv_obj_set_style_border_width(b,index==scan_index?2:1,0);
+      lv_obj_set_style_border_color(b,index==scan_index?fg:lv_color_hex(0x808080),0);
       auto *label=lv_obj_get_child(b,0);
-      lv_label_set_text(label,flow.stage==Stage::RESULTS && i<flow.results()?networks[i].ssid:words[6]);
+      std::string caption=scan_picker?words[index==0?20:index==1?4:index==2?19:6]:
+        flow.stage==Stage::RESULTS && index<flow.results()?flow.result_label(index):words[6];
+      lv_obj_set_width(label,w-36);
+      lv_label_set_long_mode(label,LV_LABEL_LONG_MODE_SCROLL_CIRCULAR);
+      lv_label_set_text(label,caption.c_str());
       lv_obj_center(label);
     }
   }
@@ -100,7 +118,7 @@ struct Editor {
   bool editing_password = false;
   bool dark_theme = true;
   void clear() {
-    flow.clear();
+    flow.clear();scan_picker=false;scan_index=scan_top=0;
     if(open_box)lv_obj_remove_state(open_box,LV_STATE_CHECKED);
     lv_textarea_set_text(ssid, "");
     lv_textarea_set_text(password, "");
@@ -136,7 +154,7 @@ struct Editor {
   }
   void move(int delta) {
     if(scanning()){
-      int n=flow.stage==nabla_forms::Stage::SCANNING?1:flow.results()+1;
+      int n=scan_count();
       scan_index=(scan_index+delta%n+n)%n;poll();return;
     }
     if(flow.stage==nabla_forms::Stage::CONNECTING){focus=keys()+5;highlight();return;}
@@ -181,8 +199,14 @@ struct Editor {
     lv_obj_set_pos(password, portrait ? 6 : field_w + 12, portrait ? 86 : 42);
     lv_obj_set_size(password, field_w, 40);
     int status_y = portrait ? 132 : 88;
-    lv_obj_set_pos(status, 6, status_y); lv_obj_set_width(status, w - 122);
-    lv_obj_set_pos(open_box,w-115,status_y);lv_obj_set_width(open_box,110);
+    lv_point_t toggle_text;
+    lv_text_get_size(&toggle_text,lv_checkbox_get_text(open_box),
+                    lv_obj_get_style_text_font(open_box,LV_PART_MAIN),0,0,LV_COORD_MAX,LV_TEXT_FLAG_NONE);
+    const int toggle_width=toggle_text.x+32;
+    lv_obj_set_style_pad_all(open_box,2,0);
+    lv_obj_set_style_pad_column(open_box,4,0);
+    lv_obj_set_pos(status,6,status_y);lv_obj_set_width(status,w-toggle_width-18);
+    lv_obj_set_pos(open_box,w-toggle_width-6,status_y);lv_obj_set_width(open_box,toggle_width);
     int keyboard_y = status_y + 24;
     lv_obj_set_pos(keyboard, 4, keyboard_y);
     lv_obj_set_size(keyboard, w - 8, h - keyboard_y - 42);
@@ -215,9 +239,9 @@ struct Editor {
           LV_PART_ITEMS | state);
     }
     lv_obj_set_style_bg_color(open_box,bg,LV_PART_INDICATOR);
-    lv_obj_set_style_bg_color(open_box,fg,LV_PART_INDICATOR | LV_STATE_CHECKED);
+    lv_obj_set_style_bg_color(open_box,fg,static_cast<lv_style_selector_t>(LV_PART_INDICATOR) | LV_STATE_CHECKED);
     lv_obj_set_style_border_color(open_box,fg,LV_PART_INDICATOR);
-    lv_obj_set_style_text_color(open_box,bg,LV_PART_INDICATOR | LV_STATE_CHECKED);
+    lv_obj_set_style_text_color(open_box,bg,static_cast<lv_style_selector_t>(LV_PART_INDICATOR) | LV_STATE_CHECKED);
     highlight();
   }
 };

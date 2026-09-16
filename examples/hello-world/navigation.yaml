@@ -5,6 +5,29 @@ external_components:
       path: ../external_components
 
 nabla_navigation:
+  forms:
+    - key: brightness
+      label: ${tr_form_brightness}
+      type: number
+      min: 0
+      max: 100
+      step: 5
+      initial: 50
+    - key: refresh
+      label: ${tr_form_refresh}
+      type: number
+      min: 1
+      max: 60
+      initial: 5
+    - key: mode
+      label: ${tr_form_mode}
+      type: choice
+      options: ["${tr_form_auto}", "${tr_form_manual}", "${tr_form_eco}"]
+      initial: 0
+    - key: notifications
+      label: ${tr_form_notifications}
+      type: toggle
+      initial: true
   tree:
     key: home
     title: ${tr_main_menu}
@@ -36,6 +59,9 @@ nabla_navigation:
               - key: light
                 title: ${tr_light}
                 action: light
+          - key: forms
+            title: ${tr_form_0}
+            action: forms_demo
       - key: communications
         icon_dark: 0x46D6A0
         icon_light: 0x007653

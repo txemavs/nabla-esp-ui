@@ -23,7 +23,8 @@ Applies to the entire nabla-esp-ui repository.
 - Root rotation control follows the triangle in focus order; status icons do not.
 - Current title is bold and not focusable; ancestors are navigable.
 - UP/DOWN is sequential movement; ENTER confirms; LEFT/RIGHT are reserved
-  outside contexts that define them. Physical input adapters remain pending.
+  outside contexts that define them; M2 numbers/choices define optional adjustments.
+  Physical input adapters remain pending.
 - Header has no divider. Header/footer share the bar surface, now 36 px.
 - Desktop footer is persistent; app footer is hidden unless an operation needs it.
 - Startup progress is simulated, then brand/clock replace it.
@@ -34,11 +35,16 @@ Applies to the entire nabla-esp-ui repository.
 - Use runtime logical dimensions when rendering rotated layouts.
 - Settings > Connections > Wi-Fi hosts a manual SSID/password demo (wifi_demo).
 - Its component owns editor focus and draft clearing; routes keep shared toolbar.
-- Apply validates locally and clears the password; no Wi-Fi or persistence yet.
+- Connect validates locally and clears the password; only mock Wi-Fi, no persistence.
+- Password show time stays zero; never reveal even the last typed character.
+- M2 Save commits once after confirmation; accepting a field changes only its draft.
+- Keep focus/rollback rules in the shared controller, not separate renderer callbacks.
+- Wi-Fi scenarios include bounded deduplication, long names, empty/error, cancel/retry.
 - M1 tiny/readable profiles render the same tree at real 128x64, monochrome.
 - profiles/README.md documents geometry, launch commands and host-only evidence.
 - M2 Wi-Fi forms work in compact and regular with a shared simulated scan/connect flow.
-- Generic forms, real data bindings, GPIO adapters and peers remain planned.
+- M2 generic number/choice/toggle forms use validated YAML and shared transactions.
+- Real data bindings, GPIO adapters and peers remain planned.
 
 ## Extension rules
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.

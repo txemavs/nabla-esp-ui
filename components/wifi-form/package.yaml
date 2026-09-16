@@ -1,6 +1,10 @@
+substitutions:
+  nabla_keyboard_latin: "true"
+
 # Local simulated Wi-Fi form, composed by the demo navigation.
 esphome:
   includes:
+    - ../components/forms/latin_keyboard.h
     - ../components/forms/wifi_flow.h
     - ../components/wifi-form/form.h
 
@@ -13,8 +17,13 @@ script:
           e.password=id(wifi_form_password);e.keyboard=id(wifi_form_keyboard)->obj;
           e.status=id(wifi_form_status);e.apply=id(wifi_form_apply);e.cancel=id(wifi_form_cancel);
           e.scan=id(wifi_form_scan);e.open_box=id(wifi_form_open);
-          static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}"};
+          static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}", "${tr_flow_18}", "${tr_flow_19}", "${tr_flow_20}", "${tr_flow_21}"};
           e.words=words;e.setup_scan();
+          lv_textarea_set_password_show_time(e.password,0);
+          if(${nabla_keyboard_latin}){
+            nabla_keyboard::install(e.keyboard);
+            lv_obj_set_style_text_font(e.keyboard,id(nabla_font_16)->get_lv_font(),LV_PART_ITEMS);
+          }
           nabla_wifi_form::editor.clear();
       - lvgl.label.update:
           id: wifi_form_status
@@ -130,6 +139,11 @@ lvgl:
               focused:
                 border_color: 0xFFFFFF
                 border_width: 2
+            on_value:
+              - lambda: |-
+                  auto &e=nabla_wifi_form::editor;
+                  int selected=lv_buttonmatrix_get_selected_button(e.keyboard);
+                  if(selected>=0 && selected<e.keys()){e.focus=selected+2;e.highlight();}
             on_cancel:
               - script.execute: nav_back
         - button:

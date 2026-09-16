@@ -1,41 +1,21 @@
-# Manual Wi-Fi form (simulator)
+# Manual Wi-Fi form
 
-Status: integrated local demo; no radio, persistence or automatic discovery.
-Include package.yaml alongside the navigation shell and select action: wifi_demo
-on a non-root leaf. The package declares its widgets/scripts and depends on
-nav_back, shared fonts, locale substitutions and the shell's runtime dimensions.
-Only one active editor instance is supported.
+The package in package.yaml opens at Settings > Connections > Wi-Fi through
+action: wifi_demo. It is a host-only simulation on regular/portrait LVGL.
+The compact renderer uses the same WifiFlow with its character selector.
 
-The C++ Editor helper owns field selection, sequential input, bounded key
-traversal and regular/portrait layout. Menu routing stays in navigation/logic.yaml.
-The form returns through the ordinary breadcrumb, triangle, X and Escape paths.
-Leaving the form clears both fields; changing fields does not clear the draft.
+The form provides SSID, masked password, an open-network checkbox, a native
+keyboard and Connect/Scan/Cancel. Scan opens normal/empty/error fixtures; results
+fill the draft. Nothing changes the host's Wi-Fi or stores credentials.
 
-Inputs:
-- Touch a field to attach the native keyboard to it.
-- Up/Down traverses SSID, password, keyboard keys, Apply and Cancel.
-- Enter on a field enters keyboard selection; Enter on a key types it.
-- The native Ready key advances SSID to password, then submits.
-- Cancel on the keyboard/button or Escape returns without committing.
-- Home returns to the launcher and clears the draft.
+Up/Down/Enter reaches fields, keyboard keys and all actions. Touch updates the
+same focus. Connection starts at most once per submitted draft; Cancel remains
+available while busy. Invalid input focuses the field requiring correction.
+Leaving through the toolbar, Home or Cancel clears drafts.
 
-States: editing, invalid SSID, invalid password and demo accepted.
-Validation requires SSID length 1..32 UTF-8 bytes and password length 8..63 bytes.
-The open-network checkbox bypasses password validation; scans select its state.
-64-digit raw PSKs and enterprise authentication are not implemented.
-The textarea's character limit is only an editing limit; submission checks bytes.
-The stock keyboard has its native repertoire, not a Spanish custom key layout.
+The optional Latin keyboard supports ASCII and Spanish accents. The last
+password character is never briefly revealed. Portrait places fields vertically;
+landscape places them side by side, above the keyboard.
 
-Apply validates locally, clears the password and runs the shared simulated
-connection operation before reporting demo success/failure.
-No connection is attempted, no credentials are saved, and no input is logged.
-On real hardware the future Wi-Fi adapter will implement connection state,
-failure, rollback and deliberate persistence. Nabla Net automatic discovery is
-a separate planned adapter using the same application state.
-
-Supported preview: 480x320 and rotated 320x480, es/en labels, dark/light shell.
-Field/key surfaces follow the same black/white theme as the shell. Tiny OLED editing is
-pending; this composition is not automatically scaled down to 128x64.
-
-M2 adds a Scan overlay and the shared [Wi-Fi workflow](../forms/README.md).
-Connection and scan waits are deterministic and cancelable; no network changes.
+See [shared forms](../forms/README.md) for validation, fixtures, resource bounds,
+extension rules and test evidence. Real Wi-Fi and Nabla Net readiness are M3+.

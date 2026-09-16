@@ -13,6 +13,7 @@ packages:
   toolbar_progress: !include ../../components/toolbar/progress.yaml
   navigation: !include ../../navigation/logic.yaml
   catalog: !include navigation.yaml
+  forms: !include ../../components/forms/package.yaml
   wifi_form: !include ../../components/wifi-form/package.yaml
 
 lvgl:

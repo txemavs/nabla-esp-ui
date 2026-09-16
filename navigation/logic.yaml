@@ -86,10 +86,12 @@ script:
                   nabla_wifi_form::editor.clear();
                 if (old != node && nabla::nodes[node].action == 3)
                   id(wifi_form_bind).execute();
+                if(old!=node && nabla::nodes[old].action==4)nabla_forms::regular_form.model.discard();
+                if(old!=node && nabla::nodes[node].action==4)id(forms_bind).execute();
                 id(nav_saved_focus)[old] = id(nav_selection);
                 if (old || id(nav_list_view)) id(nav_saved_scroll)[old] = lv_obj_get_scroll_y(id(navigation_content));
                 id(nav_current) = node;
-                id(nav_selection) = nabla::nodes[node].action == 3 ? -1 : id(nav_saved_focus)[node];
+                id(nav_selection) = nabla::nodes[node].action >= 3 ? -1 : id(nav_saved_focus)[node];
                 if (old != node && nabla::children(node) > 0) {
                   // Entering a child starts at its first option; returning keeps
                   // the previous content item, never a saved toolbar control.
@@ -107,10 +109,16 @@ script:
   - id: nav_back
     then:
       - script.stop: nav_choose
-      - script.execute:
-          id: nav_open
-          node: !lambda |-
-            return id(nav_current) ? nabla::nodes[id(nav_current)].parent : 0;
+      - if:
+          condition:
+            lambda: return nabla::nodes[id(nav_current)].action==4 && !nabla_forms::regular_form.back();
+          then:
+            - lambda: return;
+          else:
+            - script.execute:
+                id: nav_open
+                node: !lambda |-
+                  return id(nav_current) ? nabla::nodes[id(nav_current)].parent : 0;
   - id: nav_home
     then:
       - script.stop: nav_choose
@@ -123,9 +131,11 @@ script:
     then:
       - if:
           condition:
-            lambda: return nabla::nodes[id(nav_current)].action == 3;
+            lambda: return nabla::nodes[id(nav_current)].action >= 3;
           then:
-            - lambda: nabla_wifi_form::editor.move(delta);
+            - lambda: |-
+                if(nabla::nodes[id(nav_current)].action==3)nabla_wifi_form::editor.move(delta);
+                else nabla_forms::regular_form.move(delta);
           else:
             - script.stop: nav_choose
             - lambda: |-
@@ -140,9 +150,11 @@ script:
     then:
       - if:
           condition:
-            lambda: return nabla::nodes[id(nav_current)].action == 3;
+            lambda: return nabla::nodes[id(nav_current)].action >= 3;
           then:
-            - lambda: nabla_wifi_form::editor.activate();
+            - lambda: |-
+                if(nabla::nodes[id(nav_current)].action==3)nabla_wifi_form::editor.activate();
+                else nabla_forms::regular_form.activate();
           else:
             - script.execute:
                 id: nav_choose
@@ -363,3 +375,9 @@ script:
           then:
             - lambda: nabla_wifi_form::editor.render(id(nav_dark));
             - lvgl.page.show: wifi_form_page
+      - if:
+          condition:
+            lambda: return nabla::nodes[id(nav_current)].action == 4;
+          then:
+            - lambda: nabla_forms::regular_form.render(id(nav_dark), ${nabla_monochrome});
+            - lvgl.page.show: form_gallery_page

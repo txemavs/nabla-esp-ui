@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "forms.h"
 namespace nabla {
 struct Node { const char *title; int parent; const char *detail; const char *icon; int action; int bg_dark = 0; int bg_light = 0xFFFFFF; int icon_dark = 0xFFFFFF; int icon_light = 0; };
 extern const Node nodes[];

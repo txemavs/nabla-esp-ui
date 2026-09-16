@@ -63,3 +63,15 @@ binary_sensor:
     key: SDLK_HOME
     on_press:
       - lambda: nabla::compact_shell.home();
+  - platform: sdl
+    id: compact_left
+    sdl_id: compact_display
+    key: SDLK_LEFT
+    on_press:
+      - lambda: nabla::compact_shell.adjust(-1);
+  - platform: sdl
+    id: compact_right
+    sdl_id: compact_display
+    key: SDLK_RIGHT
+    on_press:
+      - lambda: nabla::compact_shell.adjust(1);

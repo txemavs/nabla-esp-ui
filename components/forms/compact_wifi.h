@@ -28,7 +28,7 @@ struct CompactWifi {
     if(editing) return 4+glyphs().size();
     if(flow.stage==Stage::RESULTS) return flow.results()+1;
     if(flow.stage!=Stage::EDIT) return 1;
-    return 7;
+    return 8;
   }
   void move(int delta) {
     if(editing) {key=nabla::wrap_focus(key,delta,total());return;}
@@ -66,14 +66,19 @@ struct CompactWifi {
       case 2: flow.open=!flow.open;flow.wipe_password();break;
       case 3: flow.scan(now);focus=top=0;break;
       case 4: flow.scan(now,true);focus=top=0;break;
-      case 5: flow.connect(now);break;
-      case 6: return back();
+      case 5: flow.scan(now,ScanMode::ERROR);focus=top=0;break;
+      case 6:
+        if(!flow.connect(now) && flow.error!=Error::NONE){
+          focus=flow.error==Error::SSID?0:1;top=0;
+        }
+        break;
+      case 7: return back();
     }
     return false;
   }
   std::string row(int index) const {
     if(flow.stage==Stage::RESULTS)
-      return index<flow.results()?networks[index].ssid:text[6];
+      return index<flow.results()?flow.result_label(index):text[6];
     if(flow.stage!=Stage::EDIT) return text[6];
     switch(index) {
       case 0:return std::string("SSID: ")+(flow.ssid.empty()?"...":flow.ssid);
@@ -81,7 +86,8 @@ struct CompactWifi {
       case 2:return std::string(flow.open?"[x] ":"[ ] ")+text[2];
       case 3:return text[3];
       case 4:return text[4];
-      case 5:return text[5];
+      case 5:return text[19];
+      case 6:return text[5];
       default:return text[6];
     }
   }

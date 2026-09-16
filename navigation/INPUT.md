@@ -46,6 +46,7 @@ Preserve focus by stable semantic key across refresh, rotation and navigation.
 Modal overlays own focus temporarily and restore it on close.
 Remote sessions must release held input on disconnect and offer local escape.
 
-The regular Wi-Fi demo has an editor focus path. Compact editing and remote
-input remain later work.
+Both Wi-Fi renderers have an editor focus path. Generic forms define optional
+LEFT/RIGHT adjustments; UP/DOWN/ENTER remains sufficient. Field/dialog ESC restores
+its invoking focus before a subsequent ESC leaves the form. Remote input remains planned.
 See [component/input plan](../docs/platform/COMPONENTS-AND-INPUT.md) for the target.

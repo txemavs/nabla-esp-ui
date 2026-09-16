@@ -75,7 +75,8 @@ int main() {
             cpp.write_text(source)
             includes=Path(tmp)/"esphome/components/nabla_navigation"
             includes.mkdir(parents=True)
-            shutil.copy(ROOT/"external_components/nabla_navigation/navigation.h", includes/"navigation.h")
+            for name in ("navigation.h","forms.h"):
+                shutil.copy(ROOT/"external_components/nabla_navigation"/name, includes/name)
             subprocess.run(["g++","-std=c++17","-I",str(ROOT),"-I",str(ROOT/"navigation"),
                             "-I",str(Path(tmp)),str(cpp),"-o",str(exe)],check=True)
             subprocess.run([str(exe)],check=True)

@@ -1,0 +1,20 @@
+# Transactional renderer; metadata comes from nabla_navigation.forms.
+esphome:
+  includes:
+    - ../components/forms/regular.h
+script:
+  - id: forms_bind
+    then:
+      - lambda: |-
+          auto &f=nabla_forms::regular_form;
+          static const char *words[] = {"${tr_form_0}", "${tr_form_1}", "${tr_form_2}", "${tr_form_3}", "${tr_form_4}", "${tr_form_5}", "${tr_form_6}", "${tr_form_7}", "${tr_form_8}", "${tr_form_9}"};
+          f.model.words=words;
+          f.setup(id(form_gallery_page)->obj,id(nabla_font_16)->get_lv_font());
+          f.on_close=[](){id(nav_back).execute();};
+          f.begin();
+lvgl:
+  pages:
+    - id: form_gallery_page
+      pad_all: 0
+      border_width: 0
+      scrollbar_mode: "OFF"

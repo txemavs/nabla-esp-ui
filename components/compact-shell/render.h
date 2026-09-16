@@ -9,18 +9,27 @@ class CompactShell {
  public:
   CompactMenu menu;
   nabla_forms::CompactWifi wifi;
+  nabla_forms::Controller forms;
+  int form_focus=-1,form_view=-1,wifi_focus=-1,wifi_stage=-1;
+  uint32_t form_since=0,wifi_since=0;
+  bool in_forms() const {return nodes[menu.current].action==4;}
+  void adjust(int delta){if(in_forms())forms.adjust(delta);}
   bool in_wifi() const {return nodes[menu.current].action==3;}
-  void move(int delta) {if(in_wifi())wifi.move(delta);else menu.move(delta);}
+  void move(int delta) {if(in_wifi())wifi.move(delta);else if(in_forms())forms.move(delta);else menu.move(delta);}
   void activate() {
     if(in_wifi()) {if(wifi.activate(esphome::millis())) menu.back();}
-    else {menu.activate();if(in_wifi())wifi.clear();}
+    else if(in_forms()){if(forms.activate())menu.back();}
+    else {menu.activate();if(in_wifi())wifi.clear();if(in_forms())forms.begin();}
   }
-  void back() {if(in_wifi()) {if(wifi.back())menu.back();}else menu.back();}
-  void home() {wifi.clear();menu.home();}
+  void back() {if(in_wifi()) {if(wifi.back())menu.back();}else if(in_forms()){if(forms.back())menu.back();}else menu.back();}
+  void home() {wifi.clear();forms.discard();menu.home();}
   void render_wifi(esphome::display::Display &d, esphome::font::Font *small,
                    esphome::font::Font *body, esphome::font::Font *large) {
     using namespace esphome;using namespace nabla_forms;
     wifi.flow.tick(millis());
+    if(wifi_focus!=wifi.focus || wifi_stage!=int(wifi.flow.stage)){
+      wifi_focus=wifi.focus;wifi_stage=int(wifi.flow.stage);wifi_since=millis();
+    }
     Color fg=menu.dark?Color::WHITE:Color::BLACK,bg=menu.dark?Color::BLACK:Color::WHITE;
     d.fill(bg);
     auto t=wifi.text;
@@ -44,6 +53,7 @@ class CompactShell {
     int title=0;
     switch(wifi.flow.stage) {
       case Stage::SCANNING:title=11;break;case Stage::CONNECTING:title=12;break;
+      case Stage::SCAN_ERROR:title=18;break;
       case Stage::SUCCESS:title=13;break;case Stage::FAILURE:title=14;break;
       case Stage::RESULTS:if(!wifi.flow.results())title=17;break;
       default:if(wifi.flow.error==Error::SSID)title=15;
@@ -58,7 +68,42 @@ class CompactShell {
       int y=13+r*17;
       if(index==wifi.focus)d.rectangle(0,y,128,17,fg);
       d.start_clipping(3,y+1,124,y+15);
-      d.print(4,y+2,body,fg,wifi.row(index).c_str());d.end_clipping();
+      auto label=wifi.row(index);int bx,by,bw,bh;
+      d.get_text_bounds(0,0,label.c_str(),body,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+      int offset=index==wifi.focus && bw>120?std::min(bw-120,std::max(0,int(((millis()-wifi_since)/100)%(bw-120+20))-10)):0;
+      d.print(4-offset,y+2,body,fg,label.c_str());d.end_clipping();
+    }
+  }
+  void render_forms(esphome::display::Display &d, esphome::font::Font *small,
+                    esphome::font::Font *body,esphome::font::Font *large) {
+    using namespace esphome;
+    auto fg=menu.dark?Color::WHITE:Color::BLACK,bg=menu.dark?Color::BLACK:Color::WHITE;
+    if(form_focus!=forms.focus || form_view!=int(forms.view)){
+      form_focus=forms.focus;form_view=int(forms.view);form_since=millis();
+    }
+    d.fill(bg);
+    if(forms.view==nabla_forms::FormView::NUMBER){
+      auto value=std::to_string(forms.value);int bx,by,bw,bh;
+      d.get_text_bounds(0,0,value.c_str(),small,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+      d.start_clipping(2,0,122-bw,11);
+      d.print(2,0,small,fg,forms.session.spec[forms.field].label);d.end_clipping();
+      d.print(126,0,small,fg,display::TextAlign::TOP_RIGHT,value.c_str());
+    }else{
+      d.start_clipping(2,0,126,11);d.print(2,0,small,fg,forms.title().c_str());d.end_clipping();
+    }
+    int rows=menu.readable?1:3,rh=menu.readable?52:17;
+    forms.top=nabla::scroll_anchor(forms.focus,forms.top,rows,forms.total());
+    for(int r=0;r<rows;r++){
+      int index=forms.top+r;if(index>=forms.total())break;
+      int y=12+r*rh;bool selected=index==forms.focus;
+      if(selected)d.rectangle(0,y,128,rh,fg);
+      auto *font=menu.readable?large:body;const auto label=forms.row(index);
+      int bx,by,bw,bh;
+      d.get_text_bounds(0,0,label.c_str(),font,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+      int offset=selected && bw>120?int(((millis()-form_since)/100)%(bw-120+20)):0;
+      offset=std::clamp(offset-10,0,std::max(0,bw-120));
+      d.start_clipping(3,y+1,124,y+rh-2);
+      d.print(4-offset,y+(rh-bh)/2,font,fg,label.c_str());d.end_clipping();
     }
   }
   bool app_footer = false;
@@ -69,6 +114,9 @@ class CompactShell {
               esphome::font::Font *body, esphome::font::Font *large,
               const char *back_text, const char *pending) {
     using namespace esphome;
+    if(!in_forms())form_focus=-1;
+    if(!in_wifi())wifi_focus=-1;
+    if(in_forms()){render_forms(d,small,body,large);return;}
     if(in_wifi()){render_wifi(d,small,body,large);return;}
     if (last_node != menu.current || last_focus != menu.focus || last_readable != menu.readable) {
       last_node = menu.current; last_focus = menu.focus; last_readable = menu.readable;
@@ -127,6 +175,11 @@ class CompactShell {
     }
   }
   void touch(int x, int y) {
+    if(in_forms()){
+      if(y<12){back();return;}
+      int rh=menu.readable?52:17,index=forms.top+(y-12)/rh;
+      if(y<64 && index<forms.total()){forms.focus=index;activate();}return;
+    }
     if(in_wifi()) {
       if(y<12) {back();return;}
       if(wifi.editing) {if(y>=27 && y<52)activate();else if(y>=52)move(x<64?-1:1);return;}
@@ -139,7 +192,7 @@ class CompactShell {
     auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer);
     if (y >= 64-g.footer) return;
     int row = (y-12)/g.row_height;
-    if (row < g.rows) {menu.touch_option(menu.top + row);if(in_wifi())wifi.clear();}
+    if (row < g.rows) {menu.touch_option(menu.top + row);if(in_wifi())wifi.clear();if(in_forms())forms.begin();}
   }
 };
 inline CompactShell compact_shell;

@@ -66,9 +66,9 @@ layout assumptions; these are migration work, not the final module architecture.
 
 ## First next step
 
-The manual Wi-Fi form is now integrated in the main simulator. Refine its
-interaction, add deterministic scan and connection-result fixtures, then build
-the compact character picker on the M1 128x64 list profile.
+M2 now includes shared form transactions, native/compact text editors and
+deterministic Wi-Fi fixtures. M3 validates the first physical device and real
+network operations; the host demo does not establish those capabilities.
 See [the roadmap](ROADMAP.md) for M0-M8 and current completion status.
 
 Peer roles do not depend on screen size: a tiny encoder controller may operate

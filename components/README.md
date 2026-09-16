@@ -4,7 +4,7 @@ Reusable UI building blocks live here, grouped by component. New components
 should have a widget.yaml entry point and a README describing parameters,
 dependencies, focus/pressed behavior, examples and limitations.
 
-- logo/widget.yaml: accent-colored equilateral triangle with down/left motion and white focus.
+- logo/widget.yaml: theme-foreground equilateral triangle with upward focus motion.
 - toolbar/widget.yaml: persistent application shell, breadcrumbs and close.
 - menu-tile.yaml: parameterized application tile.
 
@@ -39,7 +39,7 @@ symbols. Spanish/English labels compile; native keys keep the stock repertoire.
 [Wi-Fi form](wifi-form/README.md): packaged two-field SSID/password editor,
 native keyboard, validation, sequential focus and cancel/return lifecycle.
 Selected by action: wifi_demo in the demo tree. Current support is host-only
-480x320/320x480, with no connection or persistence; see its contract for details.
+480x320/320x480, with simulated connection states and no radio or persistence; see its contract for details.
 
 Launcher entries accept icon_dark/icon_light independently of optional bg_dark/bg_light.
 Default surfaces are black/white; focus and text invert with the theme.
@@ -52,5 +52,7 @@ policies. Host-verified; physical OLED and GPIO adapters remain pending.
 
 ## M2 Wi-Fi workflow and compact editor
 
-[Forms primitives](forms/README.md): local scan/connect state machine and bounded
-UTF-8 draft used by regular and compact Wi-Fi demos. No live network adapter.
+[Forms primitives](forms/README.md): validated YAML fields, transactional numeric,
+choice/toggle editors, confirmation/error states, UTF-8 draft and optional Latin
+keyboard. Regular/compact renderers share the controller and simulated Wi-Fi
+state machine. The contract documents dependencies, states, focus, bounds and examples.

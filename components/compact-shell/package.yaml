@@ -11,8 +11,11 @@ esphome:
     then:
       - lambda: |-
           App.set_loop_interval(1);
-          static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}"};
+          static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}", "${tr_flow_18}", "${tr_flow_19}", "${tr_flow_20}", "${tr_flow_21}"};
           nabla::compact_shell.wifi.text = words;
+          static const char *form_words[] = {"${tr_form_0}", "${tr_form_1}", "${tr_form_2}", "${tr_form_3}", "${tr_form_4}", "${tr_form_5}", "${tr_form_6}", "${tr_form_7}", "${tr_form_8}", "${tr_form_9}"};
+          nabla::compact_shell.forms.words=form_words;
+          nabla::compact_shell.forms.session.configure(nabla_forms::fields,nabla_forms::field_count);
           nabla::compact_shell.menu.readable = ${compact_readable};
           nabla::compact_shell.app_footer = ${compact_app_footer};
           id(compact_up).publish_state(false);

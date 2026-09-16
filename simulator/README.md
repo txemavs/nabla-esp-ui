@@ -118,9 +118,9 @@ The shared toolbar and focus behavior are described in navigation/README.md.
 Set ui_language to es or en; see locales/README.md for CLI overrides.
 
 Current presentation contract: focus changes only borders, never icon, text or
-background colors. Icons and names default to white. The current toolbar title
-is bold white and excluded from focus; ancestors remain regular clickable text.
-The single underline starts just after the logo's lower tip. Startup spins the
+background colors. Text follows the dark/light foreground; launcher icon colors are independent.
+The current toolbar title is bold and excluded from focus; ancestors remain regular clickable text.
+The header has no divider. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a
 presentation option, not validation of physical OLED hardware.
@@ -131,7 +131,7 @@ rotation, reachable via Up/Down and Enter. The SDL window remains physically
 
 For the larger platform design and proposed keyboard/128x64 fixtures, see
 [the platform roadmap](../docs/platform/ROADMAP.md). The compact profiles are separate compositions; do not create them by shrinking
-the regular example. Compact forms remain future work.
+the regular example. Compact forms use the M2 character selector and shared form controller.
 
 ## Password keyboard preview
 
@@ -187,8 +187,8 @@ Compact Wi-Fi editing now uses the M2 character selector; see ../components/form
 ## M2 Wi-Fi workflow
 
 In regular, portrait, tiny or readable, open Settings > Connections > Wi-Fi.
-Regular offers Scan beside Connect/Cancel. Compact offers Scan and an additional
-empty-scan fixture in the list. Choose Invitados Demo to try success without
+Regular offers Scan beside Connect/Cancel, opening a normal/empty/error scenario
+picker. Compact exposes all three fixtures in its list. Choose Invitados Demo to try success without
 typing a password; choose Demo sin servicio and an 8-character dummy password
 to try failure. Other protected fixtures accept any valid-length dummy password.
 Both scan and connection are simulations; there are no network side effects.
@@ -196,3 +196,24 @@ Both scan and connection are simulations; there are no network side effects.
 In the compact field editor, use Up/Down/Enter for Done, Delete, Cancel, the
 character group and individual characters. Escape cancels only the field edit;
 Back from the form discards all data. See ../components/forms/README.md.
+
+## M2 controls gallery
+
+Open Settings > Controls (demo) in any profile. The fields are configured in
+examples/hello-world/navigation.yaml under nabla_navigation.forms.
+Edit numbers with Minus/Plus/Accept/Cancel, select an operating mode and toggle
+notifications. These are local example values, not real device settings.
+
+Use Up/Down/Enter throughout; Left/Right is an optional numeric/choice shortcut.
+Save asks for confirmation with Cancel focused first. Cancelling a field restores
+its previous value; cancelling the form discards all its changes. Confirmed
+values remain during this process and reset when the program restarts.
+The shared toolbar/ESC returns from an editor/dialog before leaving the form.
+
+The integrated Wi-Fi keyboard includes ASCII and Spanish accents. Set
+nabla_keyboard_latin: "false" to test the unmodified native keyboard.
+Passwords stay masked at all times. The standalone password preview keeps its
+original stock keyboard; it is an isolated earlier fixture.
+
+See [forms](../components/forms/README.md) and
+[M2 evidence](../docs/platform/M2-VERIFICATION.md) for coverage and limitations.

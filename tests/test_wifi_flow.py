@@ -13,6 +13,11 @@ int main(){
  TextDraft d;d.limit=4;
  assert(d.append("á"));assert(d.append("ñ"));assert(!d.append("a"));
  d.erase();assert(d.value=="á");d.erase();assert(d.value.empty());
+
+ // Reject malformed, embedded-NUL, surrogate and oversized Unicode input.
+ assert(!d.append(std::string("\0",1)));assert(!d.append("\xC0\xAF"));
+ assert(!d.append("\xED\xA0\x80"));assert(!d.append("\xF4\x90\x80\x80"));
+ assert(d.append("\xF0\x9F\x98\x80"));d.erase();assert(d.value.empty());
  WifiFlow f;
  assert(!f.connect(0));assert(f.error==Error::SSID);
  f.ssid="demo";assert(!f.connect(0));assert(f.error==Error::PASSWORD);
@@ -31,13 +36,30 @@ int main(){
  assert(f.connect(11000));f.tick(12000);assert(f.stage==Stage::SUCCESS);
  f.clear();assert(f.ssid.empty() && f.password.empty() && f.stage==Stage::EDIT);
  f.scan(0xFFFFFF00);f.tick(0x00000200);assert(f.stage==Stage::RESULTS);
+
+ // Duplicate SSID/security collapses to strongest signal; open/protected remain distinct.
+ f.scan(0);f.tick(700);assert(f.results()==6);
+ assert(std::string(f.result(0).ssid)=="Nabla Demo" && f.result(0).rssi==-35);
+ assert(f.result(5).open && !f.result(0).open);
+ assert(std::string(f.result(4).ssid).size()==32);
+ auto rev=f.revision;f.scan(1000);assert(!f.scan(1001));assert(f.revision==rev+1);
+ f.cancel();f.tick(2000);assert(f.stage==Stage::EDIT);
+ f.scan(3000,ScanMode::ERROR);f.tick(3700);assert(f.stage==Stage::SCAN_ERROR && !f.choose(0));
+ f.scan(4000);f.tick(4700);assert(f.choose(4));
+ f.password="12345678";assert(f.connect(5000));auto accepted=f.accepted;
+ // Mutable draft cannot alter an in-flight operation's result.
+ f.ssid="edited";f.tick(6000);assert(f.stage==Stage::SUCCESS);
+ assert(!f.connect(6001) && f.accepted==accepted);
+ f.cancel();f.ssid=std::string(33,'a');f.password="12345678";assert(!f.connect(7000));
+ f.ssid=std::string(32,'a');assert(f.connect(7100));
+ f.clear();f.tick(9000);assert(f.stage==Stage::EDIT);
  CompactWifi e;e.flow.ssid="original";e.edit(false);
  e.draft.value="changed";assert(!e.back());assert(e.flow.ssid=="original");
  e.edit(false);e.draft.value="new";e.key=0;e.activate(0);assert(e.flow.ssid=="new");
  e.flow.password="private";e.clear();assert(e.flow.password.empty() && e.draft.value.empty());
  // Sequential selector reaches cancel without a physical Escape key.
  e.edit(true);e.move(2);e.activate(0);assert(!e.editing);
- e.focus=6;assert(e.activate(0));
+ e.focus=7;assert(e.activate(0));
 }
 """
         with tempfile.TemporaryDirectory() as tmp:

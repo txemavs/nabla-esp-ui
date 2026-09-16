@@ -2,6 +2,9 @@
 font:
   - file: ../assets/fonts/DejaVuSans.ttf
     id: nabla_font_16
+    extras:
+      - file: ../assets/fonts/fa-solid-900.ttf
+        glyphs: ["\uf00c", "\uf00d", "\uf053", "\uf054", "\uf55a"]
     size: 16
     bpp: 4
     glyphsets: []
