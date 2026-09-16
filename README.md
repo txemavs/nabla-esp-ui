@@ -1,153 +1,170 @@
 # ∇ nabla-esp-ui
 
-Biblioteca modular de interfaces para **ESPHome + LVGL**, con un estilo común, componentes reutilizables y navegación adaptada a distintas pantallas y métodos de entrada.
+A modular UI library for **ESPHome + LVGL**, with a shared visual style, reusable components, and navigation adapted to different displays and input methods.
 
-**Define qué quieres controlar; reutiliza cómo se presenta y cómo funciona.**
+**Define what you want to control; reuse how it looks and works.**
 
-> **Estado: diseño inicial.** Este README recoge la arquitectura y el primer alcance del proyecto. Los paquetes, perfiles y aplicaciones descritos son objetivos de implementación; todavía no hay una versión instalable ni hardware validado.
+> **Status: initial design.** This README describes the planned architecture and initial scope. The packages, profiles, and applications below are implementation goals. There is no installable release or validated hardware configuration yet.
 
-## La idea
+## The idea
 
-Queremos montar paneles sin volver a diseñar botones, barras, menús y controles para cada dispositivo.
+Build panels without redesigning buttons, bars, menus, and controls for every device.
 
-Un menú con ocho aplicaciones debe poder mostrarse como ocho iconos en una pantalla táctil o como una lista de ocho opciones en una pantalla pequeña con encoder. La estructura de navegación y las funciones se comparten; cada perfil aporta una presentación apropiada.
+A menu containing eight applications should appear as eight icons on a touchscreen or eight list entries on a small display with a rotary encoder. Navigation structure and functionality are shared; each profile provides a suitable presentation.
 
-El mismo panel de luces debe poder utilizarse en distintas habitaciones, edificios o instalaciones de Home Assistant cambiando sus entidades, sin copiar su implementación.
+The same lighting application should work across rooms, buildings, and Home Assistant installations by changing entity mappings rather than copying its implementation.
 
-## Qué configurará cada panel
+## What each panel configures
 
-- **Hardware:** placa, pantalla, táctil, encoder y retroiluminación.
-- **Perfil de interfaz:** formato, densidad y método de entrada.
-- **Navegación:** aplicaciones disponibles, orden y accesos favoritos.
-- **Entidades:** luces, sensores y acciones de esa instalación.
-- **Tema:** estilo común con ajustes opcionales.
+- **Hardware:** board, display, touchscreen, encoder, and backlight.
+- **UI profile:** format, density, and input method.
+- **Navigation:** available applications, ordering, and favorite shortcuts.
+- **Entities:** lights, sensors, and actions for that installation.
+- **Theme:** shared styling with optional overrides.
 
-La configuración se basará inicialmente en **packages, includes y variables nativos de ESPHome**. No se requiere un generador propio. La sintaxis pública se concretará con los primeros ejemplos compilables.
+Configuration will initially use **native ESPHome packages, includes, and variables**. A custom generator is not required. The public configuration syntax will be established through the first compilable examples.
 
-## Capas de la biblioteca
+## Library layers
 
-### Tema
+### Theme
 
-Colores, tipografías, iconos, espaciados, tamaños y estados visuales compartidos. Las variantes compacta, normal y grande deben mantener una identidad común.
+Shared colors, typography, icons, spacing, dimensions, and visual states. Compact, regular, and large variants should maintain a common identity.
 
-### Componentes visuales
+### Visual components
 
-Piezas como botones con icono, barras, indicadores, tarjetas, cabeceras y filas de menú.
+Building blocks such as icon buttons, bars, indicators, cards, headers, and menu rows.
 
-Cada pieza se define una vez, admite parámetros y evita asumir una pantalla o entidad concreta. Una barra debe conservar su aspecto y comportamiento allí donde se utilice.
+Each component is defined once, accepts parameters, and avoids assumptions about a particular display or entity. A bar should look and behave consistently wherever it is used.
 
-### Aplicaciones
+### Applications
 
-Módulos funcionales compuestos con las piezas de la biblioteca: luces, sensores, escenas, clima, multimedia y ajustes.
+Functional modules built from library components: lighting, sensors, scenes, climate, media, and settings.
 
-Cada aplicación declara sus dependencias y agrupa la conexión con los datos, las acciones y sus presentaciones. Los datos particulares de una instalación quedan fuera del módulo.
+Each application declares its dependencies and groups its data connections, actions, and presentations. Installation-specific entity mappings remain outside the module.
 
-### Navegación
+### Navigation
 
-Un contrato común para abrir aplicaciones, volver, ir al inicio, seleccionar y confirmar.
+A shared contract for opening applications, going back, returning home, selecting, and confirming.
 
-El perfil táctil inicial tendrá un escritorio de hasta ocho accesos y un menú global desplegable desde una esquina, con un acceso visible alternativo. El menú permitirá volver al escritorio y abrir ajustes o aplicaciones favoritas.
+The initial touch profile will provide a desktop with up to eight shortcuts and a global menu revealed from a corner, with a visible alternative entry point. The menu will offer access to the desktop, settings, and favorite applications.
 
-El perfil con encoder utilizará menús estructurados: girar para seleccionar, pulsar para entrar y una acción de retroceso configurable.
+The encoder profile will use structured menus: rotate to select, press to enter, and a configurable back action.
 
-### Perfiles
+### Profiles
 
-La presentación depende de la resolución, orientación, espacio útil y método de entrada; no solamente de las pulgadas.
+Presentation depends on resolution, orientation, available space, and input method—not just physical screen size.
 
-Una aplicación de luces puede representarse como tarjetas y controles de detalle en una táctil, y como una lista con ajuste secuencial en una pantalla pequeña. Compartirá funciones y configuración siempre que resulte práctico.
+A lighting application may use cards and detail controls on a touchscreen, and a list with sequential adjustments on a small display. It will share functionality and configuration wherever practical.
 
-No se pretende reducir un escritorio completo hasta que quepa en cualquier pantalla: cada formato tendrá una composición apropiada.
+Each format will have an appropriate composition rather than shrinking a full desktop to fit every display.
 
 ### Hardware
 
-Los controladores y conexiones físicas se mantienen separados de la UI.
+Physical drivers and connections remain separate from the UI.
 
-La **JC3248W535CN** será el primer dispositivo objetivo. Su configuración exacta y compatibilidad se verificarán durante la implementación.
+The **JC3248W535CN** is the first target device. Its exact configuration and compatibility will be verified during implementation.
 
-## Estructura prevista
+## Planned structure
 
-Las siguientes carpetas se irán creando a medida que se implementen módulos:
+Directories will be added as their modules are implemented:
 
 ```text
-theme/          Colores, estilos, fuentes e iconos
-components/     Piezas visuales parametrizables
-apps/           Aplicaciones y sus presentaciones
-navigation/     Menús y acciones comunes
-profiles/       Composición por formato y método de entrada
-hardware/       Configuraciones de placas y periféricos
-examples/       Paneles completos y configuración de entidades
-simulator/      Configuraciones host con SDL2 y datos de demostración
-docs/catalog/   Fichas y ejemplos de los módulos disponibles
+theme/          Colors, styles, fonts, and icons
+components/     Parameterized visual building blocks
+apps/           Applications and their presentations
+navigation/     Shared menus and actions
+profiles/       Composition by format and input method
+hardware/       Board and peripheral configurations
+examples/       Complete panels and entity mappings
+simulator/      Host configurations with SDL2 and demo data
+docs/catalog/   Module documentation and examples
 ```
 
-## Contrato de los módulos
+## Module contract
 
-- Cada instancia tendrá identificadores únicos, definidos al preparar la configuración.
-- Añadir otra instancia no debe requerir copiar scripts ni editar la implementación del módulo.
-- Cada módulo declarará sus dependencias y parámetros obligatorios.
-- Eliminar un módulo debe retirar su lógica asociada, evitando referencias colgantes.
-- Los componentes visuales no contendrán entidades de Home Assistant fijadas a una instalación.
-- Las aplicaciones definirán el tratamiento de estados desconocidos, desconectados y pendientes.
-- Los perfiles compartirán las acciones de navegación, aunque cambie su representación.
-- Se priorizarán las acciones nativas de ESPHome y LVGL; el C++ adicional tendrá un alcance limitado y documentado.
-- Los ejemplos mantendrán las credenciales en archivos de secretos excluidos del repositorio.
+- Each instance has unique identifiers resolved during configuration.
+- Adding another instance must not require copying scripts or editing module internals.
+- Each module declares its dependencies and required parameters.
+- Removing a module should remove its associated logic without leaving dangling references.
+- Visual components must not hardcode installation-specific Home Assistant entities.
+- Applications define how unknown, unavailable, and pending states are handled.
+- Profiles share navigation actions even when their presentation differs.
+- Native ESPHome and LVGL actions are preferred; additional C++ must be limited in scope and documented.
+- Examples keep credentials in secret files excluded from the repository.
 
-ESPHome resuelve los IDs y la composición durante la compilación. La modularidad de esta biblioteca se construirá sobre ese modelo, sin depender de descubrimiento dinámico de widgets.
+ESPHome resolves IDs and composition at compile time. The library will build on that model without relying on runtime widget discovery.
 
-## Catálogo de piezas
+## Component catalog
 
-Cada componente o aplicación tendrá una ficha con:
+Each component or application will have an entry documenting:
 
-- Nombre, finalidad y estado: experimental o validado.
-- Parámetros, valores predeterminados e identificadores.
-- Dependencias y perfiles compatibles.
-- Ejemplo mínimo de inclusión.
-- Captura o demostración, cuando esté disponible.
-- Verificaciones realizadas y limitaciones conocidas.
+- Name, purpose, and status: experimental or validated.
+- Parameters, defaults, and identifiers.
+- Dependencies and compatible profiles.
+- A minimal inclusion example.
+- A screenshot or demonstration when available.
+- Completed checks and known limitations.
 
-El catálogo distinguirá lo disponible de lo planificado.
+The catalog will distinguish available modules from planned work.
 
-## Desarrollo en el ordenador
+## Desktop development
 
-El entorno de desarrollo previsto es **ESPHome host + SDL2**: una ventana ejecutará los mismos includes de interfaz que se utilizarán en el dispositivo.
+The planned development environment is **ESPHome host + SDL2**: a desktop window will run the same UI includes used on the device.
 
-Esto permitirá:
+This will allow us to:
 
-- Revisar estilos y distribuciones en distintas resoluciones.
-- Probar interacción táctil con el ratón.
-- Asociar teclas a acciones de navegación para probar menús.
-- Usar datos ficticios para verificar estados y transiciones.
-- Ejecutar ejemplos de componentes sin grabar firmware en una placa.
+- Review styling and layouts at different resolutions.
+- Test touch interaction with a mouse.
+- Map keyboard keys to navigation actions for menu testing.
+- Use mock data to exercise states and transitions.
+- Run component examples without flashing a board.
 
-En Windows se contempla WSL con soporte gráfico. Las instrucciones reproducibles y la versión de ESPHome se fijarán cuando el primer ejemplo esté validado.
+Windows development is expected to use WSL with graphical support. Reproducible setup instructions and an ESPHome version will be established when the first example is validated.
 
-Los cambios de YAML requieren recompilar. La ejecución en el ordenador no valida el consumo de memoria, el rendimiento ni los controladores físicos del ESP: también habrá compilaciones y pruebas en hardware real.
+YAML changes require recompilation. Desktop execution does not validate ESP memory usage, performance, or physical drivers; builds and tests on real hardware remain necessary.
 
-## Primer alcance
+## Initial scope
 
-- [ ] Fijar una versión de ESPHome y un ejemplo host + SDL2 reproducible.
-- [ ] Definir el tema inicial y las piezas visuales básicas.
-- [ ] Definir el contrato de navegación y registro de aplicaciones.
-- [ ] Mostrar el mismo menú como escritorio de iconos y lista para encoder.
-- [ ] Implementar las aplicaciones de luces y ajustes.
-- [ ] Preparar y validar el perfil de hardware JC3248W535CN.
-- [ ] Documentar los primeros módulos en el catálogo.
+- [ ] Pin an ESPHome version and provide a reproducible host + SDL2 example.
+- [ ] Define the initial theme and basic visual components.
+- [ ] Define navigation and application registration contracts.
+- [ ] Present the same menu as an icon desktop and an encoder-driven list.
+- [ ] Implement lighting and settings applications.
+- [ ] Prepare and validate the JC3248W535CN hardware profile.
+- [ ] Document the first modules in the catalog.
 
-Las ocho posiciones del escritorio no implican ocho aplicaciones terminadas. Los accesos se mostrarán según los módulos configurados.
+Eight desktop positions do not imply eight completed applications. Shortcuts will reflect the configured modules.
 
-### Criterio de éxito
+### First milestone: Hello World
 
-Poder añadir, repetir o quitar un control y reutilizar una aplicación en otro perfil sin modificar los archivos internos de los componentes. Los cambios esperados deben concentrarse en la composición del panel, su hardware y sus entidades.
+Start with a minimal desktop example before building the application library:
 
-## Referencias
+- Open an SDL2 window with configurable dimensions.
+- Render a shared LVGL view containing “Hello, nabla!”.
+- Include a button that changes a label to verify mouse input and UI updates.
+- Run without a physical board, Home Assistant, or credentials.
+- Keep desktop display/input configuration separate from reusable UI.
+- Document setup and a single command to build and run the example.
+
+This milestone is planned, not yet implemented.
+
+### Success criterion
+
+Add, repeat, or remove a control and reuse an application in another profile without editing component internals. Expected changes should be concentrated in panel composition, hardware, and entity mappings.
+
+## Repository language
+
+Documentation, code comments, identifiers, and development instructions use English. User-facing interface localization can be added separately.
+
+## References
 
 - [ESPHome LVGL](https://esphome.io/components/lvgl/)
-- [Widgets LVGL](https://esphome.io/components/lvgl/widgets/)
-- [Layouts LVGL](https://esphome.io/components/lvgl/layouts/)
-- [Packages de ESPHome](https://esphome.io/components/packages/)
-- [Recetario LVGL](https://esphome.io/cookbook/lvgl/)
-- [Pantalla SDL2 para host](https://esphome.io/components/display/sdl/)
+- [LVGL widgets](https://esphome.io/components/lvgl/widgets/)
+- [LVGL layouts](https://esphome.io/components/lvgl/layouts/)
+- [ESPHome packages](https://esphome.io/components/packages/)
+- [LVGL cookbook](https://esphome.io/cookbook/lvgl/)
+- [SDL2 host display](https://esphome.io/components/display/sdl/)
 - [ESPHome UI Kit](https://github.com/mplogas/esphome-ui-kit)
 - [ESPHome Modular LVGL Buttons](https://github.com/agillis/esphome-modular-lvgl-buttons)
 
-Estos proyectos sirven como referencias de diseño. Cualquier reutilización de código deberá conservar su licencia y atribución correspondiente.
+These projects serve as design references. Any reused code must preserve its applicable license and attribution.
