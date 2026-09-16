@@ -153,3 +153,7 @@ keyboard capabilities, and touch-to-encoder handover in the same form.
 Agent-readable metadata should enumerate fields, capabilities, examples and
 status, generated from the validation source. An agent must be able to discover
 that a keyboard is unsupported on a profile before it generates firmware.
+
+Peer roles do not depend on screen size: a tiny encoder controller may operate
+a larger panel, and a larger panel may provide a keyboard for a smaller target.
+Negotiate capabilities and explicit session roles; see [peer roles](CONNECTIVITY.md).

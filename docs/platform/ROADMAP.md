@@ -65,7 +65,8 @@ sessions using six semantic actions. Add local override, release on disconnect,
 session expiry and operation status. Do not start with screen mirroring.
 
 Exit: the same remote function works with two controllers of different sizes.
-Mixed local/remote input cannot leave a held action stuck. A peer reconnects
+Test both a tiny encoder controlling a large panel and a large keyboard
+configuring a small target. Mixed local/remote input cannot leave a held action stuck. A peer reconnects
 without duplicating an action. Provisioning permission does not grant control.
 
 ## M6 — Home Assistant and Nabla Edge

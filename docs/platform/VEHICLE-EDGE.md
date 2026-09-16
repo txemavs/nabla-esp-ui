@@ -95,3 +95,7 @@ sample. Power recovery must never replay old remote commands automatically.
 
 Success is not 'the dashboard looks connected'. Success is a responsive panel
 whose individual capabilities accurately describe what can be done now.
+
+Peer roles do not depend on screen size: a tiny encoder controller may operate
+a larger panel, and a larger panel may provide a keyboard for a smaller target.
+Negotiate capabilities and explicit session roles; see [peer roles](CONNECTIVITY.md).

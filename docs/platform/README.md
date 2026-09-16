@@ -67,3 +67,7 @@ Build one vertical slice: Settings > Wi-Fi using deterministic mock scans,
 the shared text/password editor, and all six input actions. Run it on the
 existing color simulator and a new 128x64 list profile before connecting a radio.
 That forces the contracts to prove useful before extending the catalog.
+
+Peer roles do not depend on screen size: a tiny encoder controller may operate
+a larger panel, and a larger panel may provide a keyboard for a smaller target.
+Negotiate capabilities and explicit session roles; see [peer roles](CONNECTIVITY.md).

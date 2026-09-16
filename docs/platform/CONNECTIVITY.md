@@ -132,3 +132,21 @@ or malformed payload; out-of-order fragments; duplicate Apply; lost result;
 revoked peer; controller reboot; target power loss; cancelled form; no Wi-Fi;
 connection succeeds but persistence fails; operation completes after controller
 disconnects. Every case has a bounded failure path and preserves local navigation.
+
+## Roles are independent of display size
+
+Controller and target are session roles, not screen-size classes. A small device
+with only an encoder can control a larger touchscreen that has no encoder or
+that the user does not want to touch. A large panel can provide text entry for
+a small target. Equal-sized peers can cooperate as well; a device may support
+both roles, with the active target and session made explicit.
+
+Negotiate input and action capabilities rather than infer them from display
+resolution. In the small-encoder-to-large-panel case, forward UP/DOWN/ENTER
+and expose a locally reachable Exit remote mode action. Remote Back/ESC is a
+separate selectable command when no physical ESC button exists. The target
+renders focus and scroll using its own profile and remains operable locally.
+A controller with no display needs a defined physical exit gesture and target-side
+session indication; such a profile must be validated before claiming support.
+Changing roles requires the same authorization, release-on-disconnect and
+local-override rules as any other remote-control session.

@@ -61,3 +61,7 @@ Applies to the entire nabla-esp-ui repository.
 - Do not claim hardware support from host builds; publish measured target evidence.
 - Run git diff --check; exclude .venv/builds/credentials from commits.
 - Update current contracts rather than appending contradictory historical rules.
+
+- Controller/target roles are independent of display size. Support the planned
+  small-encoder-to-large-panel use case as well as large-keyboard-to-small-device.
+  Negotiate capabilities; never infer authority or direction from screen size.
