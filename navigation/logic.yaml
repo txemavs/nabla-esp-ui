@@ -1,3 +1,6 @@
+substitutions:
+  nabla_initial_rotation: "0"
+
 esphome:
   includes:
     - ../navigation/tree.h
@@ -11,7 +14,7 @@ globals:
     initial_value: 'false'
   - id: nav_angle
     type: int
-    initial_value: '0'
+    initial_value: '${nabla_initial_rotation}'
   - id: nav_dark
     type: bool
     restore_value: true

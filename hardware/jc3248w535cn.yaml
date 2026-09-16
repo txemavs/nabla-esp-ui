@@ -1,0 +1,49 @@
+# Guition JC3248W535CN: ESP32-S3, 16 MiB flash, 8 MiB octal PSRAM.
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG
+  level: INFO
+
+spi:
+  id: panel_qspi
+  type: quad
+  clk_pin: GPIO47
+  data_pins: [GPIO21, GPIO48, GPIO40, GPIO39]
+
+i2c:
+  id: panel_i2c
+  sda: GPIO4
+  scl: GPIO8
+  frequency: 400kHz
+
+power_supply:
+  id: panel_backlight
+  pin: GPIO1
+  enable_on_boot: true
+
+display:
+  - platform: mipi_spi
+    id: panel_display
+    model: JC3248W535
+    spi_id: panel_qspi
+    auto_clear_enabled: false
+    update_interval: never
+
+touchscreen:
+  - platform: axs15231
+    id: panel_touch
+    display: panel_display
+    i2c_id: panel_i2c
+    interrupt_pin:
+      number: GPIO3
+      ignore_strapping_warning: true
+    update_interval: 30ms

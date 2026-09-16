@@ -45,6 +45,12 @@ Native keyboard limitations are addressed by a tested optional layout component.
 
 ## M3 — First real standalone device
 
+Status: started. The JC3248W535CN firmware compiles and was uploaded with verified
+flash data on 2026-09-16. The owner confirmed the eight-icon launcher and touch
+navigation; USB logs corroborated route changes. See [hardware notes](../../hardware/README.md).
+Real Wi-Fi, local data bindings, physical encoder/joystick adapters and the exit
+gate below are still pending.
+
 Confirm JC3248W535CN board revision, flash/PSRAM, controller, touch, backlight and
 pins. Add physical encoder and five-way adapters with debounce and hold/release.
 Add a local sensor/light binding and actual Wi-Fi scanning/credential application.

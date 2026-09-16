@@ -48,7 +48,8 @@ It separates application meaning from rendering, bindings and transport.
 Physical OLED drivers and real encoder/joystick adapters, the full form catalog,
 live network status, Wi-Fi commissioning, peer protocol, Home Assistant data
 bindings, Nabla Edge adapter, and vehicle telemetry. The named desktop
-applications mostly remain placeholders. No physical board is validated.
+applications mostly remain placeholders. The JC3248W535CN has passed an initial
+LCD/touch bring-up; complete M3 hardware validation remains pending.
 The current runtime still contains fixed IDs, eight row slots and example-sized
 layout assumptions; these are migration work, not the final module architecture.
 

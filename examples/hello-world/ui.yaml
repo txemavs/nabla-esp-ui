@@ -18,7 +18,7 @@ packages:
 
 lvgl:
   id: nabla_lvgl
-  rotation: 0
+  rotation: ${nabla_initial_rotation}
   buffer_size: 100%
   default_font: nabla_font_20
   top_layer:

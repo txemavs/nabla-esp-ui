@@ -8,7 +8,8 @@ and cooperation between large and small screens. Local operation must not depend
 on a server being available.
 
 **Status:** working desktop prototype on ESPHome 2026.8.2 / LVGL 9.5.
-Physical boards, persistent settings and device-to-device links are not validated.
+A JC3248W535CN now runs the launcher with owner-confirmed touch navigation.
+Persistent settings, radio integration and device-to-device links remain unvalidated.
 Start with [the simulator](simulator/README.md).
 
 ## Platform plan
@@ -68,9 +69,11 @@ Use typed state for unknown/stale/offline values and bounded asynchronous work.
 Add a new capability as a documented module with a runnable example.
 A stable core still receives maintenance; it is not a promise of zero future edits.
 
-The first physical target is **JC3248W535CN**, pending board-specific validation.
+The first physical target is **JC3248W535CN**: USB installation, visible launcher
+and touch navigation have passed an initial check. See [the hardware adapter](hardware/README.md).
 The 128x64 host profiles are implemented; physical OLED and input adapters remain planned.
-Host rendering does not establish ESP memory, radio, touch or display support.
+Host rendering alone does not establish hardware support; the initial board check
+is narrower than complete M3 validation.
 
 ## Brand and contributions
 

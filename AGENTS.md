@@ -44,7 +44,12 @@ Applies to the entire nabla-esp-ui repository.
 - profiles/README.md documents geometry, launch commands and host-only evidence.
 - M2 Wi-Fi forms work in compact and regular with a shared simulated scan/connect flow.
 - M2 generic number/choice/toggle forms use validated YAML and shared transactions.
-- Real data bindings, GPIO adapters and peers remain planned.
+- devices/jc3248w535cn.yaml reuses the UI through hardware/jc3248w535cn.yaml.
+- Initial physical LCD/touch navigation passed on 2026-09-16; M3 is not complete.
+- The board starts at nabla_initial_rotation=90; SDL defaults to 0.
+- LVGL owns rotation; do not also rotate native display/touch coordinates.
+- Use ROM (--no-stub) USB flashing for the first unit; preserve its private backup.
+- Real data bindings, encoder/joystick GPIO adapters and peers remain planned.
 
 ## Extension rules
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.

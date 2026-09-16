@@ -1,0 +1,20 @@
+# Standalone hardware bring-up using the same UI as the desktop simulator.
+substitutions:
+  ui_language: es
+  nabla_initial_rotation: "90"
+  screen_width: "480"
+  screen_height: "320"
+
+esphome:
+  name: nabla-jc3248w535cn
+  friendly_name: nabla.net ESP UI
+
+packages:
+  locale: !include ../locales/${ui_language}.yaml
+  hardware: !include ../hardware/jc3248w535cn.yaml
+  theme: !include ../theme/nabla.yaml
+  profile: !include ../profiles/regular.yaml
+  ui: !include ../examples/hello-world/ui.yaml
+
+# No clock source or real network adapter yet: leave the footer unknown.
+# The Wi-Fi menu remains the explicitly labeled M2 simulation.
