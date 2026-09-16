@@ -4,19 +4,6 @@ substitutions:
   nabla_text: "0xF2F7FA"
   nabla_text_muted: "0x91A4B8"
 
-image:
-  - platform: file
-    file: ../assets/nabla.jpg
-    id: nabla_logo
-    type: RGB565
-    resize: 160x134
-
-  - platform: file
-    file: ../assets/nabla.jpg
-    id: nabla_toolbar_logo
-    type: RGB565
-    resize: 32x27
-
 packages:
   fonts: !include fonts.yaml
   icons: !include icons.yaml

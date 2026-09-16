@@ -1,0 +1,59 @@
+# Cyan outline logo. Parameters: widget_id, size, stroke.
+obj:
+  id: ${widget_id}
+  width: ${size}
+  height: ${size}
+  align: CENTER
+  bg_opa: TRANSP
+  border_width: 0
+  pad_all: 0
+  clickable: false
+  scrollbar_mode: "OFF"
+  widgets:
+    - obj:
+        id: ${widget_id}_down
+        width: 100%
+        height: 100%
+        bg_opa: TRANSP
+        border_width: 0
+        pad_all: 0
+        clickable: false
+        scrollbar_mode: "OFF"
+        widgets:
+          - line:
+              points:
+                - x: ${stroke}
+                  y: ${stroke}
+                - x: ${(size | int) - (stroke | int)}
+                  y: ${stroke}
+                - x: ${(size | int) // 2}
+                  y: ${(size | int) - (stroke | int)}
+                - x: ${stroke}
+                  y: ${stroke}
+              line_color: ${nabla_accent}
+              line_width: ${stroke}
+              clickable: false
+    - obj:
+        id: ${widget_id}_left
+        hidden: true
+        width: 100%
+        height: 100%
+        bg_opa: TRANSP
+        border_width: 0
+        pad_all: 0
+        clickable: false
+        scrollbar_mode: "OFF"
+        widgets:
+          - line:
+              points:
+                - x: ${(size | int) - (stroke | int)}
+                  y: ${stroke}
+                - x: ${stroke}
+                  y: ${(size | int) // 2}
+                - x: ${(size | int) - (stroke | int)}
+                  y: ${(size | int) - (stroke | int)}
+                - x: ${(size | int) - (stroke | int)}
+                  y: ${stroke}
+              line_color: ${nabla_accent}
+              line_width: ${stroke}
+              clickable: false

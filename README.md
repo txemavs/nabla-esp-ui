@@ -181,3 +181,9 @@ See [architecture and extension philosophy](docs/ARCHITECTURE.md),
 [toolbar/navigation behavior](navigation/README.md) and
 [build-time English/Spanish localization](locales/README.md).
 The static C++ node catalog has not yet been replaced by declarative YAML.
+
+## Component catalog
+
+See [reusable UI components](components/README.md), including the drawn logo
+and shared toolbar. The cyan logo uses LVGL lines and changes orientation with
+focus; the original brand image is preserved as a reference asset.

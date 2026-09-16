@@ -20,9 +20,12 @@ lvgl:
     - id: splash_page
       bg_color: ${nabla_background}
       widgets:
-        - image:
-            src: nabla_logo
-            align: CENTER
+        - !include
+            file: ../../components/logo/widget.yaml
+            vars:
+              widget_id: splash_logo
+              size: 140
+              stroke: 7
         - label:
             text: "nabla.net"
             text_font: nabla_font_28

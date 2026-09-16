@@ -37,7 +37,7 @@ g++ -std=c++17 tests/navigation.cpp -o /tmp/nabla-navigation-test
 - Toolbar remains black in both light and dark content modes.
 - A continuous cyan bottom line separates toolbar and content; no boxed borders.
 - Focused toolbar sections invert to white background and black text.
-- Keep the original multicolor logo artwork; do not flatten it with recoloring.
+- Use the shared cyan line logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.

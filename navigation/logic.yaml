@@ -141,7 +141,18 @@ script:
             lv_obj_set_style_border_width(button, 0, 0);
             if (label) lv_obj_set_style_text_color(label, lv_color_hex(selected ? 0x000000 : ${nabla_accent}), 0);
           };
-          toolbar_style(id(toolbar_home), nullptr, id(nav_selection) == total);
+          // Home is a drawn brand mark: rotate left on interior focus.
+          toolbar_style(id(toolbar_home), nullptr, false);
+          bool point_left = current != 0 && id(nav_selection) == total;
+          if (point_left) {
+            lv_obj_add_flag(id(toolbar_logo_down), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_remove_flag(id(toolbar_logo_left), LV_OBJ_FLAG_HIDDEN);
+          } else {
+            lv_obj_remove_flag(id(toolbar_logo_down), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(toolbar_logo_left), LV_OBJ_FLAG_HIDDEN);
+          }
+          lv_obj_set_style_outline_width(id(toolbar_home), current == 0 && id(nav_selection) == total ? 1 : 0, 0);
+          lv_obj_set_style_outline_color(id(toolbar_home), lv_color_hex(${nabla_accent}), 0);
           id(nav_crumbs).clear();
           if (current) {
             lv_obj_remove_flag(id(toolbar_close), LV_OBJ_FLAG_HIDDEN);

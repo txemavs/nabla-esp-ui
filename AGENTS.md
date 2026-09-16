@@ -72,8 +72,14 @@ These instructions apply to the whole repository.
 - Toolbar remains black in both light and dark content modes.
 - A continuous cyan bottom line separates toolbar and content; no boxed borders.
 - Focused toolbar sections invert to white background and black text.
-- Keep the original multicolor logo artwork; do not flatten it with recoloring.
+- Use the shared cyan line logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.
 - Content focus retains the white/cyan border convention.
+
+## Component catalog
+- Register reusable primitives in components/README.md with per-component docs.
+- Logo is vector-like LVGL line geometry, shared by splash and toolbar.
+- Focused interior Home points left; its action still opens desktop.
+- Keep the toolbar black; logo focus does not invert its background.
