@@ -68,3 +68,8 @@ Applies to the entire nabla-esp-ui repository.
 - Controller/target roles are independent of display size. Support the planned
   small-encoder-to-large-panel use case as well as large-keyboard-to-small-device.
   Negotiate capabilities; never infer authority or direction from screen size.
+
+- Entering a child menu focuses its first content option and starts at the top.
+  Returning may restore a content selection, but never a saved toolbar control
+  when the destination has options. Empty leaves can focus Back; the Wi-Fi
+  editor starts at SSID. Same-page view/rotation updates preserve current focus.

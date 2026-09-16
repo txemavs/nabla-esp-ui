@@ -88,6 +88,16 @@ script:
                 if (old || id(nav_list_view)) id(nav_saved_scroll)[old] = lv_obj_get_scroll_y(id(navigation_content));
                 id(nav_current) = node;
                 id(nav_selection) = nabla::nodes[node].action == 3 ? -1 : id(nav_saved_focus)[node];
+                if (old != node && nabla::children(node) > 0) {
+                  // Entering a child starts at its first option; returning keeps
+                  // the previous content item, never a saved toolbar control.
+                  bool entering = nabla::nodes[node].parent == old;
+                  if (entering || id(nav_selection) < 0 ||
+                      id(nav_selection) >= nabla::children(node)) {
+                    id(nav_selection) = 0;
+                    id(nav_saved_scroll)[node] = 0;
+                  }
+                }
             - script.execute: nav_render
             - lambda: |-
                 if (node || id(nav_list_view)) {

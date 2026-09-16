@@ -93,3 +93,8 @@ not credential persistence or live network configuration.
 Toolbar breadcrumbs use compact measured labels separated by non-focusable gray
 chevrons. The current title stays bold; collapsed ancestors retain a parent link.
 The focused parent triangle rotates 180 degrees from down to up.
+
+- Entering a child menu focuses its first content option and starts at the top.
+  Returning may restore a content selection, but never a saved toolbar control
+  when the destination has options. Empty leaves can focus Back; the Wi-Fi
+  editor starts at SSID. Same-page view/rotation updates preserve current focus.
