@@ -151,13 +151,29 @@ script:
               border(rows[i], id(nav_selection) == i);
             }
           }
-          auto toolbar_style = [](lv_obj_t *button, lv_obj_t *label, bool selected) {
-            lv_obj_set_style_bg_color(button, lv_color_hex(0x000000), 0);
-            lv_obj_set_style_bg_color(button, lv_color_hex(0x000000), LV_STATE_PRESSED);
-            lv_obj_set_style_border_color(button, lv_color_hex(0xFFFFFF), 0);
+          const bool loading = id(toolbar_progress) >= 0;
+          const auto toolbar_bg = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
+          const auto toolbar_fg = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
+          lv_obj_set_style_bg_color(id(navigation_toolbar), toolbar_bg, 0);
+          lv_obj_set_style_text_color(id(toolbar_progress_label), toolbar_fg, 0);
+          if (loading) {
+            lv_obj_remove_flag(id(toolbar_progress_label), LV_OBJ_FLAG_HIDDEN);
+            lv_label_set_text_fmt(id(toolbar_progress_label), "%d%%", id(toolbar_progress));
+          } else lv_obj_add_flag(id(toolbar_progress_label), LV_OBJ_FLAG_HIDDEN);
+          int line_width = (${screen_width} - 30) * (loading ? id(toolbar_progress) : 100) / 100;
+          if (id(toolbar_progress) == -2 || line_width == 0) lv_obj_add_flag(id(toolbar_divider), LV_OBJ_FLAG_HIDDEN);
+          else {
+            lv_obj_remove_flag(id(toolbar_divider), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_set_width(id(toolbar_divider), line_width);
+          }
+          lv_obj_move_foreground(id(toolbar_divider));
+          auto toolbar_style = [toolbar_fg](lv_obj_t *button, lv_obj_t *label, bool selected) {
+            lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, 0);
+            lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, LV_STATE_PRESSED);
+            lv_obj_set_style_border_color(button, toolbar_fg, 0);
             lv_obj_set_style_border_width(button, selected ? 1 : 0, 0);
             lv_obj_set_style_shadow_width(button, 0, 0);
-            if (label) lv_obj_set_style_text_color(label, lv_color_hex(0xFFFFFF), 0);
+            if (label) lv_obj_set_style_text_color(label, toolbar_fg, 0);
           };
           toolbar_style(id(toolbar_home), nullptr, current == 0 && id(nav_selection) == total);
           nabla_logo::turn(id(toolbar_logo_image), current != 0 && id(nav_selection) == total);
@@ -174,7 +190,7 @@ script:
               lv_text_get_size(&size, text, font, 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
               return (int) size.x + 22;
             };
-            int available = ${screen_width} - 108;
+            int available = ${screen_width} - 108 - (loading ? 56 : 0);
             int needed = width(nabla::nodes[current].title);
             for (int n : ancestors) needed += width(nabla::nodes[n].title);
             bool collapsed = ancestors.size() > 2 || needed > available;
@@ -207,7 +223,7 @@ script:
             lv_obj_add_flag(id(toolbar_crumb_2), LV_OBJ_FLAG_HIDDEN);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_HIDDEN);
             lv_obj_set_x(id(toolbar_crumb_0), 54);
-            lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 60);
+            lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 60 - (loading ? 100 : 0));
             lv_label_set_text(id(toolbar_crumb_label_0), nabla::nodes[0].title);
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_CLICKABLE);
             lv_obj_set_style_text_font(id(toolbar_crumb_label_0), id(nabla_font_bold_16)->get_lv_font(), 0);

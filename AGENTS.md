@@ -65,12 +65,12 @@ These instructions apply to the whole repository.
 - Read docs/ARCHITECTURE.md and locales/README.md.
 - Use tr_* locale keys for new visible text; keep en/es keys identical.
 - Toolbar focus order follows content, Home, ancestor breadcrumbs, X.
-- Current title is bold white, noninteractive and excluded from focus. The triangle and X follow the parent tree; the keyboard Home action opens desktop. Do not claim general window history yet.
+- Current title is bold in the theme foreground color, noninteractive and excluded from focus. The triangle and X follow the parent tree; the keyboard Home action opens desktop. Do not claim general window history yet.
 - Compile both locales when changing localization or text-dependent layout.
 - Declarative navigation is implemented; real sensor/data bindings remain pending.
 
 ## Persistent toolbar and appearance
-- Toolbar remains black in both light and dark content modes.
+- Toolbar follows the theme: black/white in dark, white/black in light.
 - A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
 - Focus changes only the border; content colors never change with focus.
 - Use the shared accent-colored logo component; preserve the original JPG as reference.
@@ -83,7 +83,7 @@ These instructions apply to the whole repository.
 - Register reusable primitives in components/README.md with per-component docs.
 - Logo uses editable equilateral SVG geometry, compiled into transparent assets.
 - The triangle rotates left on interior focus and activates Back; at root it remains Home.
-- Keep the toolbar black; logo focus does not invert its background.
+- Toolbar controls are transparent; the progress line must never be occluded.
 
 - Run python3 -m unittest discover -s tests -p 'test_*.py' for catalog changes.
 - Keep keys stable and titles translated; the compiler owns numeric indices.
@@ -100,7 +100,7 @@ These instructions apply to the whole repository.
 
 Current presentation contract: ordinary control focus changes only borders, never icon, text or
 background colors. Icons and names default to white. The current toolbar title
-is bold white and excluded from focus; ancestors remain regular clickable text.
+is bold in the theme foreground color and excluded from focus; ancestors remain regular clickable text.
 The single underline starts just after the logo's lower tip. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a
@@ -110,3 +110,7 @@ The brand triangle is the focus exception: inside a view it rotates 90 degrees
 left over 180 ms, without a focus box. Activating it returns to the parent,
 just like X/ESC. Removing focus restores its downward orientation. At the root
 it remains the Home mark. The underline meets its resting lower tip.
+
+Toolbar progress is shared via components/toolbar/progress.yaml. Reserve space
+for percentages while active, keep the line above transparent controls, and
+never claim the one-second startup simulation represents actual initialization.

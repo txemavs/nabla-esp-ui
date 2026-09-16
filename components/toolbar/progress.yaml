@@ -1,0 +1,29 @@
+# Shared toolbar progress: -2 hidden, -1 idle line, 0..100 active percentage.
+globals:
+  - id: toolbar_progress
+    type: int
+    initial_value: '-1'
+
+script:
+  - id: toolbar_set_progress
+    parameters:
+      value: int
+    then:
+      - lambda: id(toolbar_progress) = std::max(-2, std::min(100, value));
+      - script.execute: nav_render
+  - id: toolbar_demo_load
+    mode: restart
+    then:
+      - script.execute:
+          id: toolbar_set_progress
+          value: 0
+      - repeat:
+          count: 20
+          then:
+            - delay: 50ms
+            - script.execute:
+                id: toolbar_set_progress
+                value: !lambda return (iteration + 1) * 5;
+      - script.execute:
+          id: toolbar_set_progress
+          value: -1

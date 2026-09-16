@@ -37,9 +37,9 @@ The current toolbar is for the 480 x 320 landscape profile. Compact profiles
 will reuse navigation semantics but need their own tested layout.
 
 ## Persistent toolbar and appearance
-- Toolbar remains black in both light and dark content modes.
+- Toolbar follows the theme: black/white in dark, white/black in light.
 - A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
-- Focused toolbar controls turn white on the black background.
+- Focused toolbar controls turn the theme foreground color.
 - Use the shared accent-colored logo component; preserve the original JPG as reference.
 - Desktop title is translated Main menu; X is hidden there. Splash remains clean.
 - Settings > Appearance switches dark/light at runtime. The preference is stored

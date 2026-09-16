@@ -44,7 +44,7 @@ and scroll per node. This is parent navigation, not arbitrary window history.
 UP/DOWN focus order is content, Home, visible breadcrumbs, X. On the desktop,
 only content and Home participate; X is hidden. ENTER and touch share activation.
 
-The toolbar remains black with a medium-gray divider. Its selected controls
+The toolbar follows the active theme with a medium-gray divider. Its selected controls
 turn white; focused Home gains a white border. Long paths collapse ancestors into
 a clickable ... parent link. Layout is currently tested at 480 x 320.
 
@@ -62,7 +62,7 @@ See locales/README.md and navigation/INPUT.md for shared contracts.
 
 Current presentation contract: ordinary control focus changes only borders, never icon, text or
 background colors. Icons and names default to white. The current toolbar title
-is bold white and excluded from focus; ancestors remain regular clickable text.
+is bold in the theme foreground color and excluded from focus; ancestors remain regular clickable text.
 The single underline starts just after the logo's lower tip. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a

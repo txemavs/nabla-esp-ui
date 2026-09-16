@@ -75,7 +75,7 @@ No view may require LEFT/RIGHT exclusively: rotary-only devices must have a
 sequentially reachable way to perform the equivalent operation.
 
 ## Persistent toolbar and appearance
-- Toolbar remains black in both light and dark content modes.
+- Toolbar follows the theme: black/white in dark, white/black in light.
 - A continuous medium-gray bottom line separates toolbar and content; no boxed borders.
 - Focus changes only the border; content colors never change with focus.
 - Use the shared accent-colored logo component; preserve the original JPG as reference.
@@ -86,7 +86,7 @@ sequentially reachable way to perform the equivalent operation.
 
 Current presentation contract: ordinary control focus changes only borders, never icon, text or
 background colors. Icons and names default to white. The current toolbar title
-is bold white and excluded from focus; ancestors remain regular clickable text.
+is bold in the theme foreground color and excluded from focus; ancestors remain regular clickable text.
 The single underline starts just after the logo's lower tip. Startup spins the
 same toolbar logo in place for one second; there is no separate splash page.
 Set nabla_monochrome: "true" to hide unselected control borders. This is a

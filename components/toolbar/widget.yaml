@@ -1,4 +1,4 @@
-# Persistent black toolbar; one shared logo for startup and navigation.
+# Theme-aware toolbar; one shared logo for startup and navigation.
 obj:
   id: navigation_toolbar
   width: 100%
@@ -8,7 +8,18 @@ obj:
   border_side: BOTTOM
   border_color: ${nabla_secondary}
   pad_all: 0
+  radius: 0
   widgets:
+    - label:
+        id: toolbar_progress_label
+        hidden: true
+        x: ${(screen_width | int) - 104}
+        y: 16
+        width: 52
+        text: "0%"
+        text_align: RIGHT
+        text_font: nabla_font_16
+        clickable: false
     - obj:
         id: toolbar_divider
         x: 26
@@ -26,7 +37,7 @@ obj:
         width: 44
         height: 44
         pad_all: 0
-        bg_color: ${nabla_background}
+        bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
         shadow_width: 0
@@ -49,7 +60,7 @@ obj:
         width: 110
         height: 44
         pad_all: 4
-        bg_color: ${nabla_background}
+        bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
         shadow_width: 0
@@ -74,7 +85,7 @@ obj:
         width: 110
         height: 44
         pad_all: 4
-        bg_color: ${nabla_background}
+        bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
         shadow_width: 0
@@ -99,7 +110,7 @@ obj:
         width: 110
         height: 44
         pad_all: 4
-        bg_color: ${nabla_background}
+        bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
         shadow_width: 0
@@ -124,7 +135,7 @@ obj:
         y: 4
         width: 44
         height: 44
-        bg_color: ${nabla_background}
+        bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
         shadow_width: 0

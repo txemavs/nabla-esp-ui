@@ -1,4 +1,4 @@
-# Shared splash and launcher demo; app pages are placeholders.
+# Shared launcher and simulated startup load; app pages are placeholders.
 esphome:
   on_boot:
     priority: -100
@@ -7,8 +7,10 @@ esphome:
       - script.execute:
           id: nabla_logo_spin
           target: !lambda return id(toolbar_logo_image);
+      - script.execute: toolbar_demo_load
 
 packages:
+  toolbar_progress: !include ../../components/toolbar/progress.yaml
   navigation: !include ../../navigation/logic.yaml
   catalog: !include navigation.yaml
 
