@@ -36,11 +36,26 @@ its AP or simply delay announcing it as ready; that implementation choice remain
 in Nabla Edge. Losing VPN later must disable VPN-dependent actions without
 necessarily discarding a usable local Wi-Fi/telemetry connection.
 
-Tailscale remains on the Pi. Merely advertising a subnet route does not prove
-that an ordinary Wi-Fi client can reach the tailnet through the Pi. Verify
-forwarding, routes/return path or NAT, firewall and access policies explicitly.
-If the ESP32 only consumes a Pi-hosted API, the Pi can proxy tailnet resources;
-the ESP32 does not then need direct tailnet routing. Select this per capability.
+### Existing Nabla Edge router capability
+
+Owner-confirmed deployment: Nabla Edge Pis already accept an upstream connection
+over Wi-Fi or Ethernet and expose a NablaNet Wi-Fi network with working
+Tailscale routing. The vehicle Pi has an additional Wi-Fi adapter: it can use
+a phone hotspot as upstream while providing NablaNet to the ESP32.
+The phone supplies connectivity; it does not itself need to participate in
+Tailscale. The Pi owns the tailnet connection and routing.
+
+Treat this as an existing integration dependency, not a router feature to
+implement in the UI project. The routing configuration was reported by the
+owner, not independently inspected in this repository. Inspect existing Edge
+readiness messages and interfaces before writing the adapter; reuse them.
+
+The ESP32 joins NablaNet and can reach the permitted Home Assistant instances
+and other tailnet resources through the Pi. The UI needs credentials, readiness
+state and service reachability; it does not implement Tailscale or routing.
+If an individual service is unavailable, disable only the capabilities that
+depend on it. Internet uplink, NablaNet association and HA availability remain
+separate observations even though the router implementation is already working.
 
 ## Independent readiness state
 

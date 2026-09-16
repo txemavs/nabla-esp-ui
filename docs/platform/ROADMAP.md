@@ -72,7 +72,9 @@ without duplicating an action. Provisioning permission does not grant control.
 ## M6 — Home Assistant and Nabla Edge
 
 Implement independent adapters and one shared application across local, HA and
-Edge sources. The Pi reports service readiness; no UI component shells out to
+Edge sources. Reuse the owner-confirmed Nabla Edge router: Wi-Fi/Ethernet uplink
+and NablaNet access point with Tailscale routing are existing capabilities,
+not new UI-project deliverables. The Pi reports service readiness; no UI component shells out to
 Linux or stores Tailscale administration credentials.
 
 Exit: stopping HA leaves local controls usable. Rebooting the Pi marks only its
@@ -120,7 +122,7 @@ Reserve measured peak headroom for concurrent BLE, display and network use.
 ## Decisions needed later, not blockers for documentation
 
 Exact OLED models and resolutions; physical text-size preferences; CAN/OBD
-adapter model and BLE vs Classic; Pi-to-panel wired/wireless link; pairing UX
+adapter model and BLE vs Classic; existing NablaNet readiness/API interface; pairing UX
 for headless targets; permitted credential-storage policy; project license.
 Collect these before their dependent hardware milestones. Do not guess pins,
 vehicle PIDs, peer UUIDs or production security guarantees.
