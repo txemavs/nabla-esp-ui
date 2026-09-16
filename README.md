@@ -13,6 +13,12 @@ An optional primary Wi-Fi adapter has passed initial physical scan/save/rollback
 checks; peer links and full hardware recovery/soak coverage remain pending.
 Start with [the simulator](simulator/README.md).
 
+## Use from GitHub
+
+Start with [the editable device YAML](examples/github/panel.yaml) and the
+[GitHub library guide](docs/GITHUB-LIBRARY.md). The library is fetched at build
+time; your navigation, bindings and secrets remain in your own configuration.
+
 ## Platform plan
 
 The [platform design](docs/platform/README.md) describes the architecture,

@@ -51,6 +51,8 @@ navigation; USB logs corroborated route changes. See [hardware notes](../../hard
 Static Wi-Fi/OTA and encrypted API logs are verified. The optional primary Wi-Fi
 adapter now passes initial on-device scan, invalid-password rollback, save and
 forget/reconnect checks. Information shows live model/network/version/uptime.
+A rotation-related watchdog was investigated; the grid update order is corrected
+and host-tested, pending physical confirmation. See [investigation](M3-WATCHDOG.md).
 Local data bindings, physical encoder/joystick adapters and the full exit gate
 below are still pending.
 

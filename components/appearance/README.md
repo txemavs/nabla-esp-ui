@@ -30,3 +30,9 @@ LVGL menus, toolbar controls, forms, Wi-Fi fields and keyboard use the shared
 control_style.h helper. Compact profiles use binary fill inversion.
 The setting changes decoration, not the display color capability or font.
 Physical e-paper rendering/refresh remains unverified; this is a host UI preview.
+
+Borderless regular lists use 32px rows with 2px gaps, versus 48px/6px
+with borders. A 480x320 launcher list with both bars fits seven complete rows
+instead of four. Font size and bars are unchanged. Generic form rows compact
+to 32px with 2px gaps; keyboard key sizes and native 128x64 readable/tiny
+profiles keep their existing legibility limits. Launcher tile gaps become 4px.

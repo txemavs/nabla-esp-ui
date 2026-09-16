@@ -86,6 +86,12 @@ int main() {
    assert(g.content_height() == g.height - 72);
    assert(g.width>0 && g.content_height()>0);
  }
+ auto spacious=Geometry::regular(480,320,true);
+ auto dense=Geometry::regular(480,320,true,36,true);
+ assert(dense.row_height>=20+8); // Keep 20px labels and vertical breathing room.
+ assert((dense.content_height()+dense.gap)/(dense.row_height+dense.gap)==7);
+ assert((spacious.content_height()+spacious.gap)/(spacious.row_height+spacious.gap)==4);
+ assert(dense.header==spacious.header && dense.footer==spacious.footer);
  assert(content_focus(4,4,false)==0);
  assert(content_focus(2,4,false)==2);
  assert(content_focus(2,4,true)==0);

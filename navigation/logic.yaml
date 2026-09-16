@@ -5,13 +5,6 @@ substitutions:
   nabla_initial_borders: "true"
   nabla_initial_font_choice: "0"
 
-esphome:
-  includes:
-    - ${nabla_resource_root}/components/appearance/fonts.h
-    - ${nabla_resource_root}/navigation/tree.h
-    - ${nabla_resource_root}/navigation/focus.h
-    - ${nabla_resource_root}/profiles/geometry.h
-    - ${nabla_resource_root}/navigation/orientation.h
 
 globals:
   - id: nav_borders
@@ -189,13 +182,19 @@ script:
           int screen_w = lv_display_get_horizontal_resolution(lv_display_get_default());
           int screen_h = lv_display_get_vertical_resolution(lv_display_get_default());
           const bool portrait = screen_w < screen_h;
-          const auto base_geometry = nabla::Geometry::regular(screen_w, screen_h, false, ${nabla_bar_height});
+          const auto base_geometry = nabla::Geometry::regular(screen_w, screen_h, false, ${nabla_bar_height}, !id(nav_borders));
           const auto foreground = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
           const auto background = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
           static const int32_t grid_four[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
           static const int32_t grid_two[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
           lv_obj_set_grid_dsc_array(id(launcher_content), portrait ? grid_two : grid_four, portrait ? grid_four : grid_two);
-          lv_obj_set_width(id(navigation_content), screen_w - 8);
+          lv_obj_set_style_pad_row(id(navigation_content), base_geometry.gap, 0);
+          lv_obj_set_style_pad_row(id(launcher_content), id(nav_borders)?10:4, 0);
+          lv_obj_set_style_pad_column(id(launcher_content), id(nav_borders)?10:4, 0);
+          lv_obj_set_width(id(navigation_content), screen_w - 4);
+          lv_obj_set_style_pad_right(id(navigation_content), 6, 0);
+          lv_obj_set_style_pad_right(id(navigation_content), 0, LV_PART_SCROLLBAR);
+          lv_obj_set_style_width(id(navigation_content), 3, LV_PART_SCROLLBAR);
           lv_obj_set_width(id(nav_detail), screen_w - 16);
           if (!nabla::detail(current).empty()) lv_obj_remove_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
           else lv_obj_add_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
@@ -221,18 +220,27 @@ script:
           lv_obj_t *labels[] = {id(nav_row_label_0), id(nav_row_label_1), id(nav_row_label_2), id(nav_row_label_3), id(nav_row_label_4), id(nav_row_label_5), id(nav_row_label_6), id(nav_row_label_7)};
           lv_obj_t *tile_icons[] = {id(menu_tile_0_icon), id(menu_tile_1_icon), id(menu_tile_2_icon), id(menu_tile_3_icon), id(menu_tile_4_icon), id(menu_tile_5_icon), id(menu_tile_6_icon), id(menu_tile_7_icon)};
           lv_obj_t *tile_titles[] = {id(menu_tile_0_title), id(menu_tile_1_title), id(menu_tile_2_title), id(menu_tile_3_title), id(menu_tile_4_title), id(menu_tile_5_title), id(menu_tile_6_title), id(menu_tile_7_title)};
+          // Commit every grid cell before any synchronous layout pass. During
+          // rotation the old cells can exceed the new row/column descriptors.
+          const int columns = portrait ? 2 : 4;
+          const bool root_footer = current == 0 || id(toolbar_progress) >= 0;
+          lv_obj_set_height(id(launcher_content),
+            nabla::Geometry::regular(screen_w, screen_h, root_footer, ${nabla_bar_height}).content_height());
+          for (int i = 0; i < 8; i++)
+            lv_obj_set_grid_cell(tiles[i], LV_GRID_ALIGN_STRETCH, i % columns, 1,
+                                 LV_GRID_ALIGN_STRETCH, i / columns, 1);
+          lv_obj_update_layout(id(launcher_content));
           for (int i = 0; i < 8; i++) {
-            int columns = portrait ? 2 : 4;
-            lv_obj_set_grid_cell(tiles[i], LV_GRID_ALIGN_STRETCH, i % columns, 1, LV_GRID_ALIGN_STRETCH, i / columns, 1);
             lv_obj_set_width(rows[i], screen_w - 16);
             lv_obj_set_height(rows[i], base_geometry.row_height);
+            lv_obj_set_style_pad_top(rows[i],id(nav_borders)?8:4,0);
+            lv_obj_set_style_pad_bottom(rows[i],id(nav_borders)?8:4,0);
             int root_child = nabla::child(0, i);
             if (root_child < 0) lv_obj_add_flag(tiles[i], LV_OBJ_FLAG_HIDDEN);
             else {
               lv_obj_remove_flag(tiles[i], LV_OBJ_FLAG_HIDDEN);
               lv_label_set_text(tile_icons[i], nabla::nodes[root_child].icon);
               lv_label_set_text(tile_titles[i], nabla::nodes[root_child].title);
-              lv_obj_update_layout(tiles[i]);
               lv_point_t title_size;
               lv_text_get_size(&title_size, nabla::nodes[root_child].title,
                               (id(nav_font_choice)==0 ? id(nabla_ubuntu_16)->get_lv_font() : id(nabla_font_16)->get_lv_font()), 0, 0, LV_COORD_MAX, LV_TEXT_FLAG_NONE);
@@ -426,3 +434,12 @@ script:
           for (auto *page : {id(home_page)->obj, id(navigation_page)->obj,
                              id(wifi_form_page)->obj, id(form_gallery_page)->obj})
             nabla_appearance::apply(page,pairs,5,id(nav_font_choice));
+
+# Export helpers from the same checkout as the external component.
+nabla_runtime:
+  - headers:
+      - components/appearance/fonts.h
+      - navigation/tree.h
+      - navigation/focus.h
+      - profiles/geometry.h
+      - navigation/orientation.h

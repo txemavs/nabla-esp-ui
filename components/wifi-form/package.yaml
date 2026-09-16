@@ -3,11 +3,6 @@ substitutions:
   nabla_keyboard_latin: "true"
 
 # Wi-Fi form: mock by default, real when the optional nabla_wifi adapter is enabled.
-esphome:
-  includes:
-    - ${nabla_resource_root}/components/forms/latin_keyboard.h
-    - ${nabla_resource_root}/components/forms/wifi_flow.h
-    - ${nabla_resource_root}/components/wifi-form/form.h
 
 script:
   - id: wifi_form_bind
@@ -184,3 +179,10 @@ lvgl:
             id: wifi_form_open
             text: "${tr_flow_2}"
             text_font: nabla_font_12
+
+# Export helpers from the same checkout as the external component.
+nabla_runtime:
+  - headers:
+      - components/forms/latin_keyboard.h
+      - components/forms/wifi_flow.h
+      - components/wifi-form/form.h

@@ -46,7 +46,14 @@ will accept a binding through its documented adapter contract; it must not embed
 specific installation's URL or entity. Do not introduce unimplemented YAML keys
 to imply that this binding contract is already available.
 
-## Device Builder with a pinned local library
+## Device Builder with a GitHub library
+
+Use [the remote library entry point](GITHUB-LIBRARY.md) for new installations.
+It downloads reusable packages, helpers and assets at the same pinned revision.
+Keep the device-owned menu below in the root YAML and preserve all private
+network/API/OTA blocks when replacing local imports.
+
+## Optional local checkout for development
 
 The supported consumer layout keeps one public checkout next to a private root
 configuration. Set nabla_resource_root to that checkout; fonts, images, C++ headers

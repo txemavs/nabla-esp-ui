@@ -6,8 +6,6 @@ substitutions:
   nabla_device_model: "ESPHome simulator"
 
 esphome:
-  includes:
-    - ${nabla_resource_root}/components/device-info/runtime.h
   on_boot:
     priority: -90
     then:
@@ -29,3 +27,8 @@ interval:
   - interval: 1s
     then:
       - script.execute: device_info_refresh
+
+# Export helpers from the same checkout as the external component.
+nabla_runtime:
+  - headers:
+      - components/device-info/runtime.h

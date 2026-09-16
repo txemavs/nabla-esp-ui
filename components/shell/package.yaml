@@ -33,9 +33,10 @@ lvgl:
             id: navigation_content
             x: 4
             y: ${(nabla_bar_height | int) + 2}
-            width: ${(screen_width | int) - 8}
+            width: ${(screen_width | int) - 4}
             height: ${(screen_height | int) - (nabla_bar_height | int) - 6}
             pad_all: 2
+            pad_right: 6
             bg_opa: TRANSP
             border_width: 0
             layout:

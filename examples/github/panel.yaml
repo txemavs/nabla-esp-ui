@@ -1,0 +1,154 @@
+# Copy into your private ESPHome directory; keep the full menu editable here.
+substitutions:
+  nabla_ui_ref: REPLACE_WITH_TESTED_COMMIT
+  ui_language: en
+  screen_width: "480"
+  screen_height: "320"
+  nabla_initial_rotation: "90"
+  nabla_device_model: "JC3248W535CN"
+  nabla_display_kind: "IPS LCD"
+  nabla_display_monochrome: "false"
+esphome:
+  name: nabla-panel
+packages:
+  library:
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    refresh: never
+    files:
+      - packages/regular.yaml
+      - hardware/jc3248w535cn.yaml
+
+# Add Wi-Fi, API and OTA with your own !secret references here.
+# This example deliberately contains no installation credentials.
+
+nabla_navigation:
+  forms:
+    - key: brightness
+      label: ${tr_form_brightness}
+      type: number
+      min: 0
+      max: 100
+      step: 5
+      initial: 50
+    - key: refresh
+      label: ${tr_form_refresh}
+      type: number
+      min: 1
+      max: 60
+      initial: 5
+    - key: mode
+      label: ${tr_form_mode}
+      type: choice
+      options: ["${tr_form_auto}", "${tr_form_manual}", "${tr_form_eco}"]
+      initial: 0
+    - key: notifications
+      label: ${tr_form_notifications}
+      type: toggle
+      initial: true
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: settings
+        icon_dark: 0x499EFF
+        icon_light: 0x0055BB
+        title: ${tr_settings}
+        icon: ${icon_settings}
+        children:
+          - key: information
+            title: ${tr_information}
+            children:
+              - key: device_model
+                title: ${tr_info_model}
+                info: model
+              - key: device_wifi
+                title: Wi-Fi
+                info: wifi
+              - key: device_version
+                title: ESPHome
+                info: version
+              - key: device_uptime
+                title: ${tr_info_uptime}
+                info: uptime
+          - key: connections
+            title: ${tr_wifi_form_connections}
+            children:
+              - key: wifi
+                title: ${tr_wifi}
+                action: wifi
+          - key: language
+            title: ${tr_language}
+            detail: ${tr_language_detail}
+          - key: appearance
+            title: ${tr_appearance}
+            children:
+              - key: dark_mode
+                title: ${tr_dark_mode}
+                action: toggle_dark
+              - key: font_family
+                title: ${tr_font_family}
+                action: toggle_font
+              - key: borders
+                title: ${tr_borders}
+                action: toggle_borders
+          - key: forms
+            title: ${tr_form_0}
+            action: forms_demo
+      - key: communications
+        icon_dark: 0x46D6A0
+        icon_light: 0x007653
+        title: ${tr_communications}
+        icon: ${icon_communications}
+        detail: ${tr_pending}
+      - key: photos
+        icon_dark: 0xC58AFF
+        icon_light: 0x7437AD
+        title: ${tr_photos}
+        icon: ${icon_photos}
+        detail: ${tr_pending}
+      - key: music
+        icon_dark: 0xFF83B5
+        icon_light: 0xB11D59
+        title: ${tr_music}
+        icon: ${icon_music}
+        detail: ${tr_pending}
+      - key: cameras
+        icon_dark: 0xFF9870
+        icon_light: 0xAA3E12
+        title: ${tr_cameras}
+        icon: ${icon_video}
+        detail: ${tr_pending}
+      - key: weather
+        icon_dark: 0xFFD45A
+        icon_light: 0x806000
+        title: ${tr_weather}
+        icon: ${icon_weather}
+        detail: ${tr_pending}
+      - key: lights
+        icon_dark: 0xD6E96B
+        icon_light: 0x617000
+        title: ${tr_lights}
+        icon: ${icon_lights}
+        detail: ${tr_pending}
+      - key: sensors
+        icon_dark: 0x65D8E8
+        icon_light: 0x006A7C
+        title: ${tr_sensors}
+        icon: ${icon_sensors}
+        children:
+          - key: living_room
+            title: ${tr_living_room}
+            children:
+              - key: living_temperature
+                title: ${tr_temperature}
+                detail: ${tr_offline}
+              - key: living_humidity
+                title: ${tr_humidity}
+                detail: ${tr_offline}
+          - key: outside
+            title: ${tr_outside}
+            children:
+              - key: outside_temperature
+                title: ${tr_temperature}
+                detail: ${tr_offline}

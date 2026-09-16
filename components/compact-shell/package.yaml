@@ -2,13 +2,6 @@ substitutions:
   nabla_resource_root: ".."
 
 esphome:
-  includes:
-    - ${nabla_resource_root}/components/forms/wifi_flow.h
-    - ${nabla_resource_root}/components/forms/compact_wifi.h
-    - ${nabla_resource_root}/navigation/focus.h
-    - ${nabla_resource_root}/profiles/geometry.h
-    - ${nabla_resource_root}/components/compact-shell/model.h
-    - ${nabla_resource_root}/components/compact-shell/render.h
   on_boot:
     priority: -100
     then:
@@ -65,3 +58,13 @@ font:
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+
+# Export helpers from the same checkout as the external component.
+nabla_runtime:
+  - headers:
+      - components/forms/wifi_flow.h
+      - components/forms/compact_wifi.h
+      - navigation/focus.h
+      - profiles/geometry.h
+      - components/compact-shell/model.h
+      - components/compact-shell/render.h

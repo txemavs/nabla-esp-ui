@@ -3,8 +3,8 @@
 namespace nabla {
 struct Geometry {
   int width, height, header, footer, rows, row_height, margin, gap;
-  static Geometry regular(int w, int h, bool footer_visible, int bar = 36) {
-    return {w, h, bar, footer_visible ? bar : 0, 0, 48, 4, 6};
+  static Geometry regular(int w, int h, bool footer_visible, int bar = 36, bool dense = false) {
+    return {w, h, bar, footer_visible ? bar : 0, 0, dense ? 32 : 48, 4, dense ? 2 : 6};
   }
   static Geometry compact(bool readable, bool footer_visible) {
     int header = 12, footer = footer_visible ? 12 : 0;

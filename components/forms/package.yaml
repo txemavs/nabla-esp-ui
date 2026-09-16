@@ -2,9 +2,6 @@ substitutions:
   nabla_resource_root: ".."
 
 # Transactional renderer; metadata comes from nabla_navigation.forms.
-esphome:
-  includes:
-    - ${nabla_resource_root}/components/forms/regular.h
 script:
   - id: forms_bind
     then:
@@ -21,3 +18,8 @@ lvgl:
       pad_all: 0
       border_width: 0
       scrollbar_mode: "OFF"
+
+# Export helpers from the same checkout as the external component.
+nabla_runtime:
+  - headers:
+      - components/forms/regular.h

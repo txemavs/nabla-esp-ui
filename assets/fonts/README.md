@@ -18,6 +18,7 @@ FortAwesome/Font-Awesome release; covered by FontAwesome-LICENSE.txt.
 Used for the Bluetooth toolbar glyph.
 
 
-Ubuntu Mono Regular and Bold: unmodified Ubuntu fonts-ubuntu package files,
-UbuntuMono-R.ttf and UbuntuMono-B.ttf. See Ubuntu-LICENSE.txt for the
-Ubuntu Font Licence and package attribution. Default runtime family; DejaVu Sans is the alternate.
+Ubuntu Mono Regular and Bold: static files from
+https://github.com/google/fonts/tree/main/ufl/ubuntumono, stored as
+UbuntuMono-R.ttf and UbuntuMono-B.ttf. See Ubuntu-LICENSE.txt and
+Ubuntu-COPYRIGHT.txt. Static weights avoid variable-font default-weight fallback. Default runtime family; DejaVu Sans is the alternate.

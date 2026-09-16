@@ -1,0 +1,21 @@
+# Public LVGL library entry point. The consumer owns hardware and navigation.
+# Set nabla_ui_ref to the SAME immutable commit used to import this package.
+substitutions:
+  ui_language: en
+  nabla_resource_root: "https://raw.githubusercontent.com/txemavs/nabla-esp-ui/${nabla_ui_ref}"
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/txemavs/nabla-esp-ui.git
+      ref: ${nabla_ui_ref}
+      path: external_components
+    components: [nabla_navigation, nabla_runtime, nabla_wifi]
+    refresh: never
+
+packages:
+  locale: !include ../locales/${ui_language}.yaml
+  theme: !include ../theme/nabla.yaml
+  profile: !include ../profiles/regular.yaml
+  shell: !include ../components/shell/package.yaml
+  device_info: !include ../components/device-info/package.yaml

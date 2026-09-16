@@ -42,11 +42,15 @@ struct RegularForm {
     int h=lv_display_get_vertical_resolution(lv_display_get_default());
     auto fg=lv_color_hex(dark?0xFFFFFF:0),bg=lv_color_hex(dark?0:0xFFFFFF);
     for(auto *o:{page,body}){lv_obj_set_style_bg_color(o,bg,0);lv_obj_set_style_text_color(o,fg,0);}
+    lv_obj_set_style_pad_right(body,0,LV_PART_SCROLLBAR);
+    lv_obj_set_style_width(body,3,LV_PART_SCROLLBAR);
     lv_obj_set_width(title,w-12);lv_label_set_text(title,model.title().c_str());lv_obj_set_size(body,w,h-68);
     for(int i=0;i<10;i++){
       auto *b=buttons[i];
       if(i>=model.total()){lv_obj_add_flag(b,LV_OBJ_FLAG_HIDDEN);continue;}
-      lv_obj_remove_flag(b,LV_OBJ_FLAG_HIDDEN);lv_obj_set_pos(b,0,i*46);lv_obj_set_size(b,w-8,40);
+      lv_obj_remove_flag(b,LV_OBJ_FLAG_HIDDEN);lv_obj_set_pos(b,0,i*(nabla_style::borders?46:34));lv_obj_set_size(b,w-8,nabla_style::borders?40:32);
+      lv_obj_set_style_pad_top(b,nabla_style::borders?8:4,0);
+      lv_obj_set_style_pad_bottom(b,nabla_style::borders?8:4,0);
       nabla_style::control(b,i==model.focus,dark,mono);
       auto *label=lv_obj_get_child(b,0);
       lv_obj_set_width(label,w-28);lv_label_set_text(label,model.row(i).c_str());lv_obj_center(label);
