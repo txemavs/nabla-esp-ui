@@ -10,7 +10,7 @@ obj:
     - label:
         id: toolbar_wifi
         x: ${(screen_width | int) - 84}
-        y: 10
+        y: 6
         width: 32
         text_align: CENTER
         text: "\uf1eb"
@@ -20,7 +20,7 @@ obj:
     - label:
         id: toolbar_bluetooth
         x: ${(screen_width | int) - 42}
-        y: 10
+        y: 6
         width: 32
         text_align: CENTER
         text: "\uf293"
@@ -32,7 +32,7 @@ obj:
         x: 4
         y: 0
         width: 44
-        height: 44
+        height: ${nabla_bar_height}
         pad_all: 0
         bg_opa: TRANSP
         border_color: ${nabla_secondary}
@@ -55,8 +55,8 @@ obj:
         x: 54
         y: 0
         width: 110
-        height: 44
-        pad_all: 4
+        height: ${nabla_bar_height}
+        pad_all: 2
         bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
@@ -80,8 +80,8 @@ obj:
         x: 54
         y: 0
         width: 110
-        height: 44
-        pad_all: 4
+        height: ${nabla_bar_height}
+        pad_all: 2
         bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
@@ -105,8 +105,8 @@ obj:
         x: 54
         y: 0
         width: 110
-        height: 44
-        pad_all: 4
+        height: ${nabla_bar_height}
+        pad_all: 2
         bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0
@@ -131,7 +131,7 @@ obj:
         x: -4
         y: 0
         width: 44
-        height: 44
+        height: ${nabla_bar_height}
         bg_opa: TRANSP
         border_color: ${nabla_secondary}
         border_width: 0

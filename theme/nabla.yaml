@@ -1,5 +1,5 @@
 substitutions:
-  nabla_bar_height: "48"
+  nabla_bar_height: "36"
   nabla_toolbar_align: "TOP_MID"
   nabla_background: "0x000000"
   nabla_accent: "0x00C8FF"

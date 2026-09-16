@@ -11,7 +11,7 @@ obj:
     - label:
         id: footer_brand
         align: LEFT_MID
-        x: 12
+        x: 6
         width: ${(screen_width | int) - 96}
         text: "Soluciones Lógicas Nabla"
         text_font: nabla_font_16
@@ -21,7 +21,7 @@ obj:
     - label:
         id: footer_clock
         align: RIGHT_MID
-        x: -12
+        x: -6
         width: 64
         text: "--:--"
         text_align: RIGHT
@@ -30,7 +30,7 @@ obj:
         clickable: false
     - obj:
         id: footer_progress_track
-        x: 12
+        x: 6
         y: ${(nabla_bar_height | int) - 18}
         width: ${(screen_width | int) - 88}
         height: 3
@@ -52,8 +52,8 @@ obj:
     - label:
         id: footer_progress_label
         align: BOTTOM_RIGHT
-        x: -12
-        y: -10
+        x: -6
+        y: -5
         width: 58
         text: "0%"
         text_align: RIGHT

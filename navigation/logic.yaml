@@ -163,6 +163,9 @@ script:
           const auto toolbar_fg = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
           lv_obj_set_style_bg_color(id(navigation_toolbar), toolbar_bg, 0);
           const bool footer_visible = loading || current == 0;
+          lv_obj_set_style_bg_color(id(progress_footer), loading ? lv_color_hex(0x404040) : toolbar_bg, 0);
+          lv_obj_set_style_text_color(id(footer_brand), toolbar_fg, 0);
+          lv_obj_set_style_text_color(id(footer_clock), toolbar_fg, 0);
           lv_obj_t *idle_widgets[] = {id(footer_brand), id(footer_clock)};
           for (auto *widget : idle_widgets) {
             if (loading) lv_obj_add_flag(widget, LV_OBJ_FLAG_HIDDEN);
@@ -186,7 +189,7 @@ script:
           else lv_obj_add_flag(id(progress_footer), LV_OBJ_FLAG_HIDDEN);
           int footer_height = footer_visible ? ${nabla_bar_height} : 0;
           lv_obj_set_height(id(launcher_content), ${screen_height} - ${nabla_bar_height} - footer_height);
-          lv_obj_set_height(id(navigation_content), ${screen_height} - ${nabla_bar_height} - 12 - footer_height);
+          lv_obj_set_height(id(navigation_content), ${screen_height} - ${nabla_bar_height} - 6 - footer_height);
           auto toolbar_style = [toolbar_fg](lv_obj_t *button, lv_obj_t *label, bool selected) {
             lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, 0);
             lv_obj_set_style_bg_opa(button, LV_OPA_TRANSP, LV_STATE_PRESSED);

@@ -133,3 +133,7 @@ HH:MM on the right. The shared footer_set_clock(text) action accepts clock
 updates from hardware adapters; the simulator uses host time, Europe/Madrid.
 Application views hide the idle desktop footer and may later supply their own.
 Negative progress restores this route-specific state rather than hiding all footers.
+
+Compact layout: shared bars are 36 px tall; launcher outer padding is 5 px
+horizontally and 6 px vertically. Internal tile gaps stay 10 px. Idle footer
+follows the header theme; gray/cyan is reserved for the startup progress state.
