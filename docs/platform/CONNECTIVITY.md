@@ -150,3 +150,8 @@ A controller with no display needs a defined physical exit gesture and target-si
 session indication; such a profile must be validated before claiming support.
 Changing roles requires the same authorization, release-on-disconnect and
 local-override rules as any other remote-control session.
+
+Vehicle-specific decision: BLE announces Pi readiness and supports bootstrap;
+the ESP32 joins the Pi-provided Wi-Fi and receives speed/telemetry over Wi-Fi.
+The Pi reads the vehicle adapter over Bluetooth. Tailscale-dependent functions
+remain disabled until the required service/route is verified. See [vehicle topology](VEHICLE-EDGE.md).

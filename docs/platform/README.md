@@ -71,3 +71,8 @@ That forces the contracts to prove useful before extending the catalog.
 Peer roles do not depend on screen size: a tiny encoder controller may operate
 a larger panel, and a larger panel may provide a keyboard for a smaller target.
 Negotiate capabilities and explicit session roles; see [peer roles](CONNECTIVITY.md).
+
+Vehicle-specific decision: BLE announces Pi readiness and supports bootstrap;
+the ESP32 joins the Pi-provided Wi-Fi and receives speed/telemetry over Wi-Fi.
+The Pi reads the vehicle adapter over Bluetooth. Tailscale-dependent functions
+remain disabled until the required service/route is verified. See [vehicle topology](VEHICLE-EDGE.md).
