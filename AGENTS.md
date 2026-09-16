@@ -24,7 +24,8 @@ These instructions apply to the whole repository.
 - IDs are resolved at compile time. Declare dependencies rather than hiding broken
   references behind null checks or proliferating unrelated stub widgets.
 - Keep C++ small, bounded, and documented. Validate node IDs and parent relationships.
-- Current tree.h and launcher.yaml are an initial static catalog, not the final public API.
+- User navigation is declared in examples/hello-world/navigation.yaml.
+- Validate it via external_components/nabla_navigation; never hardcode node indices.
 - The list currently has eight reusable row slots; document limits before extending it.
 
 ## Workflow and verification
@@ -66,7 +67,7 @@ These instructions apply to the whole repository.
 - Toolbar focus order follows content, Home, breadcrumbs, X.
 - Home opens desktop; X follows the parent tree. Do not claim general window history yet.
 - Compile both locales when changing localization or text-dependent layout.
-- Declarative navigation YAML is pending; do not describe the current static catalog as final.
+- Declarative navigation is implemented; real sensor/data bindings remain pending.
 
 ## Persistent toolbar and appearance
 - Toolbar remains black in both light and dark content modes.
@@ -83,3 +84,6 @@ These instructions apply to the whole repository.
 - Logo is vector-like LVGL line geometry, shared by splash and toolbar.
 - Focused interior Home points left; its action still opens desktop.
 - Keep the toolbar black; logo focus does not invert its background.
+
+- Run python3 -m unittest discover -s tests -p 'test_*.py' for catalog changes.
+- Keep keys stable and titles translated; the compiler owns numeric indices.

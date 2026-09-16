@@ -12,3 +12,6 @@ Keep appearance in components and theme, input bindings in hardware profiles,
 and navigation actions in navigation/. Compose applications from these pieces.
 Components may be composed into larger patterns without duplicating their logic.
 The toolbar.yaml compatibility entry point remains supported.
+
+The tile slots are populated from the declarative navigation catalog; do not
+duplicate application titles, icons or numeric targets in component includes.

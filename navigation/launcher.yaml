@@ -17,71 +17,55 @@ obj:
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_0
-          node: 1
-          title: "${tr_settings}"
-          icon: "${icon_settings}"
+          slot: 0
           column: 0
           row: 0
     - !include
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_1
-          node: 2
-          title: "${tr_clock}"
-          icon: "${icon_clock}"
+          slot: 1
           column: 1
           row: 0
     - !include
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_2
-          node: 3
-          title: "${tr_photos}"
-          icon: "${icon_photos}"
+          slot: 2
           column: 2
           row: 0
     - !include
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_3
-          node: 4
-          title: "${tr_music}"
-          icon: "${icon_music}"
+          slot: 3
           column: 3
           row: 0
     - !include
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_4
-          node: 5
-          title: "${tr_video}"
-          icon: "${icon_video}"
+          slot: 4
           column: 0
           row: 1
     - !include
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_5
-          node: 6
-          title: "${tr_weather}"
-          icon: "${icon_weather}"
+          slot: 5
           column: 1
           row: 1
     - !include
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_6
-          node: 7
-          title: "${tr_lights}"
-          icon: "${icon_lights}"
+          slot: 6
           column: 2
           row: 1
     - !include
         file: ../components/menu-tile.yaml
         vars:
           tile_id: menu_tile_7
-          node: 8
-          title: "${tr_sensors}"
-          icon: "${icon_sensors}"
+          slot: 7
           column: 3
           row: 1

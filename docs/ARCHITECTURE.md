@@ -25,10 +25,10 @@ Current milestone:
 - English/Spanish build-time locale YAML with matching translation keys.
 
 Remaining:
-- Replace the C++ node catalog with validated declarative YAML.
+- Declarative YAML catalog is implemented; expand with typed data bindings.
 - Keep traversal algorithms reusable; use an ESPHome external component if
   needed to validate and generate arbitrary node structures during compilation.
-- Remove the duplicated root composition and fixed eight-row list capacity.
+- Root composition reads the catalog; lift the fixed eight-row capacity when needed.
 - Real data adapters, physical input adapters, editable settings and runtime language switching.
 - General window history for cross-links: current close semantics follow the
   parent tree, not an arbitrary application/window stack.
@@ -45,3 +45,7 @@ will reuse navigation semantics but need their own tested layout.
 - Settings > Appearance switches dark/light at runtime. The preference is stored
   through ESPHome globals; persistence follows the platform save interval.
 - Content focus retains the white/cyan border convention.
+
+The user tree now lives in examples/hello-world/navigation.yaml. The local
+nabla_navigation component validates it at ESPHome compile time and emits data.
+No manual generation or numeric node maintenance is required.

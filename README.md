@@ -180,7 +180,9 @@ These projects serve as design references. Any reused code must preserve its app
 See [architecture and extension philosophy](docs/ARCHITECTURE.md),
 [toolbar/navigation behavior](navigation/README.md) and
 [build-time English/Spanish localization](locales/README.md).
-The static C++ node catalog has not yet been replaced by declarative YAML.
+The navigation tree is now defined in [YAML](examples/hello-world/navigation.yaml),
+validated and compiled by a local ESPHome component. See the
+[navigation guide](navigation/README.md) to add entries without editing C++.
 
 ## Component catalog
 

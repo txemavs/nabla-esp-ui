@@ -1,0 +1,76 @@
+# This is the user-editable navigation tree. No numeric IDs or C++ required.
+external_components:
+  - source:
+      type: local
+      path: ../external_components
+
+nabla_navigation:
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: settings
+        title: ${tr_settings}
+        icon: ${icon_settings}
+        children:
+          - key: wifi
+            title: ${tr_wifi}
+            detail: ${tr_wifi_detail}
+          - key: language
+            title: ${tr_language}
+            detail: ${tr_language_detail}
+          - key: about
+            title: ${tr_about}
+            detail: ${tr_about_detail}
+          - key: appearance
+            title: ${tr_appearance}
+            children:
+              - key: dark
+                title: ${tr_dark}
+                action: dark
+              - key: light
+                title: ${tr_light}
+                action: light
+      - key: clock
+        title: ${tr_clock}
+        icon: ${icon_clock}
+        detail: ${tr_pending}
+      - key: photos
+        title: ${tr_photos}
+        icon: ${icon_photos}
+        detail: ${tr_pending}
+      - key: music
+        title: ${tr_music}
+        icon: ${icon_music}
+        detail: ${tr_pending}
+      - key: video
+        title: ${tr_video}
+        icon: ${icon_video}
+        detail: ${tr_pending}
+      - key: weather
+        title: ${tr_weather}
+        icon: ${icon_weather}
+        detail: ${tr_pending}
+      - key: lights
+        title: ${tr_lights}
+        icon: ${icon_lights}
+        detail: ${tr_pending}
+      - key: sensors
+        title: ${tr_sensors}
+        icon: ${icon_sensors}
+        children:
+          - key: living_room
+            title: ${tr_living_room}
+            children:
+              - key: living_temperature
+                title: ${tr_temperature}
+                detail: ${tr_offline}
+              - key: living_humidity
+                title: ${tr_humidity}
+                detail: ${tr_offline}
+          - key: outside
+            title: ${tr_outside}
+            children:
+              - key: outside_temperature
+                title: ${tr_temperature}
+                detail: ${tr_offline}

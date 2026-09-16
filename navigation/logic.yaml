@@ -57,9 +57,9 @@ script:
               return nabla::valid(node);
           then:
             - lambda: |-
-                if (node == 18 || node == 19) {
-                  id(nav_dark) = node == 18;
-                  node = 17;
+                if (nabla::nodes[node].action != 0) {
+                  id(nav_dark) = nabla::nodes[node].action == 1;
+                  node = nabla::nodes[node].parent;
                 }
                 int old = id(nav_current);
                 id(nav_saved_focus)[old] = id(nav_selection);
@@ -118,11 +118,20 @@ script:
           lv_obj_set_style_bg_color(id(home_page)->obj, lv_color_hex(id(nav_dark) ? 0x000000 : 0xF2F7FA), 0);
           lv_obj_set_style_bg_color(id(navigation_page)->obj, lv_color_hex(id(nav_dark) ? 0x000000 : 0xF2F7FA), 0);
           lv_obj_set_style_text_color(id(nav_detail), lv_color_hex(id(nav_dark) ? 0xF2F7FA : 0x101823), 0);
-          lv_label_set_text(id(nav_detail), current == 17 ? (id(nav_dark) ? "${tr_dark}" : "${tr_light}") : nabla::nodes[current].detail);
+          lv_label_set_text(id(nav_detail), nabla::nodes[current].detail);
           lv_obj_t *tiles[] = {id(menu_tile_0), id(menu_tile_1), id(menu_tile_2), id(menu_tile_3), id(menu_tile_4), id(menu_tile_5), id(menu_tile_6), id(menu_tile_7)};
           lv_obj_t *rows[] = {id(nav_row_0), id(nav_row_1), id(nav_row_2), id(nav_row_3), id(nav_row_4), id(nav_row_5), id(nav_row_6), id(nav_row_7)};
           lv_obj_t *labels[] = {id(nav_row_label_0), id(nav_row_label_1), id(nav_row_label_2), id(nav_row_label_3), id(nav_row_label_4), id(nav_row_label_5), id(nav_row_label_6), id(nav_row_label_7)};
+          lv_obj_t *tile_icons[] = {id(menu_tile_0_icon), id(menu_tile_1_icon), id(menu_tile_2_icon), id(menu_tile_3_icon), id(menu_tile_4_icon), id(menu_tile_5_icon), id(menu_tile_6_icon), id(menu_tile_7_icon)};
+          lv_obj_t *tile_titles[] = {id(menu_tile_0_title), id(menu_tile_1_title), id(menu_tile_2_title), id(menu_tile_3_title), id(menu_tile_4_title), id(menu_tile_5_title), id(menu_tile_6_title), id(menu_tile_7_title)};
           for (int i = 0; i < 8; i++) {
+            int root_child = nabla::child(0, i);
+            if (root_child < 0) lv_obj_add_flag(tiles[i], LV_OBJ_FLAG_HIDDEN);
+            else {
+              lv_obj_remove_flag(tiles[i], LV_OBJ_FLAG_HIDDEN);
+              lv_label_set_text(tile_icons[i], nabla::nodes[root_child].icon);
+              lv_label_set_text(tile_titles[i], nabla::nodes[root_child].title);
+            }
             border(tiles[i], id(nav_selection) == i);
             lv_obj_set_style_bg_color(tiles[i], lv_color_hex(id(nav_dark) ? 0x07141C : 0xFFFFFF), 0);
             lv_obj_set_style_text_color(tiles[i], lv_color_hex(id(nav_dark) ? 0xF2F7FA : 0x101823), 0);
@@ -196,7 +205,7 @@ script:
             lv_obj_remove_flag(id(toolbar_crumb_0), LV_OBJ_FLAG_HIDDEN);
             lv_obj_set_x(id(toolbar_crumb_0), 54);
             lv_obj_set_width(id(toolbar_crumb_0), ${screen_width} - 60);
-            lv_label_set_text(id(toolbar_crumb_label_0), "${tr_main_menu}");
+            lv_label_set_text(id(toolbar_crumb_label_0), nabla::nodes[0].title);
             toolbar_style(id(toolbar_crumb_0), id(toolbar_crumb_label_0), false);
           }
       - if:

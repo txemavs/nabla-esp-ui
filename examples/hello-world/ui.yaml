@@ -8,7 +8,7 @@ esphome:
 
 packages:
   navigation: !include ../../navigation/logic.yaml
-  translations: !include ../../navigation/translations.yaml
+  catalog: !include navigation.yaml
 
 lvgl:
   buffer_size: 100%

@@ -1,44 +1,61 @@
-# Shared navigation
+# Declarative navigation
 
-The current static catalog is in tree.h; translations are applied from
-translations.yaml using locales/es.yaml or locales/en.yaml. Declarative
-navigation YAML remains planned; see docs/ARCHITECTURE.md.
+Edit examples/hello-world/navigation.yaml to define the menu. It uses the
+local nabla_navigation ESPHome external component; no standalone generator
+command is required.
 
-logic.yaml supplies open, back, home, move, activate, choose and render actions.
-Touch and keyboard use the same activation path with 120 ms feedback.
-Focus and content scroll position are saved per node and restored on return.
+Each node has:
+- key: unique stable lowercase identifier (letters, digits, underscores).
+- title: text or a locale substitution.
+- icon: Font Awesome glyph substitution (required for desktop entries).
+- children: optional nested nodes.
+- detail: optional informational leaf text.
+- action: open (default), dark or light. Theme actions are leaves.
 
-Applications use components/toolbar.yaml:
-- Left triangle: return to the desktop.
-- Breadcrumbs: open an ancestor or stay at the current node.
-- Right X: close to the parent; at application root this returns to desktop.
-- Paths are measured using the actual font. When space is insufficient, earlier
-  ancestors become a clickable ... link to the immediate parent.
-- The current title is retained and truncated with dots only if needed.
-- Toolbar is hidden only during splash; the desktop shows Home and its title, without X.
+Example inside a node's children:
 
-Sequential focus order is content items, Home, visible breadcrumbs, X.
-Up/Down wraps, Enter activates, Escape returns, Home opens the desktop.
-Left/Right remains reserved. All displayed toolbar actions are touchable and
-reachable without a physical Escape key.
-
-The initial profile is 480 x 320. Breadcrumbs have up to three slots.
-Lists support eight children and scroll. Root tiles still duplicate catalog
-titles through translation keys; a unified YAML catalog is the next milestone.
-Settings pages are informational placeholders; sensors are not connected.
-
-Validation:
-```sh
-g++ -std=c++17 tests/navigation.cpp -o /tmp/nabla-navigation-test
-/tmp/nabla-navigation-test
+```yaml
+- key: workshop
+  title: Workshop
+  children:
+    - key: workshop_temperature
+      title: Temperature
+      detail: No sensor connected
 ```
 
-## Persistent toolbar and appearance
-- Toolbar remains black in both light and dark content modes.
-- A continuous cyan bottom line separates toolbar and content; no boxed borders.
-- Focused toolbar sections invert to white background and black text.
-- Use the shared cyan line logo component; preserve the original JPG as reference.
-- Desktop title is translated Main menu; X is hidden there. Splash remains clean.
-- Settings > Appearance switches dark/light at runtime. The preference is stored
-  through ESPHome globals; persistence follows the platform save interval.
-- Content focus retains the white/cyan border convention.
+Use a locale key instead of literal text for bilingual panels. Adding this
+folder needs no C++ changes. Actual sensor bindings are not implemented yet;
+detail is informational text, not a sensor configuration.
+
+The compiler checks unique keys, required titles, known fields/actions, maximum
+eight children per node, sixteen levels and 128 total nodes. Nesting defines
+parents; numeric indices are internal and may change freely when nodes move.
+The launcher reads the root children, titles and icons from the same catalog.
+It renders up to eight tiles and hides unused slots.
+
+C++ in external_components/nabla_navigation/navigation.h contains reusable
+traversal. catalog.py validates YAML and emits escaped, immutable data.
+The appearance action uses semantic action codes, not hardcoded node indices.
+navigation/tree.h is a compatibility include; translations.yaml is retired.
+
+The toolbar uses the tree to calculate its route. Home opens the desktop,
+breadcrumbs jump to ancestors, X/ESC returns to the parent. It restores focus
+and scroll per node. This is parent navigation, not arbitrary window history.
+UP/DOWN focus order is content, Home, visible breadcrumbs, X. On the desktop,
+only content and Home participate; X is hidden. ENTER and touch share activation.
+
+The toolbar remains black with a cyan divider. Its selected text sections
+invert; focused interior Home points left. Long paths collapse ancestors into
+a clickable ... parent link. Layout is currently tested at 480 x 320.
+
+## Validation
+
+```sh
+python3 -m unittest discover -s tests -p 'test_*.py'
+source .venv/bin/activate
+esphome compile simulator/hello-world.yaml
+esphome -s ui_language en compile simulator/hello-world.yaml
+```
+
+The tests compile generated C++ and exercise traversal and validation failures.
+See locales/README.md and navigation/INPUT.md for shared contracts.
