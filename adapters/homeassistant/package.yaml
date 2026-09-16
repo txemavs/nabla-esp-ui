@@ -1,0 +1,42 @@
+# Optional adapter: requires the regular UI shell, wifi: and api:.
+# API encryption and installation credentials stay in the device YAML.
+substitutions:
+  nabla_timezone: Europe/Madrid
+
+time:
+  - platform: homeassistant
+    id: nabla_ha_clock
+    timezone: ${nabla_timezone}
+
+interval:
+  - interval: 1s
+    then:
+      - script.execute:
+          id: footer_set_clock
+          text: !lambda |-
+            auto now = id(nabla_ha_clock).now();
+            return now.is_valid() ? now.strftime("%H:%M") : std::string("--:--");
+      - if:
+          condition:
+            wifi.connected:
+          then:
+            - if:
+                condition:
+                  api.connected:
+                    state_subscription_only: true
+                then:
+                  - lvgl.label.update:
+                      id: toolbar_wifi
+                      text_color: !lambda |-
+                        return lv_color_hex(${nabla_monochrome}
+                          ? (id(nav_dark) ? 0xFFFFFF : 0x000000) : 0x3388FF);
+                else:
+                  - lvgl.label.update:
+                      id: toolbar_wifi
+                      text_color: !lambda |-
+                        return lv_color_hex(${nabla_monochrome}
+                          ? (id(nav_dark) ? 0xFFFFFF : 0x000000) : 0x22AA55);
+          else:
+            - lvgl.label.update:
+                id: toolbar_wifi
+                text_color: 0x808080

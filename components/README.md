@@ -76,3 +76,9 @@ state machine. The contract documents dependencies, states, focus, bounds and ex
 [Runtime helper exporter](../external_components/nabla_runtime/README.md) resolves
 shared C++ headers from local or pinned GitHub checkouts. It adds no UI controls;
 [the GitHub entry point](../docs/GITHUB-LIBRARY.md) assembles the public LVGL shell.
+
+## Optional Home Assistant adapter
+
+[Clock and Wi-Fi status](../adapters/homeassistant/README.md): native time sync,
+one-second gray/green/blue Wi-Fi indicator, no input controls. Requires regular
+shell, Wi-Fi and native API; credentials stay in the consumer configuration.
