@@ -25,19 +25,3 @@ obj:
               align: CENTER
               antialias: true
               clickable: false
-    - obj:
-        id: ${widget_id}_left
-        hidden: true
-        width: 100%
-        height: 100%
-        bg_opa: TRANSP
-        border_width: 0
-        pad_all: 0
-        clickable: false
-        widgets:
-          - image:
-              src: ${image_id}
-              align: CENTER
-              angle: 90
-              antialias: true
-              clickable: false

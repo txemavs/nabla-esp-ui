@@ -14,10 +14,14 @@ thoughtfully for rhythm, subdivisions and proportions, without compromising
 legibility, accessibility or exact equilateral geometry. Current reflection
 stops use approximately 0.382 and 0.618.
 
-The splash performs one eased 360-degree in-plane turn over 1000 ms, then rests
-before opening the desktop. This is a 2D rotation of a shaded mark, not a 3D
-renderer or a recreation of the historical animation. Avoid perpetual motion.
-The toolbar retains its focus-based left orientation and Home action.
+Motion has two distinct forms:
+- Intro: a 1000 ms spindle-like depth-turn approximation. Horizontal
+  foreshortening and shading change; vertical coordinates and bottom tip remain
+  fixed. This is not a full perspective 3D mesh.
+- Toolbar: a 180 ms in-plane 90-degree rotation around the triangle centroid.
+  The SVG centroid and rotation pivot both lie at the canvas center.
+The historical GIF may guide a later, more faithful depth animation.
+Avoid perpetual motion; preserve the one-second intro duration.
 
 Do not overwrite the original JPG. Keep geometric sources editable and
 animation logic reusable. Support reduced/disabled motion as a future option.

@@ -94,3 +94,6 @@ These instructions apply to the whole repository.
 - Keep SVG source editable and preserve original artwork.
 - Respect 3/6/9 and golden-ratio preferences without forcing them into every layout.
 - Intro motion is finite, one second; distinguish shaded 2D from real 3D.
+
+- Separate intro depth-turn approximation (fixed tip) from centered planar toolbar rotation.
+- SVG centroid must match the animation pivot; verify equal sides after geometry changes.
