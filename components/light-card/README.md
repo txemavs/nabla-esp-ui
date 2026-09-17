@@ -32,3 +32,7 @@ camera_render, and test editor.active() before camera_fullscreen in Back.
 
 The recovered private Control composition still uses simulated acknowledgements
 and displays DEMO | MQTT simulado. Real MQTT binding is a separate integration.
+
+The grid owns its row labels while active (nav_custom_rows). The shell's
+periodic information refresh must not replace localized card text with command
+state strings. Leaving the grid restores ordinary row refresh.

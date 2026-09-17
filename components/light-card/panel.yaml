@@ -17,6 +17,7 @@ script:
       - lambda: |-
           const int base=${nabla_light_slot_base};
           const bool panel=base>=0;
+          id(nav_custom_rows) = panel;
           const int w=lv_display_get_horizontal_resolution(lv_display_get_default());
           const int h=lv_display_get_vertical_resolution(lv_display_get_default());
           lv_obj_set_flex_flow(id(navigation_content),panel?LV_FLEX_FLOW_ROW_WRAP:LV_FLEX_FLOW_COLUMN);

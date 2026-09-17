@@ -226,6 +226,8 @@ interval:
           int current = id(nav_current);
           if (nabla::nodes[current].info)
             lv_label_set_text(id(nav_detail), nabla::detail(current).c_str());
+          // Specialized views own their row labels, including localization.
+          if (id(nav_custom_rows)) return;
           lv_obj_t *labels[] = {id(nav_row_label_0), id(nav_row_label_1), id(nav_row_label_2), id(nav_row_label_3), id(nav_row_label_4), id(nav_row_label_5), id(nav_row_label_6), id(nav_row_label_7)};
           for (int i = 0; i < nabla::children(current); ++i) {
             int n = nabla::child(current, i);

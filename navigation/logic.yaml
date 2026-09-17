@@ -12,6 +12,9 @@ substitutions:
 
 
 globals:
+  - id: nav_custom_rows
+    type: bool
+    initial_value: 'false'
   - id: nav_borders
     type: bool
     restore_value: true
