@@ -33,3 +33,6 @@ ESC cancels. Credentials and installation bindings remain private.
 Uses the regular renderer; compact light grids remain unsupported.
 Validated with model tests and ESP32-S3 compilation. Live broker and physical
 verification are required for each installation.
+
+Repeated identical state messages refresh freshness without invalidating the UI.
+Changed state, availability expiry and command confirmations still notify views.

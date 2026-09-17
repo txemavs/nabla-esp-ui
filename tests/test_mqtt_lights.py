@@ -11,14 +11,25 @@ int main() {
   m.connect(true);
   m.update(0,{false,true,true,20},100);
   assert(m.ready(0,101));
+  m.dirty=false;
+  m.update(0,{false,true,true,20},101);
+  assert(!m.dirty && m.seen[0]==101); // heartbeat refreshes freshness, not UI
+  m.update(0,{false,true,true,21},101);
+  assert(m.dirty); // actual brightness change still renders
+  m.dirty=false;
   m.sent(0,true,65,102);
   assert(!m.states[0].on && !m.ready(0,103));
   m.update(0,{true,true,true,25},104);
   assert(m.pending[0]);
   m.update(0,{true,true,true,65},105);
   assert(!m.pending[0] && m.ready(0,106));
-  m.tick(90105);
-  assert(!m.ready(0,90105));
+  m.dirty=false;
+  m.sent(0,true,65,106);
+  m.dirty=false;
+  m.update(0,{true,true,true,65},107);
+  assert(m.dirty && !m.pending[0]); // identical state can confirm a command
+  m.tick(90107);
+  assert(!m.ready(0,90107));
   m.update(0,{true,true,false,0},90106);
   m.sent(0,false,0,90107);
   m.tick(105107);

@@ -26,7 +26,10 @@ class Model {
   void update(int i,State value,uint32_t now) {
     if(!valid(i))return;
     value.brightness=std::clamp(value.brightness,0,100);
-    states[i]=value;seen[i]=now?now:1;dirty=true;
+    const auto &old=states[i];
+    if(!seen[i] || old.on!=value.on || old.available!=value.available ||
+       old.dimmable!=value.dimmable || old.brightness!=value.brightness)dirty=true;
+    states[i]=value;seen[i]=now?now:1;
     if(pending[i] && value.available && value.on==target_on[i] &&
        (!value.on || !value.dimmable || std::abs(value.brightness-target_level[i])<=1)){
       pending[i]=0;note("RX confirmed "+std::to_string(i+1));
