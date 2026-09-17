@@ -31,3 +31,13 @@ Do not configure large numbers of instances on memory-constrained devices.
 The credential must be private and have access to the configured entities.
 Native ESPHome integration is still independently usable for cameras and time.
 The compact renderer and host simulator do not implement this transport.
+
+## Transport and refresh costs
+
+Each client retains at most one worker-owned HTTPS connection and reuses it
+after fully draining a successful response. Nonpersistent or failed transports
+are cleaned up; failed requests are not automatically replayed (especially POST).
+TLS verification, response bounds and the shared worker mutex remain enabled.
+Every 16 requests, diagnostics report request/session counts, last request time
+and free internal heap. UI state changes are consumed at 100 ms intervals;
+repeated missing entities do not dirty an already unavailable state.

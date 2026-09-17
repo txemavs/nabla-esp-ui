@@ -3,6 +3,7 @@
 #include <array>
 #include <string>
 #include <vector>
+#include "esp_http_client.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
@@ -46,5 +47,8 @@ class Client : public Component {
   Job queued_command_{};
   uint32_t next_=0;
   int cursor_=0;
+  // Worker-owned. UI/main loop must never access the transport.
+  esp_http_client_handle_t http_=nullptr;
+  unsigned request_count_=0, connection_count_=0;
 };
 }

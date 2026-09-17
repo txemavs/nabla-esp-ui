@@ -27,6 +27,11 @@ button:
         text_font: nabla_font_16
         align: BOTTOM_MID
         y: -8
+  on_press:
+    - script.stop: nav_choose
+    - script.execute:
+        id: nav_focus
+        index: ${slot}
   on_click:
     - script.execute:
         id: nav_choose

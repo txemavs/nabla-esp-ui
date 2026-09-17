@@ -135,3 +135,13 @@ Optional editors can capture U/D/ENTER through nabla_input_captured,
 nabla_move_handler and nabla_activate_handler; defaults preserve shell behavior.
 When multiple views are imported, the root composition must explicitly chain
 their refresh/Back hooks. A package import alone must not silently remove a view.
+
+## Interaction performance
+
+Regular controls select on press and activate on click after a 40 ms feedback
+interval. With borders enabled, content-to-content focus changes update only the
+previous and next border. Toolbar transitions and borderless inversion retain
+the full renderer for correctness. Font-family traversal runs on page/family
+changes, and already matching fonts are not reassigned.
+The ui_perf log reports CPU time spent in focus/render callbacks, not display
+latency or touch-to-photon time. Network workers never modify LVGL objects.

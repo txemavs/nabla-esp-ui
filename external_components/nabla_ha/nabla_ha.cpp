@@ -6,6 +6,7 @@
 #include "esphome/core/log.h"
 #include "esp_http_client.h"
 #include "esp_crt_bundle.h"
+#include "esp_heap_caps.h"
 #include "freertos/task.h"
 #include <algorithm>
 namespace esphome::nabla_ha {
@@ -45,7 +46,10 @@ void Client::loop(){
       if(old.on!=r.state.on||old.available!=r.state.available||
          old.dimmable!=r.state.dimmable||old.brightness!=r.state.brightness)dirty_=true;
       old=r.state;seen_[r.slot]=millis();
-    } else {states_[r.slot].available=false;dirty_=true;}
+    } else {
+      if(states_[r.slot].available)dirty_=true;
+      states_[r.slot].available=false;
+    }
     next_=millis()+(ready()?600:8000);
   }
   if(!wifi::global_wifi_component->is_connected()){set_status(Status::UNREACHABLE);return;}
@@ -73,11 +77,20 @@ void Client::worker(void *arg){
 }
 bool Client::request(const std::string &path,const std::string &body,std::string &out,int &code){
   std::string url=url_+path,auth="Bearer "+token_;
-  esp_http_client_config_t cfg{};
-  cfg.url=url.c_str();cfg.timeout_ms=3000;cfg.crt_bundle_attach=esp_crt_bundle_attach;
-  cfg.disable_auto_redirect=true;cfg.buffer_size=1024;cfg.buffer_size_tx=1024;
-  auto client=esp_http_client_init(&cfg);
+  const uint32_t started=millis();
+  if(!http_){
+    esp_http_client_config_t cfg{};
+    cfg.url=url.c_str();cfg.timeout_ms=3000;cfg.crt_bundle_attach=esp_crt_bundle_attach;
+    cfg.disable_auto_redirect=true;cfg.buffer_size=1024;cfg.buffer_size_tx=1024;
+    cfg.keep_alive_enable=true;
+    http_=esp_http_client_init(&cfg);
+    ++connection_count_;
+  }
+  auto client=http_;
   if(!client)return false;
+  if(esp_http_client_set_url(client,url.c_str())!=ESP_OK){
+    esp_http_client_cleanup(http_);http_=nullptr;return false;
+  }
   esp_http_client_set_header(client,"Authorization",auth.c_str());
   esp_http_client_set_header(client,"Content-Type","application/json");
   esp_http_client_set_method(client,body.empty()?HTTP_METHOD_GET:HTTP_METHOD_POST);
@@ -92,7 +105,13 @@ bool Client::request(const std::string &path,const std::string &body,std::string
       [client](){return esp_http_client_is_complete_data_received(client);},
       [](){return millis();});
   }
-  esp_http_client_close(client);esp_http_client_cleanup(client);
+  // Drain the whole response before reuse. Failed requests are never replayed:
+  // a POST may already have been executed remotely.
+  if(!ok || !esp_http_client_is_persistent_connection(client)){
+    esp_http_client_close(client);esp_http_client_cleanup(client);http_=nullptr;
+  }
+  if(++request_count_%16==0)
+    ESP_LOGI(TAG,"%s: HTTP requests=%u sessions=%u last=%u ms internal_free=%u",url_.c_str(),request_count_,connection_count_,unsigned(millis()-started),unsigned(heap_caps_get_free_size(MALLOC_CAP_INTERNAL)));
   return ok;
 }
 Client::Result Client::perform(const Job &job){

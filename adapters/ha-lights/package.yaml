@@ -10,7 +10,7 @@ globals:
     type: std::vector<int>
     initial_value: '${nabla_ha_root_nodes}'
 interval:
-  - interval: 500ms
+  - interval: 100ms
     then:
       - lambda: |-
           if(nabla_light::editor.active())return;

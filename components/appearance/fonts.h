@@ -12,7 +12,8 @@ inline void apply(lv_obj_t *obj, const FontPair *pairs, unsigned count, int fami
     auto *current=lv_obj_get_style_text_font(obj,part);
     for (unsigned i=0; i<count; ++i) {
       if (current==pairs[i].regular || current==pairs[i].ubuntu) {
-        lv_obj_set_style_text_font(obj,family==0?pairs[i].ubuntu:pairs[i].regular,part);
+        const auto *target = family==0?pairs[i].ubuntu:pairs[i].regular;
+        if (current != target) lv_obj_set_style_text_font(obj,target,part);
         break;
       }
     }

@@ -12,6 +12,9 @@ substitutions:
 
 
 globals:
+  - id: nav_render_started
+    type: uint32_t
+    initial_value: '0'
   - id: nav_custom_rows
     type: bool
     initial_value: 'false'
@@ -49,6 +52,31 @@ globals:
     initial_value: 'std::vector<int>(nabla::count, 0)'
 
 script:
+  # Fast path for content focus: no layout, network hooks or page-wide styling.
+  - id: nav_focus
+    parameters:
+      index: int
+    then:
+      - lambda: |-
+          const uint32_t started = millis();
+          const int previous = id(nav_selection);
+          const int total = nabla::children(id(nav_current));
+          if (previous == index) return;
+          id(nav_selection) = index;
+          if (!id(nav_borders) || previous < 0 || previous >= total || index < 0 || index >= total) {
+            id(nav_render).execute();
+            return;
+          }
+          lv_obj_t *tiles[] = {id(menu_tile_0), id(menu_tile_1), id(menu_tile_2), id(menu_tile_3), id(menu_tile_4), id(menu_tile_5), id(menu_tile_6), id(menu_tile_7)};
+          lv_obj_t *rows[] = {id(nav_row_0), id(nav_row_1), id(nav_row_2), id(nav_row_3), id(nav_row_4), id(nav_row_5), id(nav_row_6), id(nav_row_7)};
+          auto **controls = id(nav_current) == 0 && !id(nav_list_view) ? tiles : rows;
+          const auto fg = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
+          lv_obj_set_style_border_width(controls[previous], ${nabla_monochrome} ? 0 : 1, 0);
+          lv_obj_set_style_border_color(controls[previous], id(nav_custom_rows) ? lv_color_hex(id(nav_dark) ? 0x383838 : 0xDDDDDD) : nabla_style::idle(id(nav_dark)), 0);
+          lv_obj_set_style_border_width(controls[index], 2, 0);
+          lv_obj_set_style_border_color(controls[index], fg, 0);
+          ESP_LOGI("ui_perf", "focus: %u ms", unsigned(millis() - started));
+
   - id: nav_rotate
     then:
       - lambda: |-
@@ -66,10 +94,10 @@ script:
             lambda: |-
               return index >= 0 && index < nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 2);
           then:
-            - lambda: |-
-                id(nav_selection) = index;
-            - script.execute: nav_render
-            - delay: 120ms
+            - script.execute:
+                id: nav_focus
+                index: !lambda return index;
+            - delay: 40ms
             - script.execute:
                 id: nav_open
                 node: !lambda |-
@@ -173,8 +201,7 @@ script:
                   - script.stop: nav_choose
                   - lambda: |-
                       int total = nabla::children(id(nav_current)) + (id(nav_current) ? 1 + id(nav_crumbs).size() : 2);
-                      if (total) id(nav_selection) = nabla::wrap_focus(id(nav_selection), delta, total);
-                  - script.execute: nav_render
+                      if (total) id(nav_focus).execute(nabla::wrap_focus(id(nav_selection), delta, total));
                   - lambda: |-
                       lv_obj_t *rows[] = {id(nav_row_0), id(nav_row_1), id(nav_row_2), id(nav_row_3), id(nav_row_4), id(nav_row_5), id(nav_row_6), id(nav_row_7)};
                       if ((id(nav_current) || id(nav_list_view)) && id(nav_selection) < nabla::children(id(nav_current)))
@@ -203,6 +230,7 @@ script:
 
   - id: nav_render
     then:
+      - lambda: id(nav_render_started) = millis();
       - lambda: |-
           int current = id(nav_current);
           int screen_w = lv_display_get_horizontal_resolution(lv_display_get_default());
@@ -479,6 +507,10 @@ script:
             - lambda: nabla_forms::regular_form.render(id(nav_dark), ${nabla_monochrome});
             - lvgl.page.show: form_gallery_page
       - lambda: |-
+          static int applied_family = -1, applied_page = -1;
+          if (applied_family == id(nav_font_choice) && applied_page == id(nav_current)) return;
+          applied_family = id(nav_font_choice);
+          applied_page = id(nav_current);
           const nabla_appearance::FontPair pairs[] = {
             {id(nabla_font_12)->get_lv_font(), id(nabla_ubuntu_12)->get_lv_font()},
             {id(nabla_font_16)->get_lv_font(), id(nabla_ubuntu_16)->get_lv_font()},
@@ -491,6 +523,8 @@ script:
             nabla_appearance::apply(page,pairs,5,id(nav_font_choice));
 
       - lambda: ${nabla_view_refresh}
+      - lambda: |-
+          ESP_LOGI("ui_perf", "render: %u ms", unsigned(millis() - id(nav_render_started)));
 
 # Export helpers from the same checkout as the external component.
 nabla_runtime:
