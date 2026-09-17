@@ -19,7 +19,7 @@ void Client::setup(){
   }
 }
 void Client::set_status(Status s){
-  if(status_!=s){status_=s;dirty_=true;ESP_LOGI(TAG,"Connection state %u",unsigned(s));}
+  if(status_!=s){status_=s;dirty_=true;ESP_LOGI(TAG,"%s: connection state %u",url_.c_str(),unsigned(s));}
   if(s!=Status::READY){for(auto &v:states_)v.available=false;pending_.fill(false);command_waiting_=false;}
 }
 bool Client::available(int i) const {
