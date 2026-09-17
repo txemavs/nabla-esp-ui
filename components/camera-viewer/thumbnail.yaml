@@ -40,6 +40,8 @@ script:
           id(camera_thumbnail_received)=millis();
           if(nabla_camera::thumbnail_image) {
             lv_image_set_src(nabla_camera::thumbnail_image,id(camera_thumbnail)->get_lv_image_dsc());
+            lv_image_set_scale(nabla_camera::thumbnail_image,128);
+            lv_obj_center(nabla_camera::thumbnail_image);
             lv_obj_remove_flag(nabla_camera::thumbnail_image,LV_OBJ_FLAG_HIDDEN);
           }
   - id: camera_thumbnail_error
