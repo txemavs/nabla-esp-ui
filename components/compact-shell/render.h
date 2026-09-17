@@ -17,7 +17,7 @@ class CompactShell {
   bool in_wifi() const {return nodes[menu.current].action==3;}
   void move(int delta) {if(in_wifi())wifi.move(delta);else if(in_forms())forms.move(delta);else menu.move(delta);}
   void activate() {
-    if(in_wifi()) {if(wifi.activate(esphome::millis())) menu.back();}
+    if(in_wifi()) {if(wifi.activate((esphome::millis)())) menu.back();}
     else if(in_forms()){if(forms.activate())menu.back();}
     else {menu.activate();if(in_wifi())wifi.clear();if(in_forms())forms.begin();}
   }

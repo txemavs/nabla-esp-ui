@@ -67,7 +67,7 @@ inline void refresh(const char *model, const char *display, const char *dimensio
       l.router + ": " + router + "\n" + l.mask + ": " + mask + "\n" + l.signal + ": " + signal;
   if (values[3] != l.unavailable) values[2] += " - " + values[3];
   values[4] = ESPHOME_VERSION;
-  const uint32_t seconds = esphome::millis() / 1000;
+  const uint32_t seconds = (esphome::millis)() / 1000;
   char uptime[32];
   snprintf(uptime, sizeof(uptime), "%luh %02lum %02lus",
            static_cast<unsigned long>(seconds / 3600),

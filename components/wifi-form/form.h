@@ -51,11 +51,11 @@ struct Editor {
       scan_index=scan_top=0;
     }else if(scan_picker && flow.real()){
       scan_picker=false;scan_index=scan_top=0;
-      if(index==0)flow.scan(esphome::millis());
+      if(index==0)flow.scan((esphome::millis)());
       else if(index==1)reset_confirm=true;
     }else if(scan_picker){
       scan_picker=false;
-      if(index<3)flow.scan(esphome::millis(),static_cast<nabla_forms::ScanMode>(index));
+      if(index<3)flow.scan((esphome::millis)(),static_cast<nabla_forms::ScanMode>(index));
       scan_index=scan_top=0;
     }else if(flow.stage==nabla_forms::Stage::RESULTS && index<flow.results()){
       flow.choose(index);
@@ -71,7 +71,7 @@ struct Editor {
     flow.ssid=lv_textarea_get_text(ssid);
     flow.password=lv_textarea_get_text(password);
     flow.open=lv_obj_has_state(open_box,LV_STATE_CHECKED);
-    if(flow.connect(esphome::millis())){
+    if(flow.connect((esphome::millis)())){
       lv_textarea_set_text(password,"");focus=keys()+5;highlight();
     }
     else {
@@ -83,7 +83,7 @@ struct Editor {
   void poll() {
     if(!page || !ssid || !password || !status)return;
     using namespace nabla_forms;
-    flow.tick(esphome::millis());
+    flow.tick((esphome::millis)());
     if((flow.stage==Stage::SUCCESS || flow.stage==Stage::FAILURE) &&
        flow.open!=lv_obj_has_state(open_box,LV_STATE_CHECKED))flow.cancel();
     auto fg=lv_color_hex(dark_theme?0xFFFFFF:0),bg=lv_color_hex(dark_theme?0:0xFFFFFF);
