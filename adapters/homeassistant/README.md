@@ -21,3 +21,5 @@ qualifies. A disconnected subscription returns to green within one second.
 Monochrome uses foreground for connected states and gray for disconnected;
 color-only differentiation of Wi-Fi versus HA is not available on monochrome.
 Bluetooth remains a placeholder.
+
+See [site panels versus MQTT Control](../../docs/platform/HOME-ASSISTANT-PANELS.md) for the separate multi-instance URL-client contract. The native adapter above does not implement it.
