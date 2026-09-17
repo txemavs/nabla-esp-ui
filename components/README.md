@@ -94,3 +94,5 @@ part of the library. Supports shared touch/keyboard/compact activation.
 - [Camera viewer](camera-viewer/README.md): experimental regular-profile JPEG snapshots, shared footer and fullscreen touch; private bindings required.
 
 - [Light panel integration](light-card/README.md#optional-grid-integration): reusable eight-card navigation renderer and modal brightness input capture; state and transport remain consumer-owned.
+
+- [MQTT lights](../adapters/mqtt-lights/README.md): optional 16-slot authoritative-state adapter with stale detection, bounded log and commands for the regular light panel.

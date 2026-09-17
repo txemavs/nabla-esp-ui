@@ -48,7 +48,7 @@ script:
               int node=nabla::child(id(nav_current),i);
               nabla_light::card(rows[i],labels[i],nabla::nodes[node].title,
                 ${nabla_light_state},
-                {"On","Off","Sin red","Brillo","Aplicar","Cancelar"},
+                {"${tr_light_on}","${tr_light_off}","${tr_light_unavailable}","${tr_light_brightness}","${tr_light_apply}","${tr_light_cancel}"},
                 id(nav_dark),id(nav_selection)==i,(w-10-gap*(columns-1))/columns,(h-84-gap*(8/columns-1))/(8/columns),id(nabla_icons_32)->get_lv_font());
               lv_obj_set_style_text_font(labels[i],id(nabla_ubuntu_16)->get_lv_font(),0);
               if(${nabla_light_pending})lv_label_set_text_fmt(labels[i],"%s\n...",nabla::nodes[node].title);

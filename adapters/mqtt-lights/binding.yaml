@@ -1,0 +1,21 @@
+# One private, allowlisted state subscription per light/switch.
+mqtt:
+  on_json_message:
+    - topic: ${state_topic}
+      then:
+        - lambda: |-
+            static_assert(${slot} >= 0 && ${slot} < 16, "Invalid light slot");
+            if(!x["state"].is<const char*>() || !x["available"].is<bool>() ||
+               !x["dimmable"].is<bool>() || !x["brightness_pct"].is<int>() ||
+               !x["ts"].is<uint32_t>()) return;
+            auto now=id(nabla_mqtt_clock).now();
+            auto ts=x["ts"].as<uint32_t>();
+            if(!now.is_valid() || ts>now.timestamp+5 || now.timestamp>ts+90) return;
+            std::string state=x["state"].as<const char*>();
+            if(state!="on" && state!="off" && state!="unavailable" && state!="unknown")return;
+            int level=x["brightness_pct"].as<int>();
+            if(level<0 || level>100)return;
+            nabla_mqtt_lights::State value;
+            value.on=state=="on";value.available=x["available"].as<bool>()&&(state=="on"||state=="off");
+            value.dimmable=x["dimmable"].as<bool>();value.brightness=level;
+            nabla_mqtt_lights::model.update(${slot},value,millis());
