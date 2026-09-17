@@ -28,7 +28,7 @@ class Client : public Component {
   bool consume_dirty(){bool v=dirty_;dirty_=false;return v;}
   bool command(int slot,bool on,int brightness);
  protected:
-  struct Job {int slot;bool command;bool on;int level;};
+  struct Job {int slot;bool command;bool on;int level;bool dimmable=false;};
   struct Result {int slot;Status status;State state;bool valid;bool command;};
   static void worker(void *arg);
   Result perform(const Job &job);

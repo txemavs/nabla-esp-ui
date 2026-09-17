@@ -13,9 +13,10 @@ interval:
   - interval: 500ms
     then:
       - lambda: |-
+          if(nabla_light::editor.active())return;
           bool changed=false;
           for(auto *client:id(ha_clients))changed=client->consume_dirty()||changed;
-          if(changed&&!nabla_light::editor.active())id(nav_render).execute();
+          if(changed)id(nav_render).execute();
 script:
   - id: ha_light_open
     parameters:

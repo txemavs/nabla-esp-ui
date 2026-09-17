@@ -28,7 +28,7 @@ bool Client::available(int i) const {
 }
 bool Client::command(int i,bool on,int level){
   if(!available(i)||command_waiting_||level<0||level>100)return false;
-  queued_command_={i,true,on,level};command_waiting_=true;
+  queued_command_={i,true,on,level,states_[i].dimmable};command_waiting_=true;
   pending_[i]=true;dirty_=true;return true;
 }
 void Client::loop(){
@@ -103,7 +103,7 @@ Client::Result Client::perform(const Job &job){
   if(job.command){
     JsonDocument doc;doc["entity_id"]=entity;
     bool light=entity.compare(0,6,"light.")==0;
-    if(light&&job.on)doc["brightness_pct"]=job.level;
+    if(light&&job.on&&job.dimmable)doc["brightness_pct"]=job.level;
     std::string body;serializeJson(doc,body);
     if(!request("/api/services/"+std::string(light?"light":"switch")+
        (job.on?"/turn_on":"/turn_off"),body,out,code))return r;
@@ -121,7 +121,7 @@ Client::Result Client::perform(const Job &job){
   }
   std::string state=doc["state"].as<std::string>();
   r.state.on=state=="on";r.state.available=state=="on"||state=="off";
-  r.state.brightness=std::clamp(int(doc["attributes"]["brightness"]|0)*100/255,0,100);
+  r.state.brightness=std::clamp(int(doc["attributes"]["brightness"]|0),0,255)*100/255;
   for(JsonVariant mode:doc["attributes"]["supported_color_modes"].as<JsonArray>())
     if(mode.is<const char*>()&&std::string(mode.as<const char*>())!="onoff"&&
        std::string(mode.as<const char*>())!="unknown")r.state.dimmable=true;
