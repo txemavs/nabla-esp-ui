@@ -114,3 +114,7 @@ substitutions:
   tr_light_brightness: "Brightness"
   tr_light_apply: "Apply"
   tr_light_cancel: "Cancel"
+  tr_ha_connecting: "Connecting to Home Assistant"
+  tr_ha_unreachable: "Home Assistant is unreachable"
+  tr_ha_unauthorized: "Home Assistant: unauthorized"
+  tr_ha_invalid: "Home Assistant: invalid response"

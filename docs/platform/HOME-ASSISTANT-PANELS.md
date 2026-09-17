@@ -43,8 +43,9 @@ Do not reuse browser login sessions or publish access tokens in library code.
 The current MQTT light adapter is implemented and remains useful for Control.
 Site-specific MQTT aliases were a temporary composition and do not satisfy this
 direct-Home-Assistant contract. Do not describe them as direct API panels.
-A multi-instance authenticated URL adapter and its per-site availability binding
-must be completed before claiming the site panels satisfy this contract.
+The experimental nabla_ha HTTPS adapter and ha-lights integration implement this
+separation with per-instance credentials and availability. Physical deployment
+must verify both URL routes and authentication; compilation alone is insufficient.
 
 Acceptance: disconnect one site's route or revoke its credential; only that
 site's panel becomes unavailable. MQTT Control remains independent. Restore the

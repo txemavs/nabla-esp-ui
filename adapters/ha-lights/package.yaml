@@ -1,0 +1,77 @@
+# Requires nabla_ha instances and regular shell; endpoints belong to the consumer.
+substitutions:
+  nabla_ha_clients: "std::vector<esphome::nabla_ha::Client*>{}"
+  nabla_ha_root_nodes: "std::vector<int>{}"
+  nabla_ha_view_index: "-1"
+globals:
+  - id: ha_clients
+    type: std::vector<esphome::nabla_ha::Client*>
+  - id: ha_root_nodes
+    type: std::vector<int>
+    initial_value: '${nabla_ha_root_nodes}'
+interval:
+  - interval: 500ms
+    then:
+      - lambda: |-
+          bool changed=false;
+          for(auto *client:id(ha_clients))changed=client->consume_dirty()||changed;
+          if(changed&&!nabla_light::editor.active())id(nav_render).execute();
+script:
+  - id: ha_light_open
+    parameters:
+      site: int
+      slot: int
+      title: std::string
+    then:
+      - lambda: |-
+          if(site<0||site>=int(id(ha_clients).size()))return;
+          auto *client=id(ha_clients)[site];
+          if(!client->available(slot))return;
+          auto state=client->state(slot);
+          if(state.dimmable){
+            nabla_light::editor.open(title.c_str(),
+              {state.on,state.brightness,true,true},
+              {"${tr_light_on}","${tr_light_off}","${tr_light_unavailable}","${tr_light_brightness}","${tr_light_apply}","${tr_light_cancel}"},
+              id(nabla_ubuntu_16)->get_lv_font(),id(nav_dark),
+              [client,slot](nabla_light::State value){client->command(slot,value.on,value.brightness);});
+          }else client->command(slot,!state.on,state.brightness);
+  - id: ha_panel_status
+    then:
+      - lambda: |-
+          lv_obj_t *icons[]={id(menu_tile_0_icon),id(menu_tile_1_icon),id(menu_tile_2_icon),id(menu_tile_3_icon),id(menu_tile_4_icon),id(menu_tile_5_icon),id(menu_tile_6_icon),id(menu_tile_7_icon)};
+          lv_obj_t *titles[]={id(menu_tile_0_title),id(menu_tile_1_title),id(menu_tile_2_title),id(menu_tile_3_title),id(menu_tile_4_title),id(menu_tile_5_title),id(menu_tile_6_title),id(menu_tile_7_title)};
+          lv_obj_t *rows[]={id(nav_row_0),id(nav_row_1),id(nav_row_2),id(nav_row_3),id(nav_row_4),id(nav_row_5),id(nav_row_6),id(nav_row_7)};
+          lv_obj_t *labels[]={id(nav_row_label_0),id(nav_row_label_1),id(nav_row_label_2),id(nav_row_label_3),id(nav_row_label_4),id(nav_row_label_5),id(nav_row_label_6),id(nav_row_label_7)};
+          for(int i=0;i<8;i++){
+            int node=nabla::child(0,i);
+            for(size_t j=0;j<id(ha_clients).size()&&j<id(ha_root_nodes).size();j++){
+              if(node==id(ha_root_nodes)[j]&&!id(ha_clients)[j]->ready()){
+                lv_obj_set_style_text_color(icons[i],lv_color_hex(0x808080),0);
+                lv_obj_set_style_text_color(titles[i],lv_color_hex(0x808080),0);
+                if(id(nav_current)==0)lv_obj_set_style_text_color(labels[i],lv_color_hex(0x808080),0);
+              }
+            }
+          }
+          const int site=${nabla_ha_view_index};
+          if(site<0||site>=int(id(ha_clients).size())||id(ha_clients)[site]->ready())return;
+          auto *client=id(ha_clients)[site];
+          for(auto *row:rows)lv_obj_add_flag(row,LV_OBJ_FLAG_HIDDEN);
+          lv_obj_remove_flag(id(nav_detail),LV_OBJ_FLAG_HIDDEN);
+          const char *reason="${tr_ha_connecting}";
+          switch(client->status()){
+            case esphome::nabla_ha::Status::UNREACHABLE:reason="${tr_ha_unreachable}";break;
+            case esphome::nabla_ha::Status::UNAUTHORIZED:reason="${tr_ha_unauthorized}";break;
+            case esphome::nabla_ha::Status::INVALID:reason="${tr_ha_invalid}";break;
+            default:break;
+          }
+          lv_label_set_text_fmt(id(nav_detail),"%s\n\n%s",reason,client->url().c_str());
+          lv_label_set_text(id(footer_brand),"Home Assistant");
+          id(nav_selection)=nabla::children(id(nav_current));
+
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          id(ha_clients)=${nabla_ha_clients};
+          id(nav_render).execute();

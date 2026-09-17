@@ -96,3 +96,5 @@ part of the library. Supports shared touch/keyboard/compact activation.
 - [Light panel integration](light-card/README.md#optional-grid-integration): reusable eight-card navigation renderer and modal brightness input capture; state and transport remain consumer-owned.
 
 - [MQTT lights](../adapters/mqtt-lights/README.md): optional 16-slot authoritative-state adapter with stale detection, bounded log and commands for the regular light panel.
+
+- [Direct Home Assistant lights](../adapters/ha-lights/README.md): experimental authenticated HTTPS site panels, independent availability, shared light cards and worker-based network I/O (ESP32/ESP-IDF).

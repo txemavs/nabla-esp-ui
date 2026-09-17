@@ -114,3 +114,7 @@ substitutions:
   tr_light_brightness: "Brillo"
   tr_light_apply: "Aplicar"
   tr_light_cancel: "Cancelar"
+  tr_ha_connecting: "Conectando con Home Assistant"
+  tr_ha_unreachable: "Home Assistant no responde"
+  tr_ha_unauthorized: "Home Assistant: acceso no autorizado"
+  tr_ha_invalid: "Home Assistant: respuesta no válida"
