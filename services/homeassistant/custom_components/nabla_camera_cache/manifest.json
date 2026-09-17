@@ -1,0 +1,15 @@
+{
+  "domain": "nabla_camera_cache",
+  "name": "Nabla Camera Cache",
+  "version": "0.1.0",
+  "documentation": "https://github.com/txemavs/nabla-esp-ui/tree/main/services/homeassistant",
+  "codeowners": [
+    "@txemavs"
+  ],
+  "dependencies": [
+    "camera",
+    "http"
+  ],
+  "iot_class": "local_polling",
+  "requirements": []
+}

@@ -9,7 +9,11 @@ text_sensor:
           static_assert(${index} >= 0 && ${index} < ${nabla_camera_count}, "Camera index outside configured slots");
           const std::string prefix="/api/camera_proxy/${entity}?";
           bool valid=x.compare(0,prefix.size(),prefix)==0;
-          id(camera_urls)[${index}]=valid ? "${origin}"+x : "";
+          std::string path=x;
+          if(valid && ${nabla_camera_use_cache}) {
+            path="/api/nabla_camera/${entity}?" + x.substr(prefix.size()) + "&size=view";
+          }
+          id(camera_urls)[${index}]=valid ? "${origin}"+path : "";
           if(id(camera_opened) && id(camera_selected)==${index}) {
             id(camera_ready)=valid;
             if(valid)id(camera_image).set_url(id(camera_urls)[${index}]);

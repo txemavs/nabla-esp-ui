@@ -1,5 +1,6 @@
 substitutions:
   nabla_camera_count: "3"
+  nabla_camera_use_cache: "false"
   nabla_camera_route: "-1"
   nabla_view_refresh: "id(camera_render).execute();"
   nabla_back_intercept: "if(id(camera_fullscreen)) {id(camera_toggle_fullscreen).execute(); return true;}"

@@ -19,6 +19,11 @@ Start with [the editable device YAML](examples/github/panel.yaml) and the
 [GitHub library guide](docs/GITHUB-LIBRARY.md). The library is fetched at build
 time; your navigation, bindings and secrets remain in your own configuration.
 
+## Optional camera service
+
+[Home Assistant camera cache](services/homeassistant/README.md) provides protected,
+on-demand 64x64 thumbnails and JPEGs up to 480 pixels, shared by all viewers.
+
 ## Platform plan
 
 The [platform design](docs/platform/README.md) describes the architecture,

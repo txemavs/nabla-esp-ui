@@ -17,6 +17,13 @@ and receives its rotating image token through the encrypted native API.
 Never publish these private bindings or tokens. TLS verification stays enabled;
 sensitive HTTP and text sensor logs are muted.
 
+For servers with the optional [Home Assistant camera cache](../../services/homeassistant/README.md),
+set nabla_camera_use_cache: "true" in the device substitutions. All HA camera
+bindings then use /api/nabla_camera/{entity}?token=...&size=view instead of the
+full-size proxy, retaining the same rotating camera token. Enable only when
+the service is installed and every bound camera is allowlisted. The default
+is false, preserving compatibility with unmodified Home Assistant servers.
+
 Only the selected source is fetched, every two seconds. A single RGB565 image
 (416x234 maximum, approximately 190 KiB) and a 32 KiB receive buffer are reused.
 PSRAM/regular LCD targets only; compact/monochrome camera rendering is not supported.
