@@ -29,7 +29,13 @@ Only the selected source is fetched, every two seconds. A single RGB565 image
 PSRAM/regular LCD targets only; compact/monochrome camera rendering is not supported.
 Hosts need a CA certificate path and JPEGDEC's Linux build flag.
 
-Loading, waiting, error and stale states use the normal footer.
+The footer shows small FPS text (12 px regular / 13 px Ubuntu Mono), measured
+from completed image downloads/decodes, not LVGL redraws or requested refreshes.
+The first frame shows -- FPS; subsequent inter-frame times use 25% exponential
+smoothing. The rate falls when arrivals stop; after eight seconds the stale
+message includes 0.0 FPS. Reopening a camera resets the measurement. Repeated
+snapshots count as deliveries, not necessarily distinct camera exposures.
+Waiting, error and stale states remain visible in the normal footer.
 The module owns the nabla_view_refresh and nabla_back_intercept shell hooks.
 Multiple views require an explicit root-level refresh and Back hook composition; see the light-card panel integration. The viewer contains
 no installation address or entity; homeassistant.yaml is an optional adapter.

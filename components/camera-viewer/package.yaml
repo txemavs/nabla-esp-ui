@@ -35,6 +35,9 @@ globals:
   - id: camera_received
     type: uint32_t
     initial_value: '0'
+  - id: camera_frame_interval
+    type: float
+    initial_value: '0'
 image:
   - platform: online_image
     id: camera_image
@@ -46,17 +49,25 @@ image:
     update_interval: never
     on_download_finished:
       - lambda: |-
-          id(camera_received)=millis();
           if(id(camera_opened)) {
+            const uint32_t now=millis();
+            if(id(camera_received)) {
+              const float elapsed=uint32_t(now-id(camera_received));
+              id(camera_frame_interval)=id(camera_frame_interval)>0
+                ? 0.75f*id(camera_frame_interval)+0.25f*elapsed : elapsed;
+            }
+            id(camera_received)=now;
             lv_image_set_src(id(camera_picture),id(camera_image)->get_lv_image_dsc());
             lv_obj_remove_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
             id(camera_layout).execute();
-            lv_label_set_text_fmt(id(footer_brand),"${tr_camera_updated} - %lus",millis()/1000);
+            id(camera_update_fps).execute();
           }
     on_error:
       - lambda: |-
           if(id(camera_opened)) {
             lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+            id(camera_received)=0;
+            id(camera_frame_interval)=0;
             lv_label_set_text(id(footer_brand),"${tr_camera_error}");
           }
 lvgl:
@@ -111,7 +122,7 @@ lvgl:
                 on_click:
                   - lambda: |-
                       if(id(camera_ready)) {
-                        lv_label_set_text(id(footer_brand),"${tr_camera_refresh}");
+                        if(!id(camera_received))lv_label_set_text(id(footer_brand),"-- FPS");
                         id(camera_image).update();
                       }
             - button:
@@ -132,6 +143,18 @@ lvgl:
                 on_click:
                   - script.execute: camera_toggle_fullscreen
 script:
+  - id: camera_update_fps
+    then:
+      - lambda: |-
+          if(!id(camera_opened) || !id(camera_received))return;
+          const uint32_t age=millis()-id(camera_received);
+          if(age>8000)return;
+          if(id(camera_frame_interval)<=0) {
+            lv_label_set_text(id(footer_brand),"-- FPS");
+            return;
+          }
+          const float interval=std::max(id(camera_frame_interval),float(age));
+          lv_label_set_text_fmt(id(footer_brand),"%.1f FPS",1000.0f/std::max(interval,1.0f));
   - id: camera_render
     then:
       - lambda: |-
@@ -186,6 +209,9 @@ script:
             id(camera_ready)=true;
           }
           id(camera_received)=0;
+          id(camera_frame_interval)=0;
+          lv_obj_set_style_text_font(id(footer_brand),id(nav_font_choice)==0
+            ? id(nabla_ubuntu_12)->get_lv_font() : id(nabla_font_12)->get_lv_font(),0);
           lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
           id(camera_opened)=true;
           lv_obj_remove_flag(id(camera_overlay),LV_OBJ_FLAG_HIDDEN);
@@ -193,7 +219,7 @@ script:
           lv_obj_remove_flag(id(progress_footer),LV_OBJ_FLAG_HIDDEN);
           lv_obj_add_flag(id(footer_clock),LV_OBJ_FLAG_HIDDEN);
           lv_obj_remove_flag(id(camera_footer_icons),LV_OBJ_FLAG_HIDDEN);
-          lv_label_set_text(id(footer_brand),id(camera_ready)?"${tr_camera_loading}":"${tr_camera_waiting}");
+          lv_label_set_text(id(footer_brand),id(camera_ready)?"-- FPS":"${tr_camera_waiting}");
           if(id(camera_ready)) id(camera_image).update();
   - id: camera_close
     then:
@@ -201,17 +227,22 @@ script:
           id(camera_fullscreen)=false;
           id(camera_opened)=false;
           id(camera_selected)=-1;
+          lv_obj_set_style_text_font(id(footer_brand),id(nav_font_choice)==0
+            ? id(nabla_ubuntu_16)->get_lv_font() : id(nabla_font_16)->get_lv_font(),0);
           lv_obj_add_flag(id(camera_footer_icons),LV_OBJ_FLAG_HIDDEN);
           lv_obj_add_flag(id(camera_overlay),LV_OBJ_FLAG_HIDDEN);
           lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
 interval:
+  - interval: 1s
+    then:
+      - script.execute: camera_update_fps
   - interval: 2s
     then:
       - lambda: |-
           if(id(camera_opened) && id(camera_ready)) {
             if(id(camera_received) && millis()-id(camera_received)>8000) {
               lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
-              lv_label_set_text(id(footer_brand),"${tr_camera_stale}");
+              lv_label_set_text(id(footer_brand),"0.0 FPS - ${tr_camera_stale}");
             }
             id(camera_image).update();
           }
