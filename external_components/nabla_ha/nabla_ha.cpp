@@ -1,4 +1,5 @@
 #include "nabla_ha.h"
+#include "response_reader.h"
 #include "esphome/components/wifi/wifi_component.h"
 #include "esphome/components/json/json_util.h"
 #include "esphome/core/hal.h"
@@ -17,6 +18,9 @@ void Client::setup(){
      xTaskCreate(worker,"nabla_ha",8192,this,1,nullptr)!=pdPASS){
     mark_failed();set_status(Status::INVALID);
   }
+}
+void Client::dump_config(){
+  ESP_LOGI(TAG,"%s: connection state %u, %u entities",url_.c_str(),unsigned(status_),unsigned(entities_.size()));
 }
 void Client::set_status(Status s){
   if(status_!=s){status_=s;dirty_=true;ESP_LOGI(TAG,"%s: connection state %u",url_.c_str(),unsigned(s));}
@@ -83,15 +87,10 @@ bool Client::request(const std::string &path,const std::string &body,std::string
     int64_t length=esp_http_client_fetch_headers(client);
     code=esp_http_client_get_status_code(client);
     if(length>8192)ok=false;
-    char buffer[512];out.clear();
-    uint32_t started=millis();
-    while(ok&&!esp_http_client_is_complete_data_received(client)){
-      int n=esp_http_client_read(client,buffer,sizeof(buffer));
-      if(n<0||millis()-started>5000){ok=false;break;}
-      if(n==0){if(!esp_http_client_is_complete_data_received(client))ok=false;break;}
-      if(out.size()+n>8192){ok=false;break;}
-      out.append(buffer,n);
-    }
+    if(ok)ok=read_response(out,
+      [client](char *buffer,size_t size){return esp_http_client_read(client,buffer,size);},
+      [client](){return esp_http_client_is_complete_data_received(client);},
+      [](){return millis();});
   }
   esp_http_client_close(client);esp_http_client_cleanup(client);
   return ok;
@@ -108,15 +107,16 @@ Client::Result Client::perform(const Job &job){
     if(!request("/api/services/"+std::string(light?"light":"switch")+
        (job.on?"/turn_on":"/turn_off"),body,out,code))return r;
     if(code==401||code==403){r.status=Status::UNAUTHORIZED;return r;}
-    if(code!=200){r.status=Status::INVALID;return r;}
+    if(code!=200){ESP_LOGW(TAG,"%s: HTTP %d",url_.c_str(),code);r.status=Status::INVALID;return r;}
   }
   if(!request("/api/states/"+entity,"",out,code))return r;
   if(code==401||code==403){r.status=Status::UNAUTHORIZED;return r;}
   if(code==404){r.status=Status::READY;return r;}
-  if(code!=200){r.status=Status::INVALID;return r;}
+  if(code!=200){ESP_LOGW(TAG,"%s: HTTP %d",url_.c_str(),code);r.status=Status::INVALID;return r;}
   JsonDocument doc;
   if(deserializeJson(doc,out)||!doc["entity_id"].is<const char*>()||
      entity!=doc["entity_id"].as<std::string>()||!doc["state"].is<const char*>()){
+    ESP_LOGW(TAG,"%s: invalid state JSON (%u bytes)",url_.c_str(),unsigned(out.size()));
     r.status=Status::INVALID;return r;
   }
   std::string state=doc["state"].as<std::string>();

@@ -19,6 +19,7 @@ class Client : public Component {
   void add_entity(const std::string &v){entities_.push_back(v);}
   void setup() override;
   void loop() override;
+  void dump_config() override;
   bool ready() const {return status_==Status::READY;}
   bool available(int i) const;
   bool pending(int i) const {return i>=0&&i<8&&pending_[i];}
