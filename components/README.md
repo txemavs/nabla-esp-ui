@@ -98,3 +98,7 @@ part of the library. Supports shared touch/keyboard/compact activation.
 - [MQTT lights](../adapters/mqtt-lights/README.md): optional 16-slot authoritative-state adapter with stale detection, bounded log and commands for the regular light panel.
 
 - [Direct Home Assistant lights](../adapters/ha-lights/README.md): experimental authenticated HTTPS site panels, independent availability, shared light cards and worker-based network I/O (ESP32/ESP-IDF).
+
+The optional [camera thumbnail](camera-viewer/README.md#passive-thumbnail-card)
+adds one passive 32 px preview to a regular mixed card grid; its 64x64 JPEG
+source and credentials remain adapter-owned.

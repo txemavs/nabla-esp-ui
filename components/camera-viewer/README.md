@@ -24,7 +24,7 @@ full-size proxy, retaining the same rotating camera token. Enable only when
 the service is installed and every bound camera is allowlisted. The default
 is false, preserving compatibility with unmodified Home Assistant servers.
 
-Only the selected source is fetched, every two seconds. A single RGB565 image
+Only the selected source is fetched. nabla_camera_refresh_interval defaults to 1s. A single RGB565 image
 (416x234 maximum, approximately 190 KiB) and a 32 KiB receive buffer are reused.
 PSRAM/regular LCD targets only; compact/monochrome camera rendering is not supported.
 Hosts need a CA certificate path and JPEGDEC's Linux build flag.
@@ -73,3 +73,42 @@ Wi-Fi, encrypted API and OTA. The sample identifiers below are fictional.
 
 Declare a leaf with key front_camera in nabla_navigation.tree. Additional cameras
 use distinct binding_id values and indices, with corresponding route mappings.
+
+## Optional ESP32 background transport
+
+nabla_camera_fetch is an opt-in ESP32/ESP-IDF component, requiring PSRAM.
+It takes one or two runtime image IDs and exposes select(slot) and
+request(slot, https_url). select(-1) invalidates pending results; request returns
+false while busy or offline instead of building a queue. A single worker owns
+the HTTP client and at most one request/result. HTTPS certificate verification
+remains enabled, redirects are rejected, and completed connections are reused.
+Compressed responses are capped at 128 KiB and allocated in PSRAM; network I/O
+never calls LVGL. The main loop decodes a complete JPEG and invokes on_result
+with slot and success. Tokens/URLs are not logged. Errors close the connection;
+the next scheduled request may retry. This transport is for reduced snapshots,
+not arbitrary full-resolution camera streams.
+
+Configure images: [camera_image, camera_thumbnail] and on_result to execute
+camera_finish/camera_error for slot 0 and camera_thumbnail_finish/
+camera_thumbnail_error for slot 1. Override nabla_camera_download with a
+request(0, selected_url) call. Select the current slot before camera_render.
+The fallback online_image transport remains available to host simulators.
+An idle persistent connection consumes memory until its next request or reboot.
+
+## Passive thumbnail card
+
+Import thumbnail.yaml after package.yaml. It requires the cache service and
+uses size=icon from nabla_thumbnail_source (camera index, default 0).
+nabla_thumbnail_active is a visibility expression; call camera_thumbnail_render
+from the composed view hook. Override nabla_thumbnail_download to request slot
+1 on the background transport, or retain the synchronous host fallback.
+The source is 64x64 RGB565 (8 KiB) with a 4 KiB download buffer; the card draws
+it at 32x32 in the icon area. No title or click action is supplied by the widget.
+The consumer can bind a no-op command for the card. Error/stale images hide.
+
+The light grid exposes nabla_light_card_override, a bool expression evaluated
+before light state access. Return true after custom rendering to skip the
+light renderer; i, node, rows, labels, w, h, gap and columns are in scope.
+nabla_camera::thumbnail draws the passive image using that row's dimensions.
+This prototype supports one thumbnail object and the regular color profile.
+Compact/monochrome and multiple simultaneous thumbnail cards are not implemented.

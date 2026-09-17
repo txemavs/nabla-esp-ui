@@ -10,7 +10,7 @@ external_components:
       url: https://github.com/txemavs/nabla-esp-ui.git
       ref: ${nabla_ui_ref}
       path: external_components
-    components: [nabla_navigation, nabla_runtime, nabla_wifi, nabla_ha]
+    components: [nabla_navigation, nabla_runtime, nabla_wifi, nabla_ha, nabla_camera_fetch]
     refresh: never
 
 packages:

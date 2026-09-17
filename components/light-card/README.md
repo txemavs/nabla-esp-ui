@@ -36,3 +36,6 @@ and displays DEMO | MQTT simulado. Real MQTT binding is a separate integration.
 The grid owns its row labels while active (nav_custom_rows). The shell's
 periodic information refresh must not replace localized card text with command
 state strings. Leaving the grid restores ordinary row refresh.
+
+A mixed grid can supply nabla_light_card_override to render a non-light row
+before its light state is read. See the camera-viewer passive thumbnail example.

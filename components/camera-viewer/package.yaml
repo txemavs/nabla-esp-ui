@@ -2,6 +2,8 @@ substitutions:
   nabla_camera_count: "3"
   nabla_camera_use_cache: "false"
   nabla_camera_route: "-1"
+  nabla_camera_refresh_interval: 1s
+  nabla_camera_download: "id(camera_image).update();"
   nabla_view_refresh: "id(camera_render).execute();"
   nabla_back_intercept: "if(id(camera_fullscreen)) {id(camera_toggle_fullscreen).execute(); return true;}"
 # Experimental JPEG snapshot viewer; installation bindings are supplied separately.
@@ -48,28 +50,10 @@ image:
     buffer_size: 32768
     update_interval: never
     on_download_finished:
-      - lambda: |-
-          if(id(camera_opened)) {
-            const uint32_t now=millis();
-            if(id(camera_received)) {
-              const float elapsed=uint32_t(now-id(camera_received));
-              id(camera_frame_interval)=id(camera_frame_interval)>0
-                ? 0.75f*id(camera_frame_interval)+0.25f*elapsed : elapsed;
-            }
-            id(camera_received)=now;
-            lv_image_set_src(id(camera_picture),id(camera_image)->get_lv_image_dsc());
-            lv_obj_remove_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
-            id(camera_layout).execute();
-            id(camera_update_fps).execute();
-          }
+      - script.execute: camera_finish
     on_error:
-      - lambda: |-
-          if(id(camera_opened)) {
-            lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
-            id(camera_received)=0;
-            id(camera_frame_interval)=0;
-            lv_label_set_text(id(footer_brand),"${tr_camera_error}");
-          }
+      - script.execute: camera_error
+
 lvgl:
   top_layer:
     widgets:
@@ -123,7 +107,7 @@ lvgl:
                   - lambda: |-
                       if(id(camera_ready)) {
                         if(!id(camera_received))lv_label_set_text(id(footer_brand),"-- FPS");
-                        id(camera_image).update();
+                        ${nabla_camera_download}
                       }
             - button:
                 x: 42
@@ -143,6 +127,31 @@ lvgl:
                 on_click:
                   - script.execute: camera_toggle_fullscreen
 script:
+  - id: camera_finish
+    then:
+      - lambda: |-
+          if(id(camera_opened)) {
+            const uint32_t now=millis();
+            if(id(camera_received)) {
+              const float elapsed=uint32_t(now-id(camera_received));
+              id(camera_frame_interval)=id(camera_frame_interval)>0
+                ? 0.75f*id(camera_frame_interval)+0.25f*elapsed : elapsed;
+            }
+            id(camera_received)=now;
+            lv_image_set_src(id(camera_picture),id(camera_image)->get_lv_image_dsc());
+            lv_obj_remove_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+            id(camera_layout).execute();
+            id(camera_update_fps).execute();
+          }
+  - id: camera_error
+    then:
+      - lambda: |-
+          if(id(camera_opened)) {
+            lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
+            id(camera_received)=0;
+            id(camera_frame_interval)=0;
+            lv_label_set_text(id(footer_brand),"${tr_camera_error}");
+          }
   - id: camera_update_fps
     then:
       - lambda: |-
@@ -220,7 +229,7 @@ script:
           lv_obj_add_flag(id(footer_clock),LV_OBJ_FLAG_HIDDEN);
           lv_obj_remove_flag(id(camera_footer_icons),LV_OBJ_FLAG_HIDDEN);
           lv_label_set_text(id(footer_brand),id(camera_ready)?"-- FPS":"${tr_camera_waiting}");
-          if(id(camera_ready)) id(camera_image).update();
+          if(id(camera_ready)) { ${nabla_camera_download} }
   - id: camera_close
     then:
       - lambda: |-
@@ -236,7 +245,7 @@ interval:
   - interval: 1s
     then:
       - script.execute: camera_update_fps
-  - interval: 2s
+  - interval: ${nabla_camera_refresh_interval}
     then:
       - lambda: |-
           if(id(camera_opened) && id(camera_ready)) {
@@ -244,7 +253,7 @@ interval:
               lv_obj_add_flag(id(camera_picture),LV_OBJ_FLAG_HIDDEN);
               lv_label_set_text(id(footer_brand),"0.0 FPS - ${tr_camera_stale}");
             }
-            id(camera_image).update();
+            ${nabla_camera_download}
           }
 
 font:

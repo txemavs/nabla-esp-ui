@@ -3,6 +3,7 @@ substitutions:
   nabla_light_slot_base: "-1"
   nabla_light_state: "nabla_light::State{false,0,false,false}"
   nabla_light_pending: "false"
+  nabla_light_card_override: "false"
   nabla_light_footer: "Lights"
   nabla_view_refresh: "id(light_panel_render).execute();"
   nabla_input_captured: "nabla_light::editor.active()"
@@ -47,6 +48,9 @@ script:
             for(int i=0;i<nabla::children(id(nav_current));i++) {
               int slot=base+i;
               int node=nabla::child(id(nav_current),i);
+              for(uint32_t j=3;j<lv_obj_get_child_count(rows[i]);j++)
+                lv_obj_add_flag(lv_obj_get_child(rows[i],j),LV_OBJ_FLAG_HIDDEN);
+              if(${nabla_light_card_override})continue;
               nabla_light::card(rows[i],labels[i],nabla::nodes[node].title,
                 ${nabla_light_state},
                 {"${tr_light_on}","${tr_light_off}","${tr_light_unavailable}","${tr_light_brightness}","${tr_light_apply}","${tr_light_cancel}"},

@@ -1,0 +1,83 @@
+# Optional passive 64x64 camera thumbnail for a regular light-card grid.
+substitutions:
+  nabla_thumbnail_active: "false"
+  nabla_thumbnail_source: "0"
+  nabla_thumbnail_download: "id(camera_thumbnail).update();"
+nabla_runtime:
+  - headers: [components/camera-viewer/thumbnail.h]
+globals:
+  - id: camera_thumbnail_ready
+    type: bool
+    initial_value: 'false'
+  - id: camera_thumbnail_visible
+    type: bool
+    initial_value: 'false'
+  - id: camera_thumbnail_received
+    type: uint32_t
+    initial_value: '0'
+  - id: camera_thumbnail_url
+    type: std::string
+    initial_value: '""'
+image:
+  - platform: online_image
+    id: camera_thumbnail
+    url: https://example.invalid/thumbnail.jpg
+    format: JPEG
+    type: RGB565
+    resize: 64x64
+    buffer_size: 4096
+    update_interval: never
+    on_download_finished:
+      - script.execute: camera_thumbnail_finish
+    on_error:
+      - script.execute: camera_thumbnail_error
+script:
+  - id: camera_thumbnail_finish
+    then:
+      - lambda: |-
+          if(!id(camera_thumbnail_visible))return;
+          id(camera_thumbnail_ready)=true;
+          id(camera_thumbnail_received)=millis();
+          if(nabla_camera::thumbnail_image) {
+            lv_image_set_src(nabla_camera::thumbnail_image,id(camera_thumbnail)->get_lv_image_dsc());
+            lv_obj_remove_flag(nabla_camera::thumbnail_image,LV_OBJ_FLAG_HIDDEN);
+          }
+  - id: camera_thumbnail_error
+    then:
+      - lambda: |-
+          id(camera_thumbnail_ready)=false;
+          nabla_camera::hide_thumbnail();
+  - id: camera_thumbnail_fetch
+    then:
+      - lambda: |-
+          if(!id(camera_thumbnail_visible))return;
+          const int source=${nabla_thumbnail_source};
+          if(source<0 || source>=int(id(camera_urls).size()))return;
+          std::string url=id(camera_urls)[source];
+          const auto size=url.rfind("&size=view");
+          if(url.find("/api/nabla_camera/")==std::string::npos || size==std::string::npos)return;
+          url.replace(size,10,"&size=icon");
+          if(url!=id(camera_thumbnail_url)) {
+            id(camera_thumbnail_url)=url;
+            id(camera_thumbnail).set_url(url);
+          }
+          ${nabla_thumbnail_download}
+  - id: camera_thumbnail_render
+    then:
+      - lambda: |-
+          const bool active=${nabla_thumbnail_active};
+          const bool entering=active&&!id(camera_thumbnail_visible);
+          id(camera_thumbnail_visible)=active;
+          if(!active) {
+            id(camera_thumbnail_ready)=false;
+            nabla_camera::hide_thumbnail();
+          } else if(entering)id(camera_thumbnail_fetch).execute();
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          if(id(camera_thumbnail_visible)) {
+            if(id(camera_thumbnail_received) && millis()-id(camera_thumbnail_received)>8000)
+              id(camera_thumbnail_error).execute();
+            id(camera_thumbnail_fetch).execute();
+          }
