@@ -90,9 +90,22 @@ Wire these to MQTT commands or ESPHome actions for real device control.
 
 ## Substitutions
 
-| Name                        | Default   | Description           |
-|-----------------------------|-----------|------------------------|
-| nabla_control_panel_footer  | Control   | Footer label text      |
+| Name                        | Default   | Description                          |
+|-----------------------------|-----------|--------------------------------------|
+| nabla_control_panel_footer  | Control   | Footer label text                    |
+| nabla_control_panel_dense   | false     | Enable dense mode for small screens  |
+
+### Dense mode
+
+Set `nabla_control_panel_dense: "true"` for small screens (320×240 or similar).
+Dense mode provides a packed Core2-style control grid:
+- 5 columns at 320px (vs 4 regular), 4 at 240px
+- Smaller tabs (18px height vs 24px)
+- Compact sensor row (16px vs 24px)
+- Short status text (ON/OFF, `>` for momentary)
+- Minimal gaps (2px) and margins
+- Cell height ~28px to fit many rows
+- Content starts immediately under header bar (no dead space)
 
 ## Limits
 
@@ -104,11 +117,15 @@ Wire these to MQTT commands or ESPHome actions for real device control.
 ## Demo
 
 ```sh
-./simulator/run.sh control-panel
+./simulator/run.sh control-panel         # 480×320 regular
+./simulator/run.sh control-panel-core2   # 320×240 Core2-sized (dense)
 ```
 
 Opens two synthetic site sections (Villa/Nave) with toggle lights, momentary
 alerts, and sensor readings. All data is local mock state with no network.
+
+The Core2 demo uses dense mode for smaller cells and tighter spacing, matching
+the M5Stack Core2 320×240 ILI9342 display form factor.
 
 ## Files
 
