@@ -29,3 +29,9 @@ do not expose those demo actions on this profile as real network settings.
 Display network status from the real Wi-Fi sensors; keep actual provisioning
 in the existing captive portal until a hardware-backed form adapter is ready.
 Compile/runtime verification is recorded with the private installation.
+
+
+Optional color.yaml gives a 2x2 launcher and one-icon view. device-info/package.yaml
+provides model, Wi-Fi/IP, router and RSSI through info fields. Long details scroll
+with the encoder. MQTT compact.yaml uses the same 16-slot contract as the larger
+panel, with an explicit brightness confirmation and no direct HA dependency.

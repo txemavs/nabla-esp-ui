@@ -1,0 +1,32 @@
+# Encoder editor shares the regular adapter's transport and freshness rules.
+packages:
+  transport: !include transport.yaml
+nabla_runtime:
+  - headers:
+      - adapters/mqtt-lights/compact.h
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          auto &e=nabla_mqtt_lights::compact_editor;
+          e.apply="${tr_light_apply}";e.cancel="${tr_light_cancel}";
+          e.unavailable="${tr_light_unavailable}";e.adjust="${tr_light_brightness}";
+          e.send=[](int slot,bool on,int level){id(control_send).execute(slot,on,level);};
+          nabla::compact_shell.custom_move=[](int delta){return nabla_mqtt_lights::compact_editor.move(delta);};
+          nabla::compact_shell.custom_activate=[](){return nabla_mqtt_lights::compact_editor.activate(millis());};
+          nabla::compact_shell.custom_back=[](){return nabla_mqtt_lights::compact_editor.back();};
+          nabla::compact_shell.custom_render=[](esphome::display::Display &d,esphome::font::Font *small,esphome::font::Font *body){
+            return nabla_mqtt_lights::compact_editor.render(d,small,body,nabla::compact_shell.menu.dark,millis());
+          };
+interval:
+  - interval: 250ms
+    then:
+      - lambda: nabla_mqtt_lights::model.tick(millis());
+script:
+  - id: control_open
+    parameters:
+      slot: int
+      title: std::string
+    then:
+      - lambda: nabla_mqtt_lights::compact_editor.open(slot,title.c_str(),millis());

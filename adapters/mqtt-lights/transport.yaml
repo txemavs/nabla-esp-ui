@@ -1,0 +1,37 @@
+# Shared transport; no renderer dependency.
+nabla_runtime:
+  - headers:
+      - adapters/mqtt-lights/mqtt_model.h
+substitutions:
+  nabla_mqtt_command_topics: "std::vector<std::string>(16)"
+time:
+  - platform: sntp
+    id: nabla_mqtt_clock
+mqtt:
+  on_connect:
+    - lambda: nabla_mqtt_lights::model.connect(true);
+  on_disconnect:
+    - lambda: nabla_mqtt_lights::model.connect(false);
+globals:
+  - id: control_command_topics
+    type: std::vector<std::string>
+    initial_value: '${nabla_mqtt_command_topics}'
+script:
+  - id: control_send
+    parameters:
+      slot: int
+      turn_on: bool
+      level: int
+    then:
+      - if:
+          condition:
+            lambda: return nabla_mqtt_lights::model.ready(slot,millis()) && slot<int(id(control_command_topics).size()) && !id(control_command_topics)[slot].empty() && level>=0 && level<=100;
+          then:
+            - mqtt.publish_json:
+                topic: !lambda return id(control_command_topics)[slot];
+                qos: 0
+                retain: false
+                payload: |-
+                  root["state"]=turn_on?"on":"off";
+                  root["brightness_pct"]=level;
+            - lambda: nabla_mqtt_lights::model.sent(slot,turn_on,level,millis());

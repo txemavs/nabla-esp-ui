@@ -102,3 +102,18 @@ part of the library. Supports shared touch/keyboard/compact activation.
 The optional [camera thumbnail](camera-viewer/README.md#passive-thumbnail-card)
 adds one passive 32 px preview to a regular mixed card grid; its 64x64 JPEG
 source and credentials remain adapter-owned.
+
+
+### Compact color and MQTT extensions
+
+- compact-shell/color.yaml optionally loads a 24 px Font Awesome subset and
+  enables 2x2 root tiles; the root logo switches to a single-icon page.
+- The device still owns its catalog and icon colors. Nested menus remain lists.
+  Encoder and touch select the same routes. Tiny/readable omit this package.
+- Compact information leaves wrap UTF-8 text and scroll with U/D; Enter/Back
+  returns. Text is bounded to 900 bytes. The device-info package supplies live
+  network/model fields through semantic info keys, never navigation node indexes.
+- adapters/mqtt-lights/compact.yaml adds a bounded encoder brightness draft,
+  shared MQTT transport, freshness checks, explicit Apply and Back/Cancel.
+- Target: NodeMCU-32S/ST7735 160x128; compilation and host rendering verified,
+  physical colors/encoder confirmation belongs to the device deployment.

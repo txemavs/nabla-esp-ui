@@ -1,17 +1,12 @@
-# Consumer supplies authenticated mqtt:, routes and allowlisted command topics.
-nabla_runtime:
-  - headers:
-      - adapters/mqtt-lights/model.h
+# Regular LVGL editor over the shared MQTT transport.
 packages:
+  transport: !include transport.yaml
   light_panel: !include ../../components/light-card/panel.yaml
 substitutions:
   nabla_mqtt_command_topics: "std::vector<std::string>(16)"
   nabla_light_state: "nabla_light::State{nabla_mqtt_lights::model.states[slot].on,nabla_mqtt_lights::model.states[slot].brightness,nabla_mqtt_lights::model.states[slot].dimmable,nabla_mqtt_lights::model.available(slot,millis())}"
   nabla_light_pending: "nabla_mqtt_lights::model.pending[slot] != 0"
   nabla_light_footer: "MQTT"
-time:
-  - platform: sntp
-    id: nabla_mqtt_clock
 interval:
   - interval: 250ms
     then:
@@ -21,15 +16,6 @@ interval:
             nabla_mqtt_lights::model.dirty=false;
             id(nav_render).execute();
           }
-mqtt:
-  on_connect:
-    - lambda: nabla_mqtt_lights::model.connect(true);
-  on_disconnect:
-    - lambda: nabla_mqtt_lights::model.connect(false);
-globals:
-  - id: control_command_topics
-    type: std::vector<std::string>
-    initial_value: '${nabla_mqtt_command_topics}'
 script:
   - id: control_open
     parameters:
@@ -47,21 +33,3 @@ script:
               id(nabla_ubuntu_16)->get_lv_font(),id(nav_dark),
               [slot](nabla_light::State value){id(control_send).execute(slot,value.on,value.brightness);});
           } else id(control_send).execute(slot,!state.on,state.brightness);
-  - id: control_send
-    parameters:
-      slot: int
-      turn_on: bool
-      level: int
-    then:
-      - if:
-          condition:
-            lambda: return nabla_mqtt_lights::model.ready(slot,millis()) && slot<int(id(control_command_topics).size()) && !id(control_command_topics)[slot].empty() && level>=0 && level<=100;
-          then:
-            - mqtt.publish_json:
-                topic: !lambda return id(control_command_topics)[slot];
-                qos: 0
-                retain: false
-                payload: |-
-                  root["state"]=turn_on?"on":"off";
-                  root["brightness_pct"]=level;
-            - lambda: nabla_mqtt_lights::model.sent(slot,turn_on,level,millis());

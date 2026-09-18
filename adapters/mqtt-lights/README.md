@@ -30,9 +30,25 @@ after 15 seconds without confirmation a timeout is logged. Disconnect and
 90-second stale state disable controls. Touch and U/D/ENTER share the editor;
 ESC cancels. Credentials and installation bindings remain private.
 
-Uses the regular renderer; compact light grids remain unsupported.
+The regular package uses LVGL; compact.yaml supplies the encoder editor without LVGL.
 Validated with model tests and ESP32-S3 compilation. Live broker and physical
 verification are required for each installation.
 
 Repeated identical state messages refresh freshness without invalidating the UI.
 Changed state, availability expiry and command confirmations still notify views.
+
+
+## Compact encoder panels
+
+Import compact.yaml alongside packages/compact.yaml and the same per-slot
+binding.yaml files. Device YAML owns command topics, broker TLS credentials
+and menu commands that invoke control_open(slot, title). transport.yaml is
+shared with the regular panel; no commands are sent merely by opening a
+dimmable light. Rotate to adjust 0–100%, press to focus Apply, rotate to choose
+Apply/Cancel/level, then press to confirm. Back cancels. Unavailable or pending
+lights cannot send. Non-dimmable lights toggle on explicit activation.
+
+The compact editor uses the shell's optional input/render callbacks and occupies
+the screen while active. The model has 16 slots, a 900-byte log and one draft.
+The installation may bind custom_detail to show the log with encoder scrolling.
+Header export uses mqtt_model.h to avoid colliding with the compact menu model.

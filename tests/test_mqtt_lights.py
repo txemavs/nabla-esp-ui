@@ -6,6 +6,21 @@ class MqttLights(unittest.TestCase):
 #include "adapters/mqtt-lights/model.h"
 #include <cassert>
 int main() {
+  using namespace nabla_mqtt_lights;
+  model.connect(true);model.update(0,{true,true,true,50},100);
+  CompactDraft draft;int sent=0;
+  draft.send=[&](int slot,bool on,int level){assert(slot==0);assert(on);assert(level==51);sent++;};
+  draft.open(0,"Light",100);draft.move(1);
+  assert(draft.level==51 && model.states[0].brightness==50);
+  draft.back();assert(!draft.active() && sent==0);
+  draft.open(0,"Light",100);draft.move(1);draft.activate(100);
+  model.connect(false);draft.activate(101);
+  assert(draft.active() && sent==0);draft.back();
+  model.connect(true);model.update(0,{true,true,true,50},102);
+  draft.open(0,"Light",102);draft.move(1);draft.activate(102);draft.activate(102);
+  assert(!draft.active() && sent==1);
+  draft.open(0,"Light",103);draft.move(999);assert(draft.level==100);
+  draft.move(-999);assert(draft.level==0);draft.back();
   nabla_mqtt_lights::Model m;
   assert(!m.ready(0,100));
   m.connect(true);

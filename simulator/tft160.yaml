@@ -3,5 +3,6 @@ substitutions:
   compact_profile: tft160
 packages:
   base: !include compact.yaml
+  colors: !include ../components/compact-shell/color.yaml
 esphome:
   name: nabla-tft160

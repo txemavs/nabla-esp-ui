@@ -8,6 +8,15 @@ namespace nabla {
 class CompactShell {
  public:
   CompactMenu menu;
+  esphome::font::Font *icons=nullptr;
+  bool color_icons=false, root_tiles=false;
+  std::function<int(int)> icon_color;
+  std::function<bool(int)> custom_move;
+  std::function<bool()> custom_activate,custom_back;
+  std::function<bool(esphome::display::Display &,esphome::font::Font *,esphome::font::Font *)> custom_render;
+  std::function<std::string(int)> custom_detail;
+  int detail_scroll=0, detail_max=0, detail_node=-1;
+
   nabla_forms::CompactWifi wifi;
   nabla_forms::Controller forms;
   int form_focus=-1,form_view=-1,wifi_focus=-1,wifi_stage=-1;
@@ -15,13 +24,14 @@ class CompactShell {
   bool in_forms() const {return nodes[menu.current].action==4;}
   void adjust(int delta){if(in_forms())forms.adjust(delta);}
   bool in_wifi() const {return nodes[menu.current].action==3;}
-  void move(int delta) {if(in_wifi())wifi.move(delta);else if(in_forms())forms.move(delta);else menu.move(delta);}
+  void move(int delta) {if(custom_move && custom_move(delta))return;if(!children(menu.current) && !in_wifi() && !in_forms()){detail_scroll=std::clamp(detail_scroll+delta,0,detail_max);return;}if(in_wifi())wifi.move(delta);else if(in_forms())forms.move(delta);else menu.move(delta);}
   void activate() {
+    if(custom_activate && custom_activate())return;
     if(in_wifi()) {if(wifi.activate((esphome::millis)())) menu.back();}
     else if(in_forms()){if(forms.activate())menu.back();}
     else {menu.activate();if(in_wifi())wifi.clear();if(in_forms())forms.begin();}
   }
-  void back() {if(in_wifi()) {if(wifi.back())menu.back();}else if(in_forms()){if(forms.back())menu.back();}else menu.back();}
+  void back() {if(custom_back && custom_back())return;if(in_wifi()) {if(wifi.back())menu.back();}else if(in_forms()){if(forms.back())menu.back();}else menu.back();}
   void home() {wifi.clear();forms.discard();menu.home();}
   void render_wifi(esphome::display::Display &d, esphome::font::Font *small,
                    esphome::font::Font *body, esphome::font::Font *large) {
@@ -115,6 +125,7 @@ class CompactShell {
               esphome::font::Font *body, esphome::font::Font *large,
               const char *back_text, const char *pending) {
     using namespace esphome;
+    if(custom_render && custom_render(d,small,body))return;
     if(!in_forms())form_focus=-1;
     if(!in_wifi())wifi_focus=-1;
     if(in_forms()){render_forms(d,small,body,large);return;}
@@ -141,7 +152,31 @@ class CompactShell {
     d.print(16, 0, small, fg, nodes[menu.current].title);
     d.end_clipping();
     const int n = children(menu.current);
-    if (n) {
+    if(root_tiles && icons && menu.current==0 && n) {
+      int cells=menu.readable?1:4;
+      int first=menu.focus<n?(menu.focus/cells)*cells:(menu.top/cells)*cells;
+      int cols=menu.readable?1:2,rows=menu.readable?1:2;
+      int cw=g.width/cols,ch=g.content_height()/rows;
+      for(int i=0;i<cells && first+i<n;i++){
+        int node=child(0,first+i),x=(i%cols)*cw,y=g.header+(i/cols)*ch;
+        bool selected=menu.focus==first+i;
+        auto ink=selected&&!menu.borders?bg:fg;
+        if(selected){if(menu.borders)d.rectangle(x,y,cw,ch,fg);else d.filled_rectangle(x,y,cw,ch,fg);}
+        auto packed=menu.dark?nodes[node].icon_dark:nodes[node].icon_light;
+        auto color=color_icons?Color((packed>>16)&255,(packed>>8)&255,packed&255):ink;
+        if(selected&&!menu.borders)color=ink;
+        d.print(x+cw/2,y+ch/2-8,icons,color,display::TextAlign::CENTER,nodes[node].icon);
+        d.start_clipping(x+3,y,x+cw-4,y+ch-2);
+        int bx,by,bw,bh;
+        d.get_text_bounds(0,0,nodes[node].title,small,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+        if(bw<=cw-6)d.print(x+cw/2,y+ch-15,small,ink,display::TextAlign::TOP_CENTER,nodes[node].title);
+        else {
+          int offset=selected?std::min(bw-cw+6,std::max(0,int(((millis()-focus_since)/100)%(bw-cw+26))-10)):0;
+          d.print(x+3-offset,y+ch-15,small,ink,nodes[node].title);
+        }
+        d.end_clipping();
+      }
+    } else if (n) {
       for (int r = 0; r < g.rows; ++r) {
         int index = menu.top + r;
         if (index >= n) break;
@@ -149,34 +184,56 @@ class CompactShell {
         bool selected = menu.focus == index;
         if (selected) { if(menu.borders) d.rectangle(0,y,g.width,g.row_height,fg); else d.filled_rectangle(0,y,g.width,g.row_height,fg); }
         auto *font = menu.readable ? large : body;
-        const std::string row_text = row_title(child(menu.current, index), menu.dark, menu.font_family, menu.borders);
+        int row_node=child(menu.current,index);
+        int left=4;
+        if(icons && nodes[row_node].icon[0]){
+          left=32;int packed=icon_color?icon_color(row_node):(menu.dark?nodes[row_node].icon_dark:nodes[row_node].icon_light);
+          auto ink=color_icons?Color((packed>>16)&255,(packed>>8)&255,packed&255):fg;
+          if(selected&&!menu.borders)ink=bg;
+          d.print(16,y+g.row_height/2,icons,ink,display::TextAlign::CENTER,nodes[row_node].icon);
+        }
+        const std::string row_text = row_title(row_node, menu.dark, menu.font_family, menu.borders);
         const char *title = row_text.c_str();
         int bx, by, bw, bh;
         d.get_text_bounds(0, 0, title, font, display::TextAlign::TOP_LEFT, &bx,&by,&bw,&bh);
         // Bounded marquee exposes complete long labels without changing focus.
         int offset = 0;
-        if (selected && bw > g.width-8) {
-          int range = bw - (g.width-8);
+        if (selected && bw > g.width-left-4) {
+          int range = bw - (g.width-left-4);
           int phase = ((millis()-focus_since)/100) % (2*range + 20);
           offset = std::min(range, std::max(0, phase-10));
           if (phase > range+10) offset = std::max(0, 2*range+10-phase);
         }
-        d.start_clipping(3, y+1, g.width-4, y+g.row_height-2);
-        d.print(4-offset, y+(g.row_height-bh)/2, font, selected && !menu.borders ? bg : fg, title);
+        d.start_clipping(left-1, y+1, g.width-4, y+g.row_height-2);
+        d.print(left-offset, y+(g.row_height-bh)/2, font, selected && !menu.borders ? bg : fg, title);
         d.end_clipping();
       }
     } else {
-      d.start_clipping(2, g.header+2, g.width-2, g.height-g.footer-g.header-2);
-      const std::string detail_text = nabla::detail(menu.current);
-      const char *detail = nodes[menu.current].action == 3 ? pending : detail_text.c_str();
-      std::string lines=detail;
-      int line_y=g.header+2;
-      for(size_t start=0;start<=lines.size() && line_y<g.height-g.footer-g.header;) {
-        auto end=lines.find('\n',start);
-        d.print(2,line_y,body,fg,lines.substr(start,end-start).c_str());
-        if(end==std::string::npos)break;
-        start=end+1;line_y+=body->get_height();
+      if(detail_node!=menu.current){detail_node=menu.current;detail_scroll=0;}
+      std::string text=custom_detail?custom_detail(menu.current):"";
+      if(text.empty())text=nabla::detail(menu.current);
+      if(nodes[menu.current].action==3)text=pending;
+      text=text.substr(0,900);
+      std::vector<std::string> lines;
+      std::string line;
+      for(size_t pos=0;pos<text.size();){
+        size_t next=pos+1;
+        while(next<text.size() && (static_cast<unsigned char>(text[next])&0xc0)==0x80)++next;
+        auto glyph=text.substr(pos,next-pos);pos=next;
+        if(glyph=="\n"){lines.push_back(line);line.clear();continue;}
+        int bx,by,bw,bh;
+        auto candidate=line+glyph;
+        d.get_text_bounds(0,0,candidate.c_str(),body,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+        if(bw>g.width-6 && !line.empty()){lines.push_back(line);line.clear();}
+        line+=glyph;
       }
+      lines.push_back(line);
+      int visible=std::max(1,(g.content_height()-g.header-4)/body->get_height());
+      detail_max=std::max(0,int(lines.size())-visible);
+      detail_scroll=std::clamp(detail_scroll,0,detail_max);
+      d.start_clipping(2,g.header+2,g.width-2,g.height-g.footer-g.header-2);
+      for(int i=0;i<visible && detail_scroll+i<int(lines.size());i++)
+        d.print(2,g.header+2+i*body->get_height(),body,fg,lines[detail_scroll+i].c_str());
       d.end_clipping();
       // Header is the semantic Back target; provide an obvious touch-sized row.
       if(menu.borders)d.rectangle(0,g.height-g.footer-g.header,g.width,g.header,fg);else d.filled_rectangle(0,g.height-g.footer-g.header,g.width,g.header,fg);
@@ -205,6 +262,13 @@ class CompactShell {
     if (!children(menu.current)) { if (y >= display_height-(app_footer ? bar_height : 0)-bar_height && y < display_height-(app_footer ? bar_height : 0)) menu.back(); return; }
     auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer,display_width,display_height,bar_height,menu.list_rows);
     if (y >= display_height-g.footer) return;
+    if(root_tiles && icons && menu.current==0){
+      int cells=menu.readable?1:4,cols=menu.readable?1:2;
+      int first=menu.focus<children(0)?menu.focus/cells*cells:menu.top/cells*cells;
+      int index=first+(y-bar_height)/(g.content_height()/(menu.readable?1:2))*cols+x/(g.width/cols);
+      if(index<children(0))menu.touch_option(index);
+      return;
+    }
     int row = (y-bar_height)/g.row_height;
     if (row < g.rows) {menu.touch_option(menu.top + row);if(in_wifi())wifi.clear();if(in_forms())forms.begin();}
   }
