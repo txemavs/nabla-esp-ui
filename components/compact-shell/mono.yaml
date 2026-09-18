@@ -4,7 +4,7 @@
 #
 # Tiny UX philosophy:
 # - Normal mode (borders=true): play marker ▶ on left of focused row, no box borders.
-# - Alto contraste (borders=false): inverted bar selection.
+# - High contrast (borders=false): inverted bar selection.
 # - Icon mode uses large font for labels, smaller centered icon.
 # - Triangle spin animation on boot and view toggle.
 substitutions:

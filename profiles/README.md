@@ -37,13 +37,15 @@ prioritizing readability on severely constrained screens:
 Fullscreen icon OR text list. No 2×2 grid—space is too constrained.
 
 ### Appearance modes
-Renamed from "Borders" to **Normal / Alto contraste** in the tiny context:
+Renamed from "Borders" to **Normal / High contrast** in the tiny context:
 - **Normal** (borders=true): ▶ play marker on the LEFT of focused row, no box
   borders. Clean appearance with minimal visual chrome.
-- **Alto contraste** (borders=false): current inverted/bar selection. Filled
+- **High contrast** (borders=false): current inverted/bar selection. Filled
   background for selected items maximizes visibility.
-- **Single-item (icon) view**: Alto contraste inverts the panel background;
+- **Single-item (icon) view**: High contrast inverts the panel background;
   Normal shows no selection chrome (only one item visible anyway).
+
+Spanish UI labels: «Normal» / «Alto contraste».
 
 ### Typography floor
 Never use undersized fonts on tiny displays. Minimum font size = form body size
@@ -73,7 +75,7 @@ Ajustes (Settings)
 ├── Apariencia
 │   ├── Oscuro (toggle dark/light)
 │   ├── Fuente (toggle font family)
-│   └── Alto contraste (toggle play marker / inverted bar)
+│   └── High contrast (toggle play marker / inverted bar)
 └── Información
     ├── Modelo
     ├── Wi-Fi
