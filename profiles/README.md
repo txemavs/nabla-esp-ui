@@ -2,6 +2,7 @@
 
 M1 provides three named profiles and a regular portrait fixture. All consume
 examples/hello-world/navigation.yaml; none duplicates the menu or entity mapping.
+The tiny profile uses examples/tiny/navigation.yaml for a simplified menu.
 
 - regular: LVGL shell at 480x320, tile/list switch, 36 px header and footer.
 - tiny: actual 128x64 monochrome, two root views only: fullscreen icon or text list.
@@ -26,6 +27,69 @@ the root menu toggles between fullscreen icon (readable=true) and text-only list
 (readable=false). List mode shows plain text rows without icon glyphs.
 There is no intermediate 2x2 tile grid on 128x64.
 The tft160 profile retains the 2x2 color tiles and list icons via `color.yaml`.
+
+## Tiny (128×64 mono OLED) UX Philosophy
+
+The tiny profile encodes a distinct philosophy for 128×64 mono OLED displays,
+prioritizing readability on severely constrained screens:
+
+### Two root views only
+Fullscreen icon OR text list. No 2×2 grid—space is too constrained.
+
+### Appearance modes
+Renamed from "Borders" to **Normal / Alto contraste** in the tiny context:
+- **Normal** (borders=true): ▶ play marker on the LEFT of focused row, no box
+  borders. Clean appearance with minimal visual chrome.
+- **Alto contraste** (borders=false): current inverted/bar selection. Filled
+  background for selected items maximizes visibility.
+- **Single-item (icon) view**: Alto contraste inverts the panel background;
+  Normal shows no selection chrome (only one item visible anyway).
+
+### Typography floor
+Never use undersized fonts on tiny displays. Minimum font size = form body size
+(SSID/password row). In icon view, the single-item label uses the large font
+(«Conexiones» size), centered at the bottom. Icon is above, well-packed with
+less empty top space.
+
+### List mode layout
+- No footer—all vertical space for content.
+- 3 rows visible, text-only (no icon glyphs in list).
+- Middle-scroll: focus stays center row until reaching list boundaries.
+
+### Icon/single mode layout
+- HAS toolbar+footer (shows n/m pagination index).
+- Smaller centered icon (16px vs old 20px) for better label space.
+- Large font for label, centered below the icon.
+
+### Nabla triangle animation
+On boot and when toggling view from main menu, the header triangle spins
+~180° as a brief visual acknowledgment of the mode change.
+
+### Settings structure (Kit1 ESPUI shape)
+```
+Ajustes (Settings)
+├── Conexiones
+│   └── Wi-Fi (captive portal hint)
+├── Apariencia
+│   ├── Oscuro (toggle dark/light)
+│   ├── Fuente (toggle font family)
+│   └── Alto contraste (toggle play marker / inverted bar)
+└── Información
+    ├── Modelo
+    ├── Wi-Fi
+    ├── IP
+    ├── Encendido (Uptime)
+    └── Idioma (last—moved from outer menu)
+```
+
+### Menu content (public example)
+Removed placeholders not useful on tiny (Photos, Music, Cameras, Weather,
+Lights, Sensors). Added Control > Site A with four generic lights (Storage,
+Office, Bench, Spotlight) mirroring the Kit1 pattern with Site A names.
+
+### Default behavior
+Settings and other menus default to list view; can toggle to centered large
+single-item view anywhere. Same two-view rule applies throughout on tiny.
 
 ## Navigation and presentation
 

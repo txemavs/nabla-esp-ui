@@ -150,3 +150,13 @@ substitutions:
   tr_cp_humidity: "Hum"
   tr_cp_status: "Estado"
   tr_cp_alarm: "Alarma"
+
+  # Tiny profile specific
+  tr_control: "Control"
+  tr_site_a: "Site A"
+  tr_light_storage: "Almacén"
+  tr_light_office: "Oficina"
+  tr_light_bench: "Banco"
+  tr_light_spot: "Foco"
+  tr_high_contrast: "Alto contraste"
+  tr_tiny_wifi_hint: "Portal cautivo disponible"

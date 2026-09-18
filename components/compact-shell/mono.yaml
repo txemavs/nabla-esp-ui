@@ -1,8 +1,13 @@
 # Monochrome icon mode for tiny OLED displays (128x64).
 # Two views only: fullscreen icon or text-only list (no icon glyphs in list).
 # Does not use the 2x2 tile grid; single_icon_mode disables list icons too.
+#
+# Tiny UX philosophy:
+# - Normal mode (borders=true): play marker ▶ on left of focused row, no box borders.
+# - Alto contraste (borders=false): inverted bar selection.
+# - Icon mode uses large font for labels, smaller centered icon.
+# - Triangle spin animation on boot and view toggle.
 substitutions:
-  compact_icon_size: "20"
   compact_list_footer: "false"
 font:
   - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
@@ -22,3 +27,8 @@ esphome:
           nabla::compact_shell.single_icon_mode=true;
           nabla::compact_shell.list_footer=${compact_list_footer};
           nabla::compact_shell.middle_scroll=true;
+          // Tiny profile: enable play marker in Normal mode, init callbacks.
+          nabla::compact_shell.tiny_play_marker=true;
+          nabla::compact_shell.init_tiny_callbacks();
+          // Start boot animation (one 180° spin).
+          nabla::compact_shell.start_triangle_spin(1);

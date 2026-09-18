@@ -6,9 +6,12 @@ substitutions:
   screen_height: "64"
   compact_rows: "3"
   compact_bar_height: "12"
-  compact_small_size: "8"
+  # Typography floor: 9px minimum (header/footer/small labels).
+  # Body 10px for form fields; large 17px for icon mode labels.
+  compact_small_size: "9"
   compact_body_size: "10"
   compact_large_size: "17"
-  compact_icon_size: "20"
+  # Smaller icon (16px vs 20px) for better label space in icon mode.
+  compact_icon_size: "16"
   # List mode hides footer; readable (fullscreen icon) keeps it.
   compact_list_footer: "false"
