@@ -146,7 +146,7 @@ script:
                 id(nav_saved_focus)[old] = id(nav_selection);
                 if (old || id(nav_list_view)) id(nav_saved_scroll)[old] = lv_obj_get_scroll_y(id(navigation_content));
                 id(nav_current) = node;
-                id(nav_selection) = nabla::nodes[node].action >= 3 ? -1 : id(nav_saved_focus)[node];
+                id(nav_selection) = (nabla::nodes[node].action >= 3 && nabla::nodes[node].action <= 4) ? -1 : (nabla::nodes[node].action == 9 ? 0 : id(nav_saved_focus)[node]);
                 if (old != node && nabla::children(node) > 0) {
                   // Entering a child starts at its first option; returning keeps
                   // the previous content item, never a saved toolbar control.
@@ -192,7 +192,7 @@ script:
           else:
             - if:
                 condition:
-                  lambda: return nabla::nodes[id(nav_current)].action >= 3;
+                  lambda: return nabla::nodes[id(nav_current)].action >= 3 && nabla::nodes[id(nav_current)].action <= 4;
                 then:
                   - lambda: |-
                       if(nabla::nodes[id(nav_current)].action==3)nabla_wifi_form::editor.move(delta);
@@ -217,7 +217,7 @@ script:
           else:
             - if:
                 condition:
-                  lambda: return nabla::nodes[id(nav_current)].action >= 3;
+                  lambda: return nabla::nodes[id(nav_current)].action >= 3 && nabla::nodes[id(nav_current)].action <= 4;
                 then:
                   - lambda: |-
                       if(nabla::nodes[id(nav_current)].action==3)nabla_wifi_form::editor.activate();

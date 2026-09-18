@@ -243,3 +243,17 @@ Physical e-paper rendering/refresh remains unverified; this is a host UI preview
 Run ./simulator/run.sh composition. Edit simulator/composition.yaml to change
 its complete navigation tree and forms. This imports reusable components without
 importing an example menu, matching the recommended private Builder structure.
+
+## Control Panel demo
+
+```sh
+./simulator/run.sh control-panel
+```
+
+Opens a dense grid control panel with two synthetic site sections (Villa/Nave).
+Use UP/DOWN to navigate cells, LEFT/RIGHT to switch sections, ENTER to toggle
+or press. Toggle cells show on/off state with color feedback; momentary cells
+fire press events; sensor cells display read-only values in a bottom row.
+
+All data is local mock state. Toggle/momentary callbacks log to the console.
+See [Control Panel](../components/control-panel/README.md) for integration.

@@ -1,0 +1,130 @@
+# Control Panel renderer. Import after shell; consumer provides section/cell data.
+substitutions:
+  nabla_control_panel_footer: "Control"
+  nabla_view_refresh: "id(control_panel_render).execute();"
+  nabla_input_captured: "nabla_control_panel::state.active"
+  nabla_move_handler: |-
+    int cols = nabla_control_panel::columns(lv_display_get_horizontal_resolution(lv_display_get_default()));
+    if (delta < 0) nabla_control_panel::move(-1, 0, cols);
+    else nabla_control_panel::move(1, 0, cols);
+  nabla_activate_handler: "nabla_control_panel::activate();"
+  nabla_back_intercept: ""
+
+packages:
+  control_widget: !include widget.yaml
+
+script:
+  - id: control_panel_render
+    then:
+      - lambda: |-
+          using namespace nabla_control_panel;
+          const int current = id(nav_current);
+          const bool panel = nabla::nodes[current].action == 9;
+          state.active = panel;
+          id(nav_custom_rows) = panel;
+          
+          const int w = lv_display_get_horizontal_resolution(lv_display_get_default());
+          const int h = lv_display_get_vertical_resolution(lv_display_get_default());
+          const bool dark = id(nav_dark);
+          
+          if (!panel) {
+            lv_obj_set_flex_flow(id(navigation_content), LV_FLEX_FLOW_COLUMN);
+            lv_obj_set_pos(id(navigation_content), 4, 38);
+            lv_obj_set_width(id(navigation_content), w - 4);
+            lv_obj_set_style_pad_left(id(navigation_content), 2, 0);
+            lv_obj_set_style_pad_right(id(navigation_content), 6, 0);
+            lv_obj_set_style_pad_top(id(navigation_content), 2, 0);
+            lv_label_set_text(id(footer_brand), "Soluciones lógicas NABLA");
+            return;
+          }
+          
+          lv_label_set_text(id(footer_brand), "${nabla_control_panel_footer}");
+          lv_obj_remove_flag(id(progress_footer), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_remove_flag(id(nav_detail), LV_OBJ_FLAG_HIDDEN);
+          
+          if (state.sections.empty()) {
+            lv_label_set_text(id(nav_detail), "${tr_cp_empty}");
+            return;
+          }
+          
+          const int bar_h = ${nabla_bar_height};
+          const int cols = columns(w);
+          const bool has_tabs = state.sections.size() > 1;
+          const int tab_h = has_tabs ? 34 : 0;
+          
+          std::vector<Cell> sensors;
+          std::vector<Cell> controls;
+          for (auto& cell : state.sections[state.current_section].cells) {
+            if (cell.kind == CellKind::Sensor) sensors.push_back(cell);
+            else controls.push_back(cell);
+          }
+          
+          const int sensor_h = sensors.empty() ? 0 : 34;
+          const int content_h = h - bar_h * 2 - tab_h - sensor_h - 8;
+          const int rows = std::max(1, (int)controls.size() / cols + ((int)controls.size() % cols ? 1 : 0));
+          const int cell_h = std::min(60, content_h / std::max(1, rows));
+          const int cell_w = (w - 20) / cols;
+          const int gap = 4;
+          
+          lv_obj_t* rows_arr[] = {id(nav_row_0), id(nav_row_1), id(nav_row_2), id(nav_row_3),
+                                   id(nav_row_4), id(nav_row_5), id(nav_row_6), id(nav_row_7)};
+          lv_obj_t* labels[] = {id(nav_row_label_0), id(nav_row_label_1), id(nav_row_label_2),
+                                 id(nav_row_label_3), id(nav_row_label_4), id(nav_row_label_5),
+                                 id(nav_row_label_6), id(nav_row_label_7)};
+          
+          lv_obj_set_flex_flow(id(navigation_content), LV_FLEX_FLOW_ROW_WRAP);
+          lv_obj_set_pos(id(navigation_content), 0, bar_h + tab_h);
+          lv_obj_set_size(id(navigation_content), w, content_h);
+          lv_obj_set_style_pad_left(id(navigation_content), 10, 0);
+          lv_obj_set_style_pad_right(id(navigation_content), 10, 0);
+          lv_obj_set_style_pad_top(id(navigation_content), 4, 0);
+          lv_obj_set_style_pad_column(id(navigation_content), gap, 0);
+          lv_obj_set_style_pad_row(id(navigation_content), gap, 0);
+          
+          int focus_idx = state.focus_row * cols + state.focus_col;
+          for (int i = 0; i < 8; i++) {
+            if (i < (int)controls.size()) {
+              lv_obj_remove_flag(rows_arr[i], LV_OBJ_FLAG_HIDDEN);
+              render_cell(rows_arr[i], labels[i], controls[i], state.words,
+                          dark, i == focus_idx, cell_w - gap, cell_h - gap);
+            } else {
+              lv_obj_add_flag(rows_arr[i], LV_OBJ_FLAG_HIDDEN);
+            }
+          }
+          
+          if (has_tabs) {
+            render_tabs(id(navigation_page)->obj, state.sections, state.current_section, dark, w);
+          }
+          if (!sensors.empty()) {
+            render_sensor_row(id(navigation_page)->obj, sensors, state.words, dark, h - bar_h - sensor_h - 2, w);
+          }
+          
+          std::string section_title = state.sections[state.current_section].label;
+          section_title += " (" + std::to_string(controls.size()) + ")";
+          lv_label_set_text(id(nav_detail), section_title.c_str());
+
+  - id: control_panel_left
+    then:
+      - lambda: |-
+          if (!nabla_control_panel::state.active) return;
+          int cols = nabla_control_panel::columns(lv_display_get_horizontal_resolution(lv_display_get_default()));
+          nabla_control_panel::move(0, -1, cols);
+      - script.execute: control_panel_render
+
+  - id: control_panel_right
+    then:
+      - lambda: |-
+          if (!nabla_control_panel::state.active) return;
+          int cols = nabla_control_panel::columns(lv_display_get_horizontal_resolution(lv_display_get_default()));
+          nabla_control_panel::move(0, 1, cols);
+      - script.execute: control_panel_render
+
+  - id: control_panel_prev_section
+    then:
+      - lambda: nabla_control_panel::switch_section(-1);
+      - script.execute: control_panel_render
+
+  - id: control_panel_next_section
+    then:
+      - lambda: nabla_control_panel::switch_section(1);
+      - script.execute: control_panel_render

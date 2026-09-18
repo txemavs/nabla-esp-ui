@@ -1,0 +1,135 @@
+# Control Panel demo composition with synthetic site data.
+# Run: ./simulator/run.sh control-panel
+substitutions:
+  nabla_resource_root: ".."
+  ui_language: es
+  screen_width: "480"
+  screen_height: "320"
+  nabla_initial_rotation: "0"
+  nabla_initial_dark: "true"
+  nabla_initial_borders: "true"
+  nabla_initial_font_choice: "0"
+  nabla_control_panel_footer: "${tr_cp_control_panel}"
+
+esphome:
+  name: nabla-control-panel
+  on_boot:
+    priority: -100
+    then:
+      - script.execute: control_panel_init
+      - script.execute: nav_home
+
+packages:
+  locale: !include ../locales/${ui_language}.yaml
+  hardware: !include hardware/sdl-control-panel.yaml
+  theme: !include ../theme/nabla.yaml
+  profile: !include ../profiles/regular.yaml
+  shell: !include ../components/shell/package.yaml
+  device_info: !include ../components/device-info/package.yaml
+  control_panel: !include ../components/control-panel/package.yaml
+
+external_components:
+  - source:
+      type: local
+      path: ${nabla_resource_root}/external_components
+
+nabla_navigation:
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: control
+        icon_dark: 0xFF9933
+        icon_light: 0xAA5500
+        title: ${tr_cp_control_panel}
+        icon: ${icon_settings}
+        action: control_panel
+      - key: settings
+        icon_dark: 0x499EFF
+        icon_light: 0x0055BB
+        title: ${tr_settings}
+        icon: ${icon_settings}
+        children:
+          - key: information
+            title: ${tr_information}
+            children:
+              - key: device_model
+                title: ${tr_info_model}
+                info: model
+              - key: device_wifi
+                title: Wi-Fi
+                info: wifi
+              - key: device_version
+                title: ESPHome
+                info: version
+              - key: device_uptime
+                title: ${tr_info_uptime}
+                info: uptime
+          - key: appearance
+            title: ${tr_appearance}
+            children:
+              - key: dark_mode
+                title: ${tr_dark_mode}
+                action: toggle_dark
+              - key: borders
+                title: ${tr_borders}
+                action: toggle_borders
+
+script:
+  - id: control_panel_init
+    then:
+      - lambda: |-
+          using namespace nabla_control_panel;
+          state.words = {"${tr_cp_on}", "${tr_cp_off}", "${tr_cp_unavailable}", "${tr_cp_press}"};
+          state.sections.clear();
+          
+          // Villa section (site_a) - lights and water controls
+          Section villa;
+          villa.id = "site_a";
+          villa.label = "${tr_cp_site_a}";
+          villa.cells = {
+            {"lamp_south", "${tr_cp_lamp_south}", CellKind::Toggle, true, 0, "", true},
+            {"lamp_kitchen", "${tr_cp_lamp_kitchen}", CellKind::Toggle, false, 0, "", true},
+            {"lamp_table", "${tr_cp_lamp_table}", CellKind::Toggle, true, 0, "", true},
+            {"lamp_north", "${tr_cp_lamp_north}", CellKind::Toggle, false, 0, "", true},
+            {"lamp_entry", "${tr_cp_lamp_entry}", CellKind::Toggle, false, 0, "", true},
+            {"lamp_hall", "${tr_cp_lamp_hall}", CellKind::Toggle, true, 0, "", true},
+            {"lamp_east", "${tr_cp_lamp_east}", CellKind::Toggle, false, 0, "", false},
+            {"lamp_rotunda", "${tr_cp_lamp_rotunda}", CellKind::Toggle, false, 0, "", true},
+            {"water_1", "${tr_cp_water_1}", CellKind::Momentary, false, 0, "", true},
+            {"water_2", "${tr_cp_water_2}", CellKind::Momentary, false, 0, "", true},
+            {"temp", "${tr_cp_temp}", CellKind::Sensor, false, 22, "°C", true},
+            {"humidity", "${tr_cp_humidity}", CellKind::Sensor, false, 65, "%", true},
+          };
+          state.sections.push_back(villa);
+          
+          // Nave section (site_b) - warehouse controls and alerts
+          Section nave;
+          nave.id = "site_b";
+          nave.label = "${tr_cp_site_b}";
+          nave.cells = {
+            {"warehouse", "${tr_cp_warehouse}", CellKind::Toggle, false, 0, "", true},
+            {"office", "${tr_cp_office}", CellKind::Toggle, true, 0, "", true},
+            {"bench", "${tr_cp_bench}", CellKind::Toggle, false, 0, "", true},
+            {"heater", "${tr_cp_heater}", CellKind::Toggle, true, 0, "", true},
+            {"spotlight", "${tr_cp_spotlight}", CellKind::Toggle, false, 0, "", true},
+            {"alert_txema", "${tr_cp_alert_txema}", CellKind::Momentary, false, 0, "", true},
+            {"alert_josemari", "${tr_cp_alert_josemari}", CellKind::Momentary, false, 0, "", true},
+            {"alert_iker", "${tr_cp_alert_iker}", CellKind::Momentary, false, 0, "", true},
+            {"alert_nela", "${tr_cp_alert_nela}", CellKind::Momentary, false, 0, "", true},
+            {"status", "${tr_cp_status}", CellKind::Sensor, false, 1, "", true},
+            {"alarm", "${tr_cp_alarm}", CellKind::Sensor, false, 0, "", true},
+          };
+          state.sections.push_back(nave);
+          
+          state.current_section = 0;
+          state.focus_row = 0;
+          state.focus_col = 0;
+          
+          state.on_toggle = [](const char* section, const char* cell, bool value) {
+            ESP_LOGI("control_panel", "Toggle %s/%s -> %s", section, cell, value ? "ON" : "OFF");
+          };
+          state.on_momentary = [](const char* section, const char* cell) {
+            ESP_LOGI("control_panel", "Momentary %s/%s pressed", section, cell);
+          };
+
