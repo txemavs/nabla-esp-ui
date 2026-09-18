@@ -23,7 +23,7 @@ class CompactShell {
 
   void start_triangle_spin(int spins=1) {
     triangle_animating = true;
-    triangle_anim_start = esphome::millis();
+    triangle_anim_start = millis();
     triangle_spins = spins;
   }
 
