@@ -16,13 +16,13 @@ Known wiring from the working board:
 Import packages/compact.yaml with compact_profile: tft160. Keep the device's
 navigation, pins, Wi-Fi, encrypted API, OTA and captive portal in its own YAML.
 Do not copy credentials or a different device's API key when making test builds.
-If using a custom captive portal, retain its implementation and verify the
-source path relative to the device YAML before compiling.
+The optional [captive portal](../external_components/captive_portal/README.md)
+is now available as a pinned Git external component; no local HA copy is needed.
 
 Four scrollable list rows, a persistent footer and one-row readable mode (root
 triangle activation). Appearance controls share dark/light, font family and
-border inversion behavior with compact OLEDs. The TFT currently uses the
-high-contrast compact palette. TFT color artwork can be added separately.
+border inversion behavior with compact OLEDs. The default compact palette is high contrast; optional color.yaml supplies
+Font Awesome icons with per-node colors and a 2x2 root launcher.
 
 The Wi-Fi and generic form prototypes retain their original 128x64 geometry:
 do not expose those demo actions on this profile as real network settings.
@@ -35,3 +35,25 @@ Optional color.yaml gives a 2x2 launcher and one-icon view. device-info/package.
 provides model, Wi-Fi/IP, router and RSSI through info fields. Long details scroll
 with the encoder. MQTT compact.yaml uses the same 16-slot contract as the larger
 panel, with an explicit brightness confirmation and no direct HA dependency.
+
+
+## Verification snapshot — 2026-09-18
+
+- Owner supplied a working display/encoder board and its existing ESPHome YAML.
+- Nabla UI 0.6.0-mqtt compiled with ESPHome 2026.8.2 and installed by OTA;
+  encrypted API reconnected and reported the new project version.
+- MQTT connected and real available-state reception was observed. No light
+  command was sent by the verification probe.
+- The private device YAML is editable in ESPHome Builder; UI, fonts and optional
+  captive portal are fetched from pinned GitHub revisions. Consumer compilation
+  passed with remote resources after fixing an asset-root precedence error.
+- The color launcher was inspected in the native-size SDL fixture; 24 automated
+  tests passed, including draft cancellation, disconnect and range limits.
+- That MQTT build used 1,185,535 bytes of application flash (64.6% of its OTA
+  partition) and 62,068 bytes of static RAM (34.3% of the linker-reported region).
+  These are build figures, not runtime heap or latency measurements.
+
+Still required: owner confirmation of the new physical color/grid UI and encoder
+direction, on-device brightness/Cancel checks, captive-AP recovery after the
+source migration, power-cycle/reconnect coverage and a 24-hour soak.
+The source migration alone does not retest captive provisioning or complete M3.

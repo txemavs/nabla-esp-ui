@@ -53,8 +53,12 @@ adapter now passes initial on-device scan, invalid-password rollback, save and
 forget/reconnect checks. Information shows live model/network/version/uptime.
 A rotation-related watchdog was investigated; the grid update order is corrected
 and host-tested, pending physical confirmation. See [investigation](M3-WATCHDOG.md).
-Local data bindings, physical encoder/joystick adapters and the full exit gate
-below are still pending.
+As of 2026-09-18, a second target, NodeMCU-32S/ST7735 at 160x128, has a deployed
+GPIO encoder/push/K0 composition, live device information and compact MQTT control.
+OTA, API reconnection and real MQTT reception passed; color layout was inspected
+on SDL. See [target evidence](../../hardware/nodemcu-32s-st7735.md).
+Generalized input adapters, physical usability confirmation and the full exit
+gate below remain pending.
 
 Confirm JC3248W535CN board revision, flash/PSRAM, controller, touch, backlight and
 pins. Add physical encoder and five-way adapters with debounce and hold/release.
@@ -164,8 +168,8 @@ The standalone password preview remains available for isolated keyboard work.
 
 Next steps:
 1. Use the host demo to collect usability feedback without changing the M2 contract.
-2. Continue M3 hardware validation on the running JC3248W535CN.
-3. Extend real Wi-Fi recovery coverage and add physical input/local data adapters.
+2. Continue M3 hardware validation on JC3248W535CN and NodeMCU-32S/ST7735.
+3. Extend real Wi-Fi recovery and encoder/brightness checks; generalize input/local data adapters.
 4. Measure resource use, legibility, reconnect behavior and the hardware exit gates.
 5. Progress through M4 provisioning, M5 peer control, M6 integrations, M7
    vehicle pilot and M8 public release using the gates above.

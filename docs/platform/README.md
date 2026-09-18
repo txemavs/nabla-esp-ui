@@ -1,6 +1,6 @@
 # Platform plan
 
-Design baseline: 2026-09-16, implementation reviewed at bc22dcd.
+Design baseline: 2026-09-16. Implementation status updated 2026-09-18.
 This directory specifies planned work, not a released platform API.
 The working entry point remains simulator/hello-world.yaml and the accepted
 navigation schema remains external_components/nabla_navigation/catalog.py.
@@ -42,14 +42,20 @@ It separates application meaning from rendering, bindings and transport.
 - Catalog validation and generated C++ traversal tests.
 - M1 128x64 tiny/readable profiles and real 320x480 portrait fixture.
 - Integrated manual SSID/password demo under Settings > Connections > Wi-Fi.
+- NodeMCU-32S/ST7735 160x128 compact profile: GPIO encoder/push/K0, optional
+  color tiles, readable single-icon mode and scrollable live information.
+- Shared regular/compact MQTT control, deployed OTA with API reconnection and
+  real state reception verified. See [target evidence](../../hardware/nodemcu-32s-st7735.md).
+- Optional captive portal published with upstream licenses and consumed from
+  GitHub; installation menus and secrets remain private.
 
 ## Still to build
 
-Physical OLED drivers and real encoder/joystick adapters, the full form catalog,
-live network status, Wi-Fi commissioning, peer protocol, Home Assistant data
-bindings, Nabla Edge adapter, and vehicle telemetry. The named desktop
-applications mostly remain placeholders. The JC3248W535CN has passed an initial
-LCD/touch bring-up; complete M3 hardware validation remains pending.
+Physical OLED drivers, generalized encoder/joystick adapters, the full form
+catalog, complete Wi-Fi recovery validation, peer protocol, Nabla Edge and vehicle
+telemetry remain open. Live information and initial HA/MQTT integrations exist;
+their full cross-device/offline completion gates remain pending. Both the
+JC3248W535CN and NodeMCU-32S/ST7735 have deployed firmware; M3 is not complete.
 The current runtime still contains fixed IDs, eight row slots and example-sized
 layout assumptions; these are migration work, not the final module architecture.
 

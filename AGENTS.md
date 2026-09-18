@@ -5,7 +5,7 @@ Applies to the entire nabla-esp-ui repository.
 ## Read first
 - README.md and simulator/README.md for working entry points.
 - docs/ARCHITECTURE.md for the implementation boundary.
-- docs/platform/README.md and ROADMAP.md for planned work and completion gates.
+- docs/platform/README.md and docs/platform/ROADMAP.md for planned work and completion gates.
 - navigation/README.md, navigation/INPUT.md and locales/README.md for current contracts.
 - docs/BRAND.md before changing brand geometry or motion.
 
@@ -13,7 +13,7 @@ Applies to the entire nabla-esp-ui repository.
 - Build a reusable ESPHome/LVGL platform that works without Home Assistant.
 - Keep Home Assistant, Nabla Edge, peer links and hardware as optional adapters.
 - Panel YAML owns its navigation tree/forms and installation configuration; reusable modules own behavior and presentation.
-- Builder compositions import components/shell/package.yaml directly, not an example menu.
+- Builder compositions import packages/regular.yaml or packages/compact.yaml, not an example menu.
 - No installation-specific entities or network clients inside shared widgets.
 - English docs/identifiers; localized UI with matching es/en keys.
 - Work in this repository, not the older esphome-ui-kit fork.
@@ -25,11 +25,12 @@ Applies to the entire nabla-esp-ui repository.
 - Current title is bold and not focusable; ancestors are navigable.
 - UP/DOWN is sequential movement; ENTER confirms; LEFT/RIGHT are reserved
   outside contexts that define them; M2 numbers/choices define optional adjustments.
-  Physical input adapters remain pending.
-- Header has no divider. Header/footer share the bar surface, now 36 px.
+  NodeMCU-32S GPIO encoder/push/K0 mapping is deployed; joystick and generalized input adapters remain pending.
+- Regular header/footer share a 36 px bar surface; compact bar geometry belongs to its profile.
 - Desktop footer is persistent; app footer is hidden unless an operation needs it.
 - Startup opens the menu directly; progress and logo animations are opt-in for operations.
-- Settings starts with Information; read-only info fields share live model/network/version/uptime.
+- The example Settings starts with Information; device YAML may expose Information at root.
+  Read-only info fields share live model/network/version/uptime.
 - Triangle uses the theme foreground without a frame; interior focus rotates upward.
 - With borders enabled, normal controls preserve contents and change the focus border.
 - Appearance can disable borders; focus then inverts the selected control instead.
@@ -53,9 +54,17 @@ Applies to the entire nabla-esp-ui repository.
 - devices/jc3248w535cn.yaml reuses the UI through hardware/jc3248w535cn.yaml.
 - Initial physical LCD/touch navigation passed on 2026-09-16; M3 is not complete.
 - The board starts at nabla_initial_rotation=90; SDL defaults to 0.
-- LVGL owns rotation; do not also rotate native display/touch coordinates.
+- On the JC3248W535CN, LVGL owns rotation; do not also rotate native display/touch coordinates.
+  On the ST7735 compact target, the display driver owns rotation=270 (logical 160x128).
 - Use ROM (--no-stub) USB flashing for the first unit; preserve its private backup.
-- Real data bindings, encoder/joystick GPIO adapters and peers remain planned.
+- NodeMCU-32S/ST7735 uses tft160: no LVGL/PSRAM requirement, encoder movement,
+  push activation and K0 Back. See hardware/nodemcu-32s-st7735.md for wiring/evidence.
+- Optional compact-shell/color.yaml adds 2x2 color tiles and a one-icon view;
+  nested lists and information details remain scrollable with the encoder.
+- MQTT regular/compact editors share transport.yaml and its freshness/confirmation
+  rules. Compact brightness is a draft until Apply; Back cancels.
+- Real network information and MQTT state reception are deployed. Generalized
+  input adapters, OLED hardware validation and peer cooperation remain pending.
 
 ## Extension rules
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.
@@ -71,6 +80,19 @@ Applies to the entire nabla-esp-ui repository.
 - Follow docs/PRIVATE-INSTALLATIONS.md: site YAML and bindings stay outside this repo.
 - Never publish real entities, camera URLs, network inventory, firmware or backups.
 - Use nabla_resource_root for font/image paths; YAML !include paths stay source-relative.
+  GitHub consumers should explicitly set nabla_resource_root in root substitutions
+  to https://raw.githubusercontent.com/txemavs/nabla-esp-ui/${nabla_ui_ref}.
+  A sibling package default can override the entry-point URL; local assets can
+  hide this error. Do not add resource-root defaults to modules that do not use assets.
+- Information uses semantic info keys (model/wifi/ip/version/uptime), never route
+  indexes as offsets into nabla_info arrays.
+- Compact profile dimensions/font sizes belong in profiles, not overriding shell
+  defaults. Keep SDL key initialization out of hardware-independent packages.
+- nabla_runtime exports flat header basenames: use unique names across modules
+  (mqtt_model.h versus compact model.h), and pass Path objects to include_file.
+- Optional captive_portal is a pinned Git external component, separate from UI
+  versioning. Preserve wifi/ap, API, OTA and fallbacks when migrating its source.
+  Keep upstream license notices and inspect decoded gzip/Brotli before publication.
 - Export helper headers through nabla_runtime, never consumer-relative source paths.
 - Validate independent GitHub consumers; packages/regular.yaml pins components and
   assets to the same nabla_ui_ref as its package import. Keep menus device-owned.
@@ -82,7 +104,7 @@ Applies to the entire nabla-esp-ui repository.
 - Compile esphome compile simulator/hello-world.yaml.
 - Run ./simulator/run.sh; inspect the actual UI for visual/input changes.
 - Compile es/en when changing locale-sensitive layout.
-- For profile changes compile simulator/compact.yaml, readable.yaml and portrait.yaml;
+- For profile changes compile simulator/compact.yaml, readable.yaml, tft160.yaml and portrait.yaml;
   inspect native-resolution output and preserve both compact densities.
 - Run python3 -m unittest discover -s tests -p 'test_*.py' for catalog changes.
 - Verify root view toggle, list scroll, nested return, rotation and rotated touch.

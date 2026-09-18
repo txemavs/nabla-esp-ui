@@ -7,6 +7,7 @@ fonts and assets. No manually maintained .nabla-ui copy is required.
 ## Repository contract
 
 - packages/regular.yaml: public LVGL entry point; no imported example menu.
+- packages/compact.yaml: public display-API entry point; tiny/readable/tft160 profiles.
 - external_components/: ESPHome schemas and code generation.
 - external_components/nabla_runtime/: exports allowlisted C++ helpers from the
   same Git checkout as the component, using ESPHome's late include generation.
@@ -39,8 +40,8 @@ your device's Wi-Fi, API and OTA privately with !secret references.
 Keep the full nabla_navigation tree and forms in that root YAML. Importing a
 library must not hide the installation's menu inside an example package.
 Hardware is imported separately, so the same library can serve other boards.
-The regular entry point currently targets LVGL displays; compact OLED packages
-remain available through the local development workflow.
+The regular entry point targets LVGL displays; packages/compact.yaml supports
+the compact profiles, including the ST7735 encoder target.
 
 Updates are deliberate: change one revision, validate, compile, then install
 only the intended device. Changing the library pin alone does not flash anything.
@@ -62,3 +63,20 @@ A successful build there catches accidental dependencies on ../ or .nabla-ui.
 Revision 4acd4ecdca042eedbaa3824ca5492abf805fd4aa passed a clean GitHub-only host build on
 ESPHome 2026.8.2, from a separate consumer directory. Local composition, compact
 and password builds and all 12 unit tests also passed. No firmware was uploaded.
+
+
+## Asset root precedence and optional portal
+
+Set nabla_resource_root explicitly in the device's root substitutions to
+https://raw.githubusercontent.com/txemavs/nabla-esp-ui/${nabla_ui_ref}.
+This protects it from sibling package defaults. Validate the resolved font paths:
+a local checkout containing ../assets can make an incorrect consumer compile
+while the same configuration fails in ESPHome Builder.
+
+The [optional captive portal](../external_components/captive_portal/README.md)
+can be fetched separately through external_components, with path external_components
+and components: [captive_portal]. Pin its tested commit and preserve the device's
+existing wifi.ap, credentials and fallback priorities. No local HA source copy is
+required. The ESPHome 2026.8.2 implementation and embedded page retain their
+upstream licenses. Changing the source reference alone does not require flashing
+an otherwise identical implementation.

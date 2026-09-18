@@ -104,4 +104,6 @@ Sources for the initial hardware mapping:
 
 See [the landscape encoder target](nodemcu-32s-st7735.md). The device owns its
 GPIO/network/menu YAML and imports `packages/compact.yaml` at a pinned revision.
-Target compilation passed with ESPHome 2026.8.2; physical UI validation is pending.
+OTA installation, API reconnection and real MQTT state reception passed on
+2026-09-18. Physical color/encoder usability and soak validation remain pending;
+see the target notes for exact evidence and build resource figures.

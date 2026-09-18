@@ -1,6 +1,6 @@
 # ∇ nabla-esp-ui
 
-A modular UI platform for **ESPHome + LVGL**: define applications and navigation
+A modular UI platform for **ESPHome**, with LVGL and compact display renderers: define applications and navigation
 in YAML, reuse presentation and interaction across panels.
 
 Works toward standalone devices, optional Home Assistant integration, Nabla Edge
@@ -11,6 +11,9 @@ on a server being available.
 A JC3248W535CN now runs the launcher with owner-confirmed touch navigation.
 An optional primary Wi-Fi adapter has passed initial physical scan/save/rollback
 checks; peer links and full hardware recovery/soak coverage remain pending.
+A [NodeMCU-32S/ST7735 encoder panel](hardware/nodemcu-32s-st7735.md) also runs
+the 160x128 compact UI, live information and MQTT control; OTA/API and MQTT
+reception are verified. Physical usability and soak gates remain open.
 Start with [the simulator](simulator/README.md).
 
 ## Use from GitHub
@@ -47,7 +50,8 @@ Draft YAML in docs/platform/ is explicitly illustrative, not accepted firmware.
 - Immediate launcher startup, reusable operation progress and brand/HH:MM footer.
 - Settings > Information shows model, network, ESPHome version and uptime.
 - Dark/light appearance and build-time Spanish/English with accent glyphs.
-- Native 128x64 tiny/readable and 320x480 portrait profiles.
+- Native 128x64 tiny/readable, 160x128 color/encoder and 320x480 portrait profiles.
+- Optional compact MQTT light control and a pinned GitHub captive portal.
 - Shared simulated Wi-Fi scans, masked password editing and failure/retry states.
 - YAML-defined numeric, choice and toggle fields with cancel/confirm transactions.
 
