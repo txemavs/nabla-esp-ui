@@ -98,11 +98,21 @@ A small encoder device may eventually control a larger panel, and a larger
 panel may provide a keyboard for a smaller one. Those peer roles are a design
 goal, not a released BLE feature.
 
-## Your installation stays yours
+## Nabla Net MQTT
 
-Keep network credentials, tokens, device YAML and camera/entity bindings outside
-the public repository. Public examples use synthetic data. Read the
-[public/private boundary](docs/PRIVATE-INSTALLATIONS.md) before sharing a configuration.
+Panels can control Home Assistant lights across multiple sites through a shared
+MQTT broker, without native API connections. See [the protocol](docs/NABLA-NET-MQTT.md)
+for topic structure, freshness rules and broker configuration. The
+[mqtt-lights adapter](adapters/mqtt-lights/README.md) implements the protocol;
+[examples/mqtt-lights](examples/mqtt-lights/) shows synthetic device compositions.
+
+## Private installations
+
+Keep site-specific device YAML, camera/entity bindings and secrets outside this
+public repository. See [the public/private boundary](docs/PRIVATE-INSTALLATIONS.md)
+for ownership, routed OTA and a Device Builder composition using a pinned local
+library checkout. The [private device checklist](docs/PRIVATE-DEVICE-TEMPLATE.md)
+covers multi-network Wi-Fi, stable OTA addresses and MQTT client_id conventions.
 
 The hardware photo above was provided by the project owner for publication.
 It illustrates a private composition; it does not distribute its configuration.
