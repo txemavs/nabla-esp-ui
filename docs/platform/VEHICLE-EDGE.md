@@ -151,3 +151,10 @@ Transport choice (for example an existing Edge API or MQTT subscription) waits
 for inspection of the actual Edge service. Never infer speed from BLE readiness.
 On telemetry timeout, mark the value stale/unavailable rather than retain an
 apparently live speed or replace missing data with zero.
+
+
+## Next implementation proposal
+
+See [BLE startup and peer-control implementation plan](BLE-STARTUP-PLAN.md) for startup messages, discovery/session
+boundaries, NablaNet handover and phased acceptance gates. It is a proposal,
+not an implemented BLE service or supported firmware configuration.

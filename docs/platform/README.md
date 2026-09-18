@@ -88,3 +88,10 @@ Vehicle-specific decision: BLE announces Pi readiness and supports bootstrap;
 the ESP32 joins the Pi-provided Wi-Fi and receives speed/telemetry over Wi-Fi.
 The Pi reads the vehicle adapter over Bluetooth. Tailscale-dependent functions
 remain disabled until the required service/route is verified. See [vehicle topology](VEHICLE-EDGE.md).
+
+
+## Next implementation proposal
+
+See [BLE startup and peer-control implementation plan](BLE-STARTUP-PLAN.md) for startup messages, discovery/session
+boundaries, NablaNet handover and phased acceptance gates. It is a proposal,
+not an implemented BLE service or supported firmware configuration.

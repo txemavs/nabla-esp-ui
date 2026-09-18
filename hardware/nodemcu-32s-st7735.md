@@ -47,13 +47,13 @@ panel, with an explicit brightness confirmation and no direct HA dependency.
 - The private device YAML is editable in ESPHome Builder; UI, fonts and optional
   captive portal are fetched from pinned GitHub revisions. Consumer compilation
   passed with remote resources after fixing an asset-root precedence error.
-- The color launcher was inspected in the native-size SDL fixture; 24 automated
+- The owner supplied a [photo of the color launcher on hardware](../docs/images/nabla-panels-touch-and-encoder.png).
+  The layout was also inspected in the native-size SDL fixture; 24 automated
   tests passed, including draft cancellation, disconnect and range limits.
 - That MQTT build used 1,185,535 bytes of application flash (64.6% of its OTA
   partition) and 62,068 bytes of static RAM (34.3% of the linker-reported region).
   These are build figures, not runtime heap or latency measurements.
 
-Still required: owner confirmation of the new physical color/grid UI and encoder
-direction, on-device brightness/Cancel checks, captive-AP recovery after the
+Still required: physical legibility/usability checks and encoder direction confirmation, on-device brightness/Cancel checks, captive-AP recovery after the
 source migration, power-cycle/reconnect coverage and a 24-hour soak.
 The source migration alone does not retest captive provisioning or complete M3.
