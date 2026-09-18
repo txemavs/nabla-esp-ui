@@ -1,5 +1,4 @@
 substitutions:
-  nabla_resource_root: ".."
   nabla_display_kind: "${tr_info_display_simulator}"
   nabla_display_monochrome: "false"
   nabla_info_preview: "false"
