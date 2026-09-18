@@ -2,6 +2,8 @@
 
 **One UI library. Touch screens, rotary encoders and small displays.**
 
+[Documentación en español → docs/es/](docs/es/)
+
 Build ESPHome panels with menus defined in YAML, reusable controls and a
 consistent visual style. Use LVGL on larger screens or the compact display
 renderer on smaller devices. Home Assistant and MQTT are optional integrations;
