@@ -1,0 +1,13 @@
+# Control Panel demo for M5Stack Core2 form factor (320×240 ILI9342).
+# Run: ./simulator/run.sh control-panel-core2
+packages:
+  main: !include control-panel.yaml
+
+substitutions:
+  screen_width: "320"
+  screen_height: "240"
+  nabla_bar_height: "28"
+  nabla_control_panel_dense: "true"
+
+esphome:
+  name: nabla-control-panel-core2

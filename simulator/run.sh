@@ -16,6 +16,8 @@ case "${1:-regular}" in
   composition) config=simulator/composition.yaml ;;
   information) config=simulator/information.yaml ;;
   password) config=simulator/password.yaml ;;
-  *) echo "Usage: $0 [regular|portrait|tiny|readable|tft160|password|information|composition]" >&2; exit 2 ;;
+  control-panel) config=simulator/control-panel.yaml ;;
+  control-panel-core2) config=simulator/control-panel-core2.yaml ;;
+  *) echo "Usage: $0 [regular|portrait|tiny|readable|tft160|password|information|composition|control-panel|control-panel-core2]" >&2; exit 2 ;;
 esac
 exec esphome run "$config"

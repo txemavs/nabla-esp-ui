@@ -6,6 +6,9 @@ dependencies, focus/pressed behavior, examples and limitations.
 
 - Optional external_components/nabla_wifi: persistent primary Wi-Fi adapter for
   the LVGL form; see its README for limits and fallback guarantees.
+- [Control Panel](control-panel/README.md): dense grid of toggle/momentary/sensor
+  cells organized into switchable site sections; see control-panel/README.md for
+  cell types, callbacks and demo.
 - device-info/package.yaml: read-only model, network, version and uptime snapshot;
   see device-info/README.md for field bindings and limits.
 - logo/widget.yaml: theme-foreground equilateral triangle with upward focus motion.
