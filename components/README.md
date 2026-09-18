@@ -117,3 +117,12 @@ source and credentials remain adapter-owned.
   shared MQTT transport, freshness checks, explicit Apply and Back/Cancel.
 - Target: NodeMCU-32S/ST7735 160x128; compilation and host rendering verified,
   physical colors/encoder confirmation belongs to the device deployment.
+
+
+### Optional captive portal
+
+[external_components/captive_portal](../external_components/captive_portal/README.md)
+hosts the Wi-Fi scan/password/OTA page without installation-specific data.
+Import it through external_components with a pinned Git revision; retain wifi.ap
+and captive_portal in device YAML. It is independent of the UI renderer and
+preserves ESPHome's fallback-AP behavior. ESPHome 2026.8.2 is the tested baseline.
