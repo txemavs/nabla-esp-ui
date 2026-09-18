@@ -232,9 +232,9 @@ class CompactShell {
         // Position icon closer to top, label at bottom for better visual balance.
         int icon_y, label_y;
         if (single_icon_mode && menu.readable) {
-          // Tiny icon mode: icon above center, large label at bottom.
+          // Tiny icon mode: icon lowered (less empty gap under top), label at bottom.
           int total_h = icon_h + 4 + bh;  // icon + gap + label
-          int base_y = y + (ch - total_h) / 2 - 2;  // shift up slightly
+          int base_y = y + (ch - total_h) / 2 + 2;  // shift down to reduce top gap
           icon_y = base_y + icon_h / 2;
           label_y = base_y + icon_h + 4;
         } else {
