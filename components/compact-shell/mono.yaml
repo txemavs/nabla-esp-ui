@@ -1,6 +1,6 @@
 # Monochrome icon mode for tiny OLED displays (128x64).
-# Shows one fullscreen icon at a time, with text-only list as alternate view.
-# Does not use the 2x2 tile grid; single_icon_mode forces cells=1.
+# Two views only: fullscreen icon or text-only list (no icon glyphs in list).
+# Does not use the 2x2 tile grid; single_icon_mode disables list icons too.
 font:
   - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
     id: compact_icons

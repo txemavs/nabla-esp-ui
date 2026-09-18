@@ -186,7 +186,7 @@ class CompactShell {
         auto *font = menu.readable ? large : body;
         int row_node=child(menu.current,index);
         int left=4;
-        if(icons && nodes[row_node].icon[0]){
+        if(icons && nodes[row_node].icon[0] && !single_icon_mode){
           left=32;int packed=icon_color?icon_color(row_node):(menu.dark?nodes[row_node].icon_dark:nodes[row_node].icon_light);
           auto ink=color_icons?Color((packed>>16)&255,(packed>>8)&255,packed&255):fg;
           if(selected&&!menu.borders)ink=bg;

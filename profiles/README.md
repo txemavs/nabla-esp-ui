@@ -22,9 +22,10 @@ It does not emulate a physical OLED driver, panel contrast or refresh timing.
 The regular renderer remains LVGL and retains its integrated Wi-Fi form.
 
 Tiny and readable use `single_icon_mode` from `components/compact-shell/mono.yaml`:
-the root menu toggles between fullscreen icon (readable=true) and text list with
-small icons (readable=false). There is no intermediate 2x2 tile grid on 128x64.
-The tft160 profile retains the 2x2 color tiles via `color.yaml`.
+the root menu toggles between fullscreen icon (readable=true) and text-only list
+(readable=false). List mode shows plain text rows without icon glyphs.
+There is no intermediate 2x2 tile grid on 128x64.
+The tft160 profile retains the 2x2 color tiles and list icons via `color.yaml`.
 
 ## Navigation and presentation
 
