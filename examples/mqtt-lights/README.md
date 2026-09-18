@@ -1,12 +1,15 @@
 # MQTT lights example
 
-This directory contains a synthetic device YAML demonstrating the `mqtt-lights`
+**Synthetic fixture — not a real installation.**
+
+This directory contains synthetic device YAML demonstrating the `mqtt-lights`
 adapter with invented topics and placeholder secrets. It illustrates composition
 structure, not a directly compilable configuration.
 
 ## Files
 
-- `panel.yaml`: Regular (LVGL) panel controlling 4 lights across 2 fictional sites.
+- `panel.yaml`: Regular (LVGL) panel controlling 4 lights across 2 fictional sites (Site A, Site B).
+- `compact.yaml`: Compact (ST7735/encoder) variant with the same fictional topology.
 
 ## Purpose
 
@@ -39,10 +42,10 @@ adjust topics to match your MQTT broker configuration.
 
 ## What is fictional
 
-- **Topics**: `nabla/ha/nave/...` and `nabla/ha/villa/...` are invented.
+- **Topics**: `nabla/ha/site_a/...` and `nabla/ha/site_b/...` are invented.
 - **Entity names**: "Living Room", "Kitchen", "Pool", "Terrace" are placeholders.
 - **Broker address**: `mqtt.example.net` does not exist.
-- **Device name**: `example-mqtt-panel` is not a real device.
+- **Device names**: `example-mqtt-panel`, `example-compact-mqtt` are not real devices.
 
 Replace all of these with your private installation values.
 

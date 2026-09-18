@@ -4,6 +4,10 @@ The device owns its navigation tree, forms, hardware selection and private
 bindings. GitHub supplies reusable presentation, controllers, translations,
 fonts and assets. No manually maintained .nabla-ui copy is required.
 
+See [LIBRARY-CONTRACT-v0.1.md](LIBRARY-CONTRACT-v0.1.md) for the normative
+consumer contract: what the library provides, pinning requirements and
+acceptance gates for tagging v0.1.0.
+
 ## Repository contract
 
 - packages/regular.yaml: public LVGL entry point; no imported example menu.
