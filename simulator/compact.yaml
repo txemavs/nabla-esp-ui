@@ -5,6 +5,15 @@ substitutions:
 
 esphome:
   name: nabla-compact
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          id(compact_up).publish_state(false);
+          id(compact_down).publish_state(false);
+          id(compact_enter).publish_state(false);
+          id(compact_back).publish_state(false);
+          id(compact_home).publish_state(false);
 
 host:
 logger:

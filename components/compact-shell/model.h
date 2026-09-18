@@ -7,10 +7,11 @@ struct CompactMenu {
   int current = 0, focus = 0, top = 0;
   bool dark = true, readable = false, borders = true;
   int font_family = 0;
+  int list_rows = 3;
   std::vector<int> saved_focus = std::vector<int>(count, 0);
   std::vector<int> saved_top = std::vector<int>(count, 0);
   int total() const { return children(current) + 1; } // reachable logo/Back
-  int rows() const { return readable ? 1 : 3; }
+  int rows() const { return readable ? 1 : list_rows; }
   void anchor() {
     // Header focus must not force the list to scroll.
     if (focus < children(current))

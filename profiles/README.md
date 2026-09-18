@@ -17,7 +17,7 @@ Start from the repository root:
 ```
 
 The compact renderer uses ESPHome's display API and 1-bit fonts, avoiding an
-LVGL dependency for the small-display view. Its SDL viewport remains 128x64.
+LVGL dependency for the small-display view. The tiny/readable SDL viewports remain 128x64.
 It does not emulate a physical OLED driver, panel contrast or refresh timing.
 The regular renderer remains LVGL and retains its integrated Wi-Fi form.
 
@@ -62,3 +62,15 @@ Runtime metrics live in geometry.h. Input wrapping/content restoration/scroll
 policies live in navigation/focus.h. The compact state machine is in
 components/compact-shell/model.h and the renderer in render.h. These are
 bounded compile-time menu views, not a dynamic menu download implementation.
+
+
+## Landscape TFT / encoder
+
+The `tft160` profile uses 160x128 logical pixels, four rows, 16 px bars and
+12/16/20 px small/body/readable fonts. Build `simulator/tft160.yaml` to inspect
+the shared display renderer at native size. Tiny/readable defaults are unchanged.
+The compact shell accepts `compact_rows`, `compact_bar_height` and the three
+`compact_*_size` substitutions. Normal menus derive width/height from the display.
+
+See [NodeMCU ST7735](../hardware/nodemcu-32s-st7735.md). The current Wi-Fi/form
+demo renderer retains its 128x64 layout and is not exposed by this device menu.

@@ -99,3 +99,9 @@ Sources for the initial hardware mapping:
 - [ESPHome maintainer's JC3248W535 example](https://gist.github.com/clydebarrow/565251df8221f9045cd013dbc7faa3bf).
 - Installed ESPHome 2026.8.2: components/mipi_spi/models/jc.py and axs15231.
 - [Guition product specifications](https://www.guition.com/ku/icms/upload/fb081940d6fc11f09850077a33e1404f/FTPData/UEditor/file/2026121/1768961095054/JC3248W535%20Specifications-EN.pdf).
+
+## NodeMCU-32S + ST7735 + encoder
+
+See [the landscape encoder target](nodemcu-32s-st7735.md). The device owns its
+GPIO/network/menu YAML and imports `packages/compact.yaml` at a pinned revision.
+Target compilation passed with ESPHome 2026.8.2; physical UI validation is pending.

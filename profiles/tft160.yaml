@@ -1,0 +1,12 @@
+# ST7735 landscape compact profile; no LVGL or PSRAM required.
+substitutions:
+  ui_profile: tft160
+  compact_readable: "false"
+  compact_app_footer: "true"
+  compact_rows: "4"
+  compact_bar_height: "16"
+  compact_small_size: "12"
+  compact_body_size: "16"
+  compact_large_size: "20"
+  screen_width: "160"
+  screen_height: "128"

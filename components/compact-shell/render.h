@@ -106,6 +106,7 @@ class CompactShell {
       d.print(4-offset,y+(rh-bh)/2,font,selected && !menu.borders?bg:fg,label.c_str());d.end_clipping();
     }
   }
+  int bar_height = 12, display_width = 128, display_height = 64;
   bool app_footer = false;
   int last_node = -1, last_focus = -1;
   bool last_readable = false;
@@ -122,19 +123,21 @@ class CompactShell {
       last_node = menu.current; last_focus = menu.focus; last_readable = menu.readable;
       focus_since = millis();
     }
-    auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer);
+    display_width=d.get_width();display_height=d.get_height();
+    auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer,
+      display_width,display_height,bar_height,menu.list_rows);
     Color fg = menu.dark ? Color::WHITE : Color::BLACK;
     Color bg = menu.dark ? Color::BLACK : Color::WHITE;
     d.fill(bg);
     bool header_focus = menu.focus == children(menu.current);
-    if(header_focus && !menu.borders) d.filled_rectangle(0,0,15,12,fg);
+    if(header_focus && !menu.borders) d.filled_rectangle(0,0,15,g.header,fg);
     auto mark_color=header_focus && !menu.borders?bg:fg;
     // Equilateral triangle, fixed center. Up on parent focus, down otherwise.
     if (header_focus && menu.current)
       d.triangle(2, 10, 12, 10, 7, 1, mark_color);
     else d.triangle(2, 1, 12, 1, 7, 10, mark_color);
-    if (header_focus && !menu.current && menu.borders) d.rectangle(0, 0, 15, 12, fg);
-    d.start_clipping(16, 0, 127, 11);
+    if (header_focus && !menu.current && menu.borders) d.rectangle(0, 0, 15, g.header, fg);
+    d.start_clipping(16, 0, g.width-1, g.header-1);
     d.print(16, 0, small, fg, nodes[menu.current].title);
     d.end_clipping();
     const int n = children(menu.current);
@@ -144,7 +147,7 @@ class CompactShell {
         if (index >= n) break;
         int y = g.header + r * g.row_height;
         bool selected = menu.focus == index;
-        if (selected) { if(menu.borders) d.rectangle(0,y,128,g.row_height,fg); else d.filled_rectangle(0,y,128,g.row_height,fg); }
+        if (selected) { if(menu.borders) d.rectangle(0,y,g.width,g.row_height,fg); else d.filled_rectangle(0,y,g.width,g.row_height,fg); }
         auto *font = menu.readable ? large : body;
         const std::string row_text = row_title(child(menu.current, index), menu.dark, menu.font_family, menu.borders);
         const char *title = row_text.c_str();
@@ -152,29 +155,36 @@ class CompactShell {
         d.get_text_bounds(0, 0, title, font, display::TextAlign::TOP_LEFT, &bx,&by,&bw,&bh);
         // Bounded marquee exposes complete long labels without changing focus.
         int offset = 0;
-        if (selected && bw > 120) {
-          int range = bw - 120;
+        if (selected && bw > g.width-8) {
+          int range = bw - (g.width-8);
           int phase = ((millis()-focus_since)/100) % (2*range + 20);
           offset = std::min(range, std::max(0, phase-10));
           if (phase > range+10) offset = std::max(0, 2*range+10-phase);
         }
-        d.start_clipping(3, y+1, 124, y+g.row_height-2);
+        d.start_clipping(3, y+1, g.width-4, y+g.row_height-2);
         d.print(4-offset, y+(g.row_height-bh)/2, font, selected && !menu.borders ? bg : fg, title);
         d.end_clipping();
       }
     } else {
-      d.start_clipping(2, 14, 126, 64-g.footer-16);
+      d.start_clipping(2, g.header+2, g.width-2, g.height-g.footer-g.header-2);
       const std::string detail_text = nabla::detail(menu.current);
       const char *detail = nodes[menu.current].action == 3 ? pending : detail_text.c_str();
-      d.print(2, 15, body, fg, detail);
+      std::string lines=detail;
+      int line_y=g.header+2;
+      for(size_t start=0;start<=lines.size() && line_y<g.height-g.footer-g.header;) {
+        auto end=lines.find('\n',start);
+        d.print(2,line_y,body,fg,lines.substr(start,end-start).c_str());
+        if(end==std::string::npos)break;
+        start=end+1;line_y+=body->get_height();
+      }
       d.end_clipping();
       // Header is the semantic Back target; provide an obvious touch-sized row.
-      if(menu.borders)d.rectangle(0,64-g.footer-14,128,14,fg);else d.filled_rectangle(0,64-g.footer-14,128,14,fg);
-      d.print(4, 64-g.footer-14, body, menu.borders?fg:bg, back_text);
+      if(menu.borders)d.rectangle(0,g.height-g.footer-g.header,g.width,g.header,fg);else d.filled_rectangle(0,g.height-g.footer-g.header,g.width,g.header,fg);
+      d.print(4, g.height-g.footer-g.header, body, menu.borders?fg:bg, back_text);
     }
     if (g.footer) {
-      d.print(2, 54, small, fg, "NABLA");
-      if (n) d.printf(126, 54, small, fg, display::TextAlign::TOP_RIGHT,
+      d.print(2, g.height-g.footer+2, small, fg, "NABLA");
+      if (n) d.printf(g.width-2, g.height-g.footer+2, small, fg, display::TextAlign::TOP_RIGHT,
                      "%d/%d", menu.focus < n ? menu.focus+1 : std::min(menu.top+1,n), n);
     }
   }
@@ -191,11 +201,11 @@ class CompactShell {
       if(y>=13 && row<3 && wifi.top+row<wifi.total()){wifi.focus=wifi.top+row;activate();}
       return;
     }
-    if (y < 12) { if (x < 16) menu.touch_option(children(menu.current)); return; }
-    if (!children(menu.current)) { if (y >= 64-(app_footer ? 12 : 0)-14 && y < 64-(app_footer ? 12 : 0)) menu.back(); return; }
-    auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer);
-    if (y >= 64-g.footer) return;
-    int row = (y-12)/g.row_height;
+    if (y < bar_height) { if (x < 16) menu.touch_option(children(menu.current)); return; }
+    if (!children(menu.current)) { if (y >= display_height-(app_footer ? bar_height : 0)-bar_height && y < display_height-(app_footer ? bar_height : 0)) menu.back(); return; }
+    auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer,display_width,display_height,bar_height,menu.list_rows);
+    if (y >= display_height-g.footer) return;
+    int row = (y-bar_height)/g.row_height;
     if (row < g.rows) {menu.touch_option(menu.top + row);if(in_wifi())wifi.clear();if(in_forms())forms.begin();}
   }
 };

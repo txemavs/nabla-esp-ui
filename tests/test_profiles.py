@@ -82,6 +82,19 @@ int main() {
    m.activate(); assert(m.borders && m.focus==4);
 
  }
+ // Landscape encoder target: four rows, with and without its footer.
+ for(bool footer : {false,true}) {
+   auto g=Geometry::compact(false,footer,160,128,16,4);
+   assert(g.width==160 && g.height==128 && g.rows==4);
+   assert(g.header+g.rows*g.row_height<=128-g.footer);
+ }
+ CompactMenu kit; kit.list_rows=4;
+ kit.move(7);
+ assert(kit.focus==7 && kit.top+kit.rows()>7 && kit.rows()==4);
+ kit.activate(); kit.back();
+ assert(kit.focus==7);
+ kit.readable=true;
+ assert(kit.rows()==1);
  for(auto g : {Geometry::regular(480,320,true),Geometry::regular(320,480,true)}) {
    assert(g.content_height() == g.height - 72);
    assert(g.width>0 && g.content_height()>0);

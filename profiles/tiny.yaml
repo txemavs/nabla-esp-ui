@@ -4,3 +4,8 @@ substitutions:
   compact_app_footer: "false"
   screen_width: "128"
   screen_height: "64"
+  compact_rows: "3"
+  compact_bar_height: "12"
+  compact_small_size: "8"
+  compact_body_size: "10"
+  compact_large_size: "16"

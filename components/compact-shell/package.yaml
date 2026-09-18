@@ -1,5 +1,6 @@
 substitutions:
   nabla_resource_root: ".."
+  compact_borders: "true"
 
 esphome:
   on_boot:
@@ -13,48 +14,46 @@ esphome:
           nabla::compact_shell.forms.words=form_words;
           nabla::compact_shell.forms.session.configure(nabla_forms::fields,nabla_forms::field_count);
           nabla::compact_shell.menu.readable = ${compact_readable};
+          nabla::compact_shell.menu.borders = ${compact_borders};
           nabla::compact_shell.app_footer = ${compact_app_footer};
-          id(compact_up).publish_state(false);
-          id(compact_down).publish_state(false);
-          id(compact_enter).publish_state(false);
-          id(compact_back).publish_state(false);
-          id(compact_home).publish_state(false);
+          nabla::compact_shell.menu.list_rows = ${compact_rows};
+          nabla::compact_shell.bar_height = ${compact_bar_height};
 
 font:
   - file: ${nabla_resource_root}/assets/fonts/DejaVuSans-Bold.ttf
     id: compact_small
-    size: 8
+    size: ${compact_small_size}
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
   - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: compact_body
-    size: 10
+    size: ${compact_body_size}
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
   - file: ${nabla_resource_root}/assets/fonts/DejaVuSans.ttf
     id: compact_large
-    size: 16
+    size: ${compact_large_size}
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
 
   - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-B.ttf
     id: compact_ubuntu_small
-    size: 8
+    size: ${compact_small_size}
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
   - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
     id: compact_ubuntu_body
-    size: 10
+    size: ${compact_body_size}
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
   - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-R.ttf
     id: compact_ubuntu_large
-    size: 16
+    size: ${compact_large_size}
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"

@@ -1,0 +1,17 @@
+# Consumer owns display, physical inputs, network and navigation.
+substitutions:
+  ui_language: en
+  compact_profile: tiny
+  nabla_resource_root: "https://raw.githubusercontent.com/txemavs/nabla-esp-ui/${nabla_ui_ref}"
+external_components:
+  - source:
+      type: git
+      url: https://github.com/txemavs/nabla-esp-ui.git
+      ref: ${nabla_ui_ref}
+      path: external_components
+    components: [nabla_navigation, nabla_runtime]
+    refresh: never
+packages:
+  locale: !include ../locales/${ui_language}.yaml
+  profile: !include ../profiles/${compact_profile}.yaml
+  shell: !include ../components/compact-shell/package.yaml
