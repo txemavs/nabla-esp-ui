@@ -26,6 +26,8 @@ documented extension, not edits throughout the core.
 5. [Edge configuration integration](EDGE-CONFIG.md): reviewed menus and BLE bridge.
 6. [Delivery roadmap](ROADMAP.md): milestones with completion gates.
 7. [Research notes](SOURCES.md): primary sources and version caveats.
+8. [Nabla Net MQTT](../NABLA-NET-MQTT.md): cross-site light control protocol.
+9. [Private device checklist](../PRIVATE-DEVICE-TEMPLATE.md): device YAML composition.
 
 [Draft configuration](platform.proposal.yaml) is illustrative, deliberately outside
 examples/. Do not feed it to ESPHome: the proposed nabla_ui domain does not exist.

@@ -1,0 +1,128 @@
+# Synthetic compact MQTT lights example — illustrative, not a complete build
+#
+# Encoder panel variant (ST7735/NodeMCU-32S style) with the same fictional
+# topics as panel.yaml. Does NOT compile without a secrets.yaml stub.
+# See docs/PRIVATE-DEVICE-TEMPLATE.md for deployment.
+
+substitutions:
+  nabla_ui_ref: 4acd4ecdca042eedbaa3824ca5492abf805fd4aa
+  ui_language: en
+  nabla_device_model: "NodeMCU-32S"
+  nabla_display_kind: "ST7735"
+  nabla_display_monochrome: "false"
+
+  nabla_mqtt_command_topics: >-
+    std::vector<std::string>{
+      "nabla/ha/nave/ui/cmd/light/living_room",
+      "nabla/ha/nave/ui/cmd/light/kitchen",
+      "nabla/ha/villa/ui/cmd/light/pool",
+      "nabla/ha/villa/ui/cmd/light/terrace",
+      "","","","","","","","","","","",""
+    }
+
+esphome:
+  name: example-compact-mqtt
+  friendly_name: "Example Compact MQTT"
+  project:
+    name: "nabla.example-compact-mqtt"
+    version: "1.0.0"
+
+packages:
+  library:
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    refresh: never
+    files:
+      - packages/compact.yaml
+      - hardware/nodemcu-32s-st7735.yaml
+  mqtt_compact: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/compact.yaml
+
+  light_0: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 0
+      state_topic: nabla/ha/nave/ui/state/light/living_room
+  light_1: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 1
+      state_topic: nabla/ha/nave/ui/state/light/kitchen
+  light_2: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 2
+      state_topic: nabla/ha/villa/ui/state/light/pool
+  light_3: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 3
+      state_topic: nabla/ha/villa/ui/state/light/terrace
+
+wifi:
+  reboot_timeout: 0s
+  networks:
+    - ssid: !secret wifi_ssid
+      password: !secret wifi_password
+      priority: 30
+  ap:
+    ssid: "Compact Setup"
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+mqtt:
+  broker: !secret mqtt_broker
+  port: 8883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  certificate_authority: !secret mqtt_ca
+
+nabla_navigation:
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: settings
+        title: ${tr_settings}
+        icon: ${icon_settings}
+        children:
+          - key: information
+            title: ${tr_information}
+            children:
+              - key: device_model
+                title: ${tr_info_model}
+                info: model
+              - key: device_wifi
+                title: Wi-Fi
+                info: wifi
+              - key: device_uptime
+                title: ${tr_info_uptime}
+                info: uptime
+      - key: lights
+        title: ${tr_lights}
+        icon: ${icon_lights}
+        children:
+          - key: nave_living
+            title: "Living Room"
+            command: control_open(0, "Living Room")
+          - key: nave_kitchen
+            title: "Kitchen"
+            command: control_open(1, "Kitchen")
+          - key: villa_pool
+            title: "Pool"
+            command: control_open(2, "Pool")
+          - key: villa_terrace
+            title: "Terrace"
+            command: control_open(3, "Terrace")

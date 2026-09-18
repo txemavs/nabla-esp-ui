@@ -1,0 +1,161 @@
+# Synthetic MQTT lights example — illustrative, not a complete build
+#
+# This file demonstrates the mqtt-lights adapter composition with invented
+# topics and placeholder secrets. It does NOT compile without a secrets.yaml
+# stub or real credentials. See docs/PRIVATE-DEVICE-TEMPLATE.md for deployment.
+#
+# All SSIDs, broker addresses, topics and entity names are fictional.
+# Replace with your private configuration before building.
+
+substitutions:
+  nabla_ui_ref: 4acd4ecdca042eedbaa3824ca5492abf805fd4aa
+  ui_language: en
+  screen_width: "480"
+  screen_height: "320"
+  nabla_initial_rotation: "90"
+  nabla_device_model: "JC3248W535CN"
+  nabla_display_kind: "IPS LCD"
+  nabla_display_monochrome: "false"
+
+  # Command topics for 4 lights across 2 sites (fictional)
+  # Pad to 16 elements; empty strings disable slots.
+  nabla_mqtt_command_topics: >-
+    std::vector<std::string>{
+      "nabla/ha/nave/ui/cmd/light/living_room",
+      "nabla/ha/nave/ui/cmd/light/kitchen",
+      "nabla/ha/villa/ui/cmd/light/pool",
+      "nabla/ha/villa/ui/cmd/light/terrace",
+      "","","","","","","","","","","",""
+    }
+
+esphome:
+  name: example-mqtt-panel
+  friendly_name: "Example MQTT Panel"
+  project:
+    name: "nabla.example-mqtt"
+    version: "1.0.0"
+
+packages:
+  library:
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    refresh: never
+    files:
+      - packages/regular.yaml
+      - hardware/jc3248w535cn.yaml
+  mqtt_transport: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/package.yaml
+
+  # Per-light state subscriptions (fictional topics)
+  light_0: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 0
+      state_topic: nabla/ha/nave/ui/state/light/living_room
+  light_1: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 1
+      state_topic: nabla/ha/nave/ui/state/light/kitchen
+  light_2: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 2
+      state_topic: nabla/ha/villa/ui/state/light/pool
+  light_3: !include
+    url: https://github.com/txemavs/nabla-esp-ui
+    ref: ${nabla_ui_ref}
+    file: adapters/mqtt-lights/binding.yaml
+    vars:
+      slot: 3
+      state_topic: nabla/ha/villa/ui/state/light/terrace
+
+# --- Secrets required (create in your private directory) ---
+# wifi_ssid, wifi_password, ota_password, mqtt_broker, mqtt_user,
+# mqtt_password, mqtt_ca
+
+wifi:
+  reboot_timeout: 0s
+  networks:
+    - ssid: !secret wifi_ssid
+      password: !secret wifi_password
+      priority: 30
+  ap:
+    ssid: "Example Panel Setup"
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+mqtt:
+  broker: !secret mqtt_broker
+  port: 8883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  certificate_authority: !secret mqtt_ca
+
+# --- Navigation tree: 4-light grid under Lights ---
+nabla_navigation:
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: settings
+        icon_dark: 0x499EFF
+        icon_light: 0x0055BB
+        title: ${tr_settings}
+        icon: ${icon_settings}
+        children:
+          - key: information
+            title: ${tr_information}
+            children:
+              - key: device_model
+                title: ${tr_info_model}
+                info: model
+              - key: device_wifi
+                title: Wi-Fi
+                info: wifi
+              - key: device_version
+                title: ESPHome
+                info: version
+              - key: device_uptime
+                title: ${tr_info_uptime}
+                info: uptime
+          - key: appearance
+            title: ${tr_appearance}
+            children:
+              - key: dark_mode
+                title: ${tr_dark_mode}
+                action: toggle_dark
+      - key: lights
+        icon_dark: 0xD6E96B
+        icon_light: 0x617000
+        title: ${tr_lights}
+        icon: ${icon_lights}
+        children:
+          # Nave site (fictional)
+          - key: nave_living
+            title: "Living Room"
+            detail: "Nave"
+            command: control_open(0, "Living Room")
+          - key: nave_kitchen
+            title: "Kitchen"
+            detail: "Nave"
+            command: control_open(1, "Kitchen")
+          # Villa site (fictional)
+          - key: villa_pool
+            title: "Pool"
+            detail: "Villa"
+            command: control_open(2, "Pool")
+          - key: villa_terrace
+            title: "Terrace"
+            detail: "Villa"
+            command: control_open(3, "Terrace")

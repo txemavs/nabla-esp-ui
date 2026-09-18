@@ -95,12 +95,21 @@ The 128x64 host profiles are implemented; physical OLED and input adapters remai
 Host rendering alone does not establish hardware support; the initial board check
 is narrower than complete M3 validation.
 
+## Nabla Net MQTT
+
+Panels can control Home Assistant lights across multiple sites through a shared
+MQTT broker, without native API connections. See [the protocol](docs/NABLA-NET-MQTT.md)
+for topic structure, freshness rules and broker configuration. The
+[mqtt-lights adapter](adapters/mqtt-lights/README.md) implements the protocol;
+[examples/mqtt-lights](examples/mqtt-lights/) shows synthetic device compositions.
+
 ## Private installations
 
 Keep site-specific device YAML, camera/entity bindings and secrets outside this
 public repository. See [the public/private boundary](docs/PRIVATE-INSTALLATIONS.md)
 for ownership, routed OTA and a Device Builder composition using a pinned local
-library checkout.
+library checkout. The [private device checklist](docs/PRIVATE-DEVICE-TEMPLATE.md)
+covers multi-network Wi-Fi, stable OTA addresses and MQTT client_id conventions.
 
 ## Brand and contributions
 
