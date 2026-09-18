@@ -1,113 +1,120 @@
 # ∇ nabla-esp-ui
 
-A modular UI platform for **ESPHome**, with LVGL and compact display renderers: define applications and navigation
-in YAML, reuse presentation and interaction across panels.
+**One UI library. Touch screens, rotary encoders and small displays.**
 
-Works toward standalone devices, optional Home Assistant integration, Nabla Edge
-and cooperation between large and small screens. Local operation must not depend
-on a server being available.
+Build ESPHome panels with menus defined in YAML, reusable controls and a
+consistent visual style. Use LVGL on larger screens or the compact display
+renderer on smaller devices. Home Assistant and MQTT are optional integrations;
+local navigation and settings do not depend on a server.
 
-**Status:** working desktop prototype on ESPHome 2026.8.2 / LVGL 9.5.
-A JC3248W535CN now runs the launcher with owner-confirmed touch navigation.
-An optional primary Wi-Fi adapter has passed initial physical scan/save/rollback
-checks; peer links and full hardware recovery/soak coverage remain pending.
-A [NodeMCU-32S/ST7735 encoder panel](hardware/nodemcu-32s-st7735.md) also runs
-the 160x128 compact UI, live information and MQTT control; OTA/API and MQTT
-reception are verified. Physical usability and soak gates remain open.
-Start with [the simulator](simulator/README.md).
+![Nabla ESP UI running on a large touch panel and a small color display with a rotary encoder](docs/images/nabla-panels-touch-and-encoder.png)
 
-## Use from GitHub
+*Two real devices running Nabla ESP UI: JC3248W535CN touch panel on the left,
+NodeMCU-32S with a 160×128 ST7735 display and encoder on the right.
+The menus shown belong to a private installation; the reusable library is public.*
 
-Start with [the editable device YAML](examples/github/panel.yaml) and the
-[GitHub library guide](docs/GITHUB-LIBRARY.md). The library is fetched at build
-time; your navigation, bindings and secrets remain in your own configuration.
+## Start here
 
-## Optional camera service
+- **Use the library:** [GitHub setup guide](docs/GITHUB-LIBRARY.md) and
+  [editable device YAML](examples/github/panel.yaml).
+- **Try it on your computer:** [simulator guide](simulator/README.md).
+- **Choose hardware:** [touch panel](hardware/README.md) or
+  [ST7735 encoder panel](hardware/nodemcu-32s-st7735.md).
+- **Follow development:** [platform plan](docs/platform/README.md) and
+  [milestones](docs/platform/ROADMAP.md).
 
-[Home Assistant camera cache](services/homeassistant/README.md) provides protected,
-on-demand 64x64 thumbnails and JPEGs up to 480 pixels, shared by all viewers.
+Import packages/regular.yaml for LVGL or packages/compact.yaml for the compact
+renderer. Pin a tested Git commit. Your device YAML owns its menus, hardware,
+network configuration and bindings; GitHub supplies the reusable components,
+fonts and assets. Nothing needs to be downloaded by the device at startup.
 
-## Platform plan
+## What you can build
 
-The [platform design](docs/platform/README.md) describes the architecture,
-component catalog, readable/tiny display profiles, keyboards and forms, Wi-Fi
-commissioning, peer control, and the vehicle panel with a Raspberry Pi 4.
-The [roadmap](docs/platform/ROADMAP.md) defines implementation order and exit gates.
+- Nested menus with tiles, lists, scrolling, focus and reachable Back controls.
+- Large touch layouts, compact four-icon launchers and readable single-item views.
+- Touch, keyboard and a deployed GPIO encoder/push/K0 composition.
+- Dark/light themes, Ubuntu Mono or DejaVu Sans, color icons and borderless focus.
+- Live device information: model, Wi-Fi, IP, router, signal, version and uptime.
+- Light controls through optional [Home Assistant](adapters/ha-lights/README.md)
+  and [MQTT adapters](adapters/mqtt-lights/README.md), with explicit availability
+  and a confirmation step for compact brightness changes.
+- Camera previews backed by an optional [Home Assistant image cache](services/homeassistant/README.md):
+  shared, on-demand 64×64 thumbnails and JPEGs up to 480 pixels.
+- Wi-Fi provisioning through an optional [primary Wi-Fi adapter](external_components/nabla_wifi/README.md)
+  or [captive portal](external_components/captive_portal/README.md) fetched from GitHub.
+- Shared text/password, numeric, choice and toggle form prototypes with
+  cancel/confirm behavior.
 
-M1 adaptive profiles and M2 local forms are implemented on the host. Try the
-Wi-Fi simulation or Settings > Controls (demo). The private physical composition
-can opt into real Wi-Fi with primary/fallback recovery.
-Draft YAML in docs/platform/ is explicitly illustrative, not accepted firmware.
+The bundled desktop is an example catalog, not a complete application suite.
+Its Wi-Fi forms and some status indicators are simulations unless an actual
+adapter is configured. Compact Wi-Fi/form prototypes still target 128×64;
+the ST7735 deployment uses the captive portal for network provisioning.
 
-## What works today
+## Current status
 
-- One declarative navigation tree with up to eight children per node.
-- Eight-tile desktop or scrollable list, switched with the root triangle.
-- Nested navigation with clickable ancestors, restored focus and scroll.
-- Touch and keyboard; Up/Down plus Enter emulate rotary navigation.
-- A root rotation button cycles 90 degrees; grid reflows 4x2 or 2x4.
-- Shared compact header/footer, configurable logo and status icon assets.
-- Immediate launcher startup, reusable operation progress and brand/HH:MM footer.
-- Settings > Information shows model, network, ESPHome version and uptime.
-- Dark/light appearance and build-time Spanish/English with accent glyphs.
-- Native 128x64 tiny/readable, 160x128 color/encoder and 320x480 portrait profiles.
-- Optional compact MQTT light control and a pinned GitHub captive portal.
-- Shared simulated Wi-Fi scans, masked password editing and failure/retry states.
-- YAML-defined numeric, choice and toggle fields with cancel/confirm transactions.
+**Active development, pre-1.0.** Tested baseline: ESPHome 2026.8.2;
+the regular renderer uses LVGL 9.5.
 
-The current desktop contains Settings, Communications, Photos, Music, Cameras,
-Weather, Lights and Sensors. Most are placeholders; Settings demonstrates
-appearance and nested navigation, not completed network configuration.
-Wi-Fi/Bluetooth header icons are visual placeholders, not live connection status.
-An opt-in [primary Wi-Fi adapter](external_components/nabla_wifi/README.md) connects
-the LVGL form to real scans and a saved primary without losing configured fallbacks.
+- **JC3248W535CN:** physical launcher and touch navigation confirmed; initial
+  primary Wi-Fi scan/save/rollback checks passed.
+- **NodeMCU-32S / ST7735:** 160×128 color launcher photographed on hardware;
+  OTA installation, encrypted API reconnection and live MQTT reception verified.
+  Build resource figures and remaining checks are in the
+  [target notes](hardware/nodemcu-32s-st7735.md).
+- **Host profiles:** 480×320 regular, 320×480 portrait, 160×128 compact color
+  and 128×64 tiny/readable.
 
-## How the repository fits together
+M1 adaptive profiles and M2 local forms have a host baseline. M3 remains open:
+physical usability, recovery and prolonged reconnect/navigation testing are not
+complete. Physical OLED validation, generalized joystick/input adapters, BLE
+cooperation, Nabla Edge integration and vehicle telemetry remain planned.
+A working demonstration is not a completed hardware qualification.
 
-- theme/: colors, typography, glyphs and assets.
-- components/: reusable visual pieces and [catalog](components/README.md).
-- navigation/: interaction, rendering and [tree contract](navigation/README.md).
-- external_components/nabla_navigation/: validation and generated C++ descriptors.
-- locales/: build-time translations.
-- examples/hello-world/: current panel composition.
-- simulator/hardware/: SDL, keyboard, mouse and host clock adapters.
-- docs/platform/: proposed modules, profiles, integrations and release plan.
+## How it fits together
 
-Native ESPHome packages and includes assemble firmware. The local external
-component validates the navigation YAML during normal ESPHome compilation.
-There is no mandatory standalone generation step.
+- **Device YAML:** application tree, hardware, private bindings and secrets.
+- **packages/, components/, profiles/:** reusable composition, presentation and editors.
+- **navigation/ and external_components/:** navigation contracts, code generation and adapters.
+- **theme/, locales/, assets/:** visual style, translations and licensed assets.
+- **simulator/ and tests/:** development fixtures and regression checks.
+- **docs/platform/:** architecture, proposed capabilities and completion gates.
+
+ESPHome packages assemble the firmware; navigation validation happens during
+normal ESPHome compilation. There is no mandatory standalone generation step.
+See the [component catalog](components/README.md) and
+[navigation contract](navigation/README.md).
 
 ## Design principles
 
-Application meaning is separate from placement and transport. A light control
-should bind to a local entity, Home Assistant or Edge without reimplementing its
-UI. The same menu becomes tiles on a large touch screen and a readable list on
-a smaller device; it is not just scaled down.
+Keep application meaning separate from screen layout and transport. A small
+screen needs a readable layout, not a shrunken desktop. Touch actions need an
+equivalent path through sequential input and Back.
 
-Every interaction must have a path using UP/DOWN/ENTER and accessible Back.
-Use typed state for unknown/stale/offline values and bounded asynchronous work.
-Add a new capability as a documented module with a runnable example.
-A stable core still receives maintenance; it is not a promise of zero future edits.
+Represent unknown, stale and unavailable data explicitly. Keep network work
+bounded and the UI responsive. Add capabilities as documented modules with
+examples and measured evidence.
 
-The first physical target is **JC3248W535CN**: USB installation, visible launcher
-and touch navigation have passed an initial check. See [the hardware adapter](hardware/README.md).
-The 128x64 host profiles are implemented; physical OLED and input adapters remain planned.
-Host rendering alone does not establish hardware support; the initial board check
-is narrower than complete M3 validation.
+A small encoder device may eventually control a larger panel, and a larger
+panel may provide a keyboard for a smaller one. Those peer roles are a design
+goal, not a released BLE feature.
 
-## Private installations
+## Your installation stays yours
 
-Keep site-specific device YAML, camera/entity bindings and secrets outside this
-public repository. See [the public/private boundary](docs/PRIVATE-INSTALLATIONS.md)
-for ownership, routed OTA and a Device Builder composition using a pinned local
-library checkout.
+Keep network credentials, tokens, device YAML and camera/entity bindings outside
+the public repository. Public examples use synthetic data. Read the
+[public/private boundary](docs/PRIVATE-INSTALLATIONS.md) before sharing a configuration.
 
-## Brand and contributions
+The hardware photo above was provided by the project owner for publication.
+It illustrates a private composition; it does not distribute its configuration.
 
-Brand: nabla.net ESP UI. Preserve the original triangle artwork in assets/nabla.jpg.
-See [brand identity](docs/BRAND.md) and [contributor instructions](AGENTS.md).
-Documentation and identifiers use English; UI strings are localized.
-Keep bundled font licenses and all applicable third-party attribution.
+## Contributing
+
+Start with [AGENTS.md](AGENTS.md), the [architecture](docs/ARCHITECTURE.md) and
+[brand guidelines](docs/BRAND.md). Documentation and identifiers use English;
+the UI supports Spanish and English.
+
+Preserve bundled font licenses and upstream component notices. In particular,
+the optional captive portal retains ESPHome and webserver licensing.
 
 ## References
 
@@ -118,4 +125,3 @@ Keep bundled font licenses and all applicable third-party attribution.
 - [ESPHome Modular LVGL Buttons](https://github.com/agillis/esphome-modular-lvgl-buttons)
 
 External projects are references, not claims of API compatibility.
-See [research notes](docs/platform/SOURCES.md) for the platform plan.
