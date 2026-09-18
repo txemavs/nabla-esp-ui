@@ -33,7 +33,7 @@ Wi-Fi, VPN, Edge o HA no están.
 | --- | --- | --- |
 | **nabla-esp-ui** (este repo) | [txemavs/nabla-esp-ui](https://github.com/txemavs/nabla-esp-ui) | UI de dispositivo ESPHome+LVGL: pantallas, tema, navegación, formularios, perfiles, simulador |
 | **Nabla Edge** | [txemavs/nabla-edge](https://github.com/txemavs/nabla-edge) | Pi / router de sitio: uplink, NablaNet AP, Tailscale, servicios del borde |
-| **Nabla Net** | [txemavs/nabla-net](https://github.com/txemavs/nabla-net) | Red / conectividad del sitio (contrato y piezas de red Nabla) |
+| **Nabla Net** (web) | [txemavs/nabla-net](https://github.com/txemavs/nabla-net) | Sitio web público [www.nabla.net](https://www.nabla.net/) (CMS/docs) |
 | **Nabla Linux** | [txemavs/nabla-linux](https://github.com/txemavs/nabla-linux) | Imagen/OS Linux de los nodos Nabla |
 | **Nabla Inference** | [txemavs/nabla-inference](https://github.com/txemavs/nabla-inference) | Stack opcional de servicios de cómputo/IA para la red (ver detalle abajo) |
 | **Home Assistant** | *(instalación del sitio)* | Estados y comandos de entidades del sitio |
