@@ -108,7 +108,8 @@ inline void render_cell(lv_obj_t* btn, lv_obj_t* label, const Cell& cell, const 
 }
 
 inline void render_tabs(lv_obj_t* container, const std::vector<Section>& sections,
-                        int current, bool dark, int screen_w, int bar_h, bool dense = false) {
+                        int current, bool dark, int screen_w, int bar_h, bool dense = false,
+                        const lv_font_t* font = nullptr) {
   static std::vector<lv_obj_t*> tab_btns;
   for (auto* btn : tab_btns) { if (btn) lv_obj_delete(btn); }
   tab_btns.clear();
@@ -136,6 +137,7 @@ inline void render_tabs(lv_obj_t* container, const std::vector<Section>& section
     lv_obj_t* lbl = lv_label_create(btn);
     lv_label_set_text(lbl, sections[i].label);
     lv_obj_set_style_text_color(lbl, lv_color_hex(dark ? 0xFFFFFF : 0x000000), 0);
+    if (dense && font) lv_obj_set_style_text_font(lbl, font, 0);
     lv_obj_center(lbl);
 
     tab_btns.push_back(btn);
@@ -144,7 +146,8 @@ inline void render_tabs(lv_obj_t* container, const std::vector<Section>& section
 }
 
 inline void render_sensor_row(lv_obj_t* container, const std::vector<Cell>& sensors,
-                              const Words& words, bool dark, int y, int screen_w, bool dense = false) {
+                              const Words& words, bool dark, int y, int screen_w, bool dense = false,
+                              const lv_font_t* font = nullptr) {
   if (sensors.empty()) return;
   int gap = dense ? 2 : 4;
   int cell_w = (screen_w - gap * ((int)sensors.size() + 1)) / std::max(1, (int)sensors.size());
@@ -171,6 +174,7 @@ inline void render_sensor_row(lv_obj_t* container, const std::vector<Cell>& sens
     text += cell.available ? (std::to_string(cell.value) + cell.unit) : "-";
     lv_label_set_text(lbl, text.c_str());
     lv_obj_set_style_text_color(lbl, lv_color_hex(dark ? 0xFFFFFF : 0x000000), 0);
+    if (dense && font) lv_obj_set_style_text_font(lbl, font, 0);
     lv_obj_center(lbl);
 
     sensor_objs.push_back(box);

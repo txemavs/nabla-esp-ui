@@ -87,6 +87,10 @@ script:
           lv_obj_set_style_pad_column(id(navigation_content), gap, 0);
           lv_obj_set_style_pad_row(id(navigation_content), gap, 0);
           
+          const lv_font_t* dense_font = id(nav_font_choice) == 0
+            ? id(nabla_ubuntu_12)->get_lv_font()
+            : id(nabla_font_12)->get_lv_font();
+          
           int focus_idx = state.focus_row * cols + state.focus_col;
           for (int i = 0; i < 8; i++) {
             lv_obj_t* btn = rows_arr[i];
@@ -99,16 +103,17 @@ script:
               lv_obj_remove_flag(btn, LV_OBJ_FLAG_HIDDEN);
               render_cell(btn, lbl, controls[i], state.words,
                           dark, i == focus_idx, cell_w, cell_h, dense);
+              if (dense) lv_obj_set_style_text_font(lbl, dense_font, 0);
             } else {
               lv_obj_add_flag(btn, LV_OBJ_FLAG_HIDDEN);
             }
           }
           
           if (has_tabs) {
-            render_tabs(id(navigation_page)->obj, state.sections, state.current_section, dark, w, bar_h, dense);
+            render_tabs(id(navigation_page)->obj, state.sections, state.current_section, dark, w, bar_h, dense, dense_font);
           }
           if (!sensors.empty()) {
-            render_sensor_row(id(navigation_page)->obj, sensors, state.words, dark, h - bar_h - sensor_h, w, dense);
+            render_sensor_row(id(navigation_page)->obj, sensors, state.words, dark, h - bar_h - sensor_h, w, dense, dense_font);
           }
 
   - id: control_panel_left
