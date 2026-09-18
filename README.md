@@ -15,7 +15,8 @@ The menus shown belong to a private installation; the reusable library is public
 
 ## Start here
 
-- **Use the library:** [GitHub setup guide](docs/GITHUB-LIBRARY.md) and
+- **Use the library:** [library contract](docs/LIBRARY-CONTRACT-v0.1.md),
+  [GitHub setup guide](docs/GITHUB-LIBRARY.md) and
   [editable device YAML](examples/github/panel.yaml).
 - **Try it on your computer:** [simulator guide](simulator/README.md).
 - **Choose hardware:** [touch panel](hardware/README.md) or

@@ -21,10 +21,10 @@ substitutions:
   # Pad to 16 elements; empty strings disable slots.
   nabla_mqtt_command_topics: >-
     std::vector<std::string>{
-      "nabla/ha/nave/ui/cmd/light/living_room",
-      "nabla/ha/nave/ui/cmd/light/kitchen",
-      "nabla/ha/villa/ui/cmd/light/pool",
-      "nabla/ha/villa/ui/cmd/light/terrace",
+      "nabla/ha/site_a/ui/cmd/light/living_room",
+      "nabla/ha/site_a/ui/cmd/light/kitchen",
+      "nabla/ha/site_b/ui/cmd/light/pool",
+      "nabla/ha/site_b/ui/cmd/light/terrace",
       "","","","","","","","","","","",""
     }
 
@@ -55,28 +55,28 @@ packages:
     file: adapters/mqtt-lights/binding.yaml
     vars:
       slot: 0
-      state_topic: nabla/ha/nave/ui/state/light/living_room
+      state_topic: nabla/ha/site_a/ui/state/light/living_room
   light_1: !include
     url: https://github.com/txemavs/nabla-esp-ui
     ref: ${nabla_ui_ref}
     file: adapters/mqtt-lights/binding.yaml
     vars:
       slot: 1
-      state_topic: nabla/ha/nave/ui/state/light/kitchen
+      state_topic: nabla/ha/site_a/ui/state/light/kitchen
   light_2: !include
     url: https://github.com/txemavs/nabla-esp-ui
     ref: ${nabla_ui_ref}
     file: adapters/mqtt-lights/binding.yaml
     vars:
       slot: 2
-      state_topic: nabla/ha/villa/ui/state/light/pool
+      state_topic: nabla/ha/site_b/ui/state/light/pool
   light_3: !include
     url: https://github.com/txemavs/nabla-esp-ui
     ref: ${nabla_ui_ref}
     file: adapters/mqtt-lights/binding.yaml
     vars:
       slot: 3
-      state_topic: nabla/ha/villa/ui/state/light/terrace
+      state_topic: nabla/ha/site_b/ui/state/light/terrace
 
 # --- Secrets required (create in your private directory) ---
 # wifi_ssid, wifi_password, ota_password, mqtt_broker, mqtt_user,
@@ -141,21 +141,21 @@ nabla_navigation:
         title: ${tr_lights}
         icon: ${icon_lights}
         children:
-          # Nave site (fictional)
-          - key: nave_living
+          # Site A (fictional)
+          - key: site_a_living
             title: "Living Room"
-            detail: "Nave"
+            detail: "Site A"
             command: control_open(0, "Living Room")
-          - key: nave_kitchen
+          - key: site_a_kitchen
             title: "Kitchen"
-            detail: "Nave"
+            detail: "Site A"
             command: control_open(1, "Kitchen")
-          # Villa site (fictional)
-          - key: villa_pool
+          # Site B (fictional)
+          - key: site_b_pool
             title: "Pool"
-            detail: "Villa"
+            detail: "Site B"
             command: control_open(2, "Pool")
-          - key: villa_terrace
+          - key: site_b_terrace
             title: "Terrace"
-            detail: "Villa"
+            detail: "Site B"
             command: control_open(3, "Terrace")

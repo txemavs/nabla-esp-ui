@@ -67,6 +67,8 @@ Applies to the entire nabla-esp-ui repository.
   input adapters, OLED hardware validation and peer cooperation remain pending.
 
 ## Extension rules
+- New examples and documentation must use generic names (Site A, Site B, generic
+  rooms/entities). Do not introduce real installation names or personal site references.
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.
 - Keep schema/code generation as the source of truth; reject unknown fields,
   invalid references and unsupported capability combinations.

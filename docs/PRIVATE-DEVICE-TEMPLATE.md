@@ -215,7 +215,7 @@ panel_ip: "192.168.1.100"
 Use a stable, unique identifier per device:
 
 - Format: `<site>-<location>-<number>` or `<device-name>`
-- Examples: `nave-kitchen-01`, `villa-pool-panel`, `car-panel`
+- Examples: `site-a-kitchen-01`, `site-b-pool-panel`, `garage-panel`
 
 The broker uses `client_id` for connection tracking and ACLs. Two devices with
 the same `client_id` will disconnect each other.
