@@ -1,0 +1,19 @@
+# Monochrome icon mode for tiny OLED displays (128x64).
+# Shows one fullscreen icon at a time, with text-only list as alternate view.
+# Does not use the 2x2 tile grid; single_icon_mode forces cells=1.
+font:
+  - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
+    id: compact_icons
+    size: 24
+    bpp: 1
+    glyphsets: []
+    glyphs: ["\uf013", "\uf1eb", "\uf11b", "\uf015", "\uf03d", "\uf185", "\uf0eb", "\uf2db", "\uf05a", "\uf1bb", "\uf086", "\uf03e", "\uf001", "\uf2c9", "\uf494"]
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          nabla::compact_shell.icons=id(compact_icons);
+          nabla::compact_shell.color_icons=false;
+          nabla::compact_shell.root_tiles=true;
+          nabla::compact_shell.single_icon_mode=true;

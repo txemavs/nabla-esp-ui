@@ -9,7 +9,7 @@ class CompactShell {
  public:
   CompactMenu menu;
   esphome::font::Font *icons=nullptr;
-  bool color_icons=false, root_tiles=false;
+  bool color_icons=false, root_tiles=false, single_icon_mode=false;
   std::function<int(int)> icon_color;
   std::function<bool(int)> custom_move;
   std::function<bool()> custom_activate,custom_back;
@@ -152,7 +152,7 @@ class CompactShell {
     d.print(16, 0, small, fg, nodes[menu.current].title);
     d.end_clipping();
     const int n = children(menu.current);
-    if(root_tiles && icons && menu.current==0 && n) {
+    if(root_tiles && icons && menu.current==0 && n && (!single_icon_mode || menu.readable)) {
       int cells=menu.readable?1:4;
       int first=menu.focus<n?(menu.focus/cells)*cells:(menu.top/cells)*cells;
       int cols=menu.readable?1:2,rows=menu.readable?1:2;
@@ -262,7 +262,7 @@ class CompactShell {
     if (!children(menu.current)) { if (y >= display_height-(app_footer ? bar_height : 0)-bar_height && y < display_height-(app_footer ? bar_height : 0)) menu.back(); return; }
     auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer,display_width,display_height,bar_height,menu.list_rows);
     if (y >= display_height-g.footer) return;
-    if(root_tiles && icons && menu.current==0){
+    if(root_tiles && icons && menu.current==0 && (!single_icon_mode || menu.readable)){
       int cells=menu.readable?1:4,cols=menu.readable?1:2;
       int first=menu.focus<children(0)?menu.focus/cells*cells:menu.top/cells*cells;
       int index=first+(y-bar_height)/(g.content_height()/(menu.readable?1:2))*cols+x/(g.width/cols);
