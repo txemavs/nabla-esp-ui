@@ -1,0 +1,24 @@
+# ST7735 display for NodeMCU-32S — SPI 160×128 TFT LCD
+# Native 128×160; display driver owns rotation=270 for logical 160×128 landscape.
+# No LVGL required; uses ESPHome display API with compact shell renderer.
+#
+# Pins: SPI clock GPIO18, MOSI GPIO23; CS GPIO5, DC GPIO16, reset GPIO17
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+
+display:
+  - platform: st7735
+    id: compact_display
+    model: INITR_BLACKTAB
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO17
+    rotation: 270
+    dimensions:
+      width: 128
+      height: 160
+      offset_width: 0
+      offset_height: 0
+    update_interval: 100ms

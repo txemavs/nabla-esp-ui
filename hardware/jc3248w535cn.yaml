@@ -1,8 +1,13 @@
+# Guition JC3248W535CN board composition
+# ESP32-S3, 16 MiB flash, 8 MiB octal PSRAM, JC3248W535 QSPI display, AXS15231 touch.
+#
+# This composer imports reusable capability packages. See hardware/ subfolders
+# for individual display, touchscreen, power and bus configurations.
+
 substitutions:
   nabla_display_kind: "IPS LCD"
   nabla_device_model: "JC3248W535CN"
 
-# Guition JC3248W535CN: ESP32-S3, 16 MiB flash, 8 MiB octal PSRAM.
 esp32:
   board: esp32-s3-devkitc-1
   flash_size: 16MB
@@ -17,37 +22,9 @@ logger:
   hardware_uart: USB_SERIAL_JTAG
   level: INFO
 
-spi:
-  id: panel_qspi
-  type: quad
-  clk_pin: GPIO47
-  data_pins: [GPIO21, GPIO48, GPIO40, GPIO39]
-
-i2c:
-  id: panel_i2c
-  sda: GPIO4
-  scl: GPIO8
-  frequency: 400kHz
-
-power_supply:
-  id: panel_backlight
-  pin: GPIO1
-  enable_on_boot: true
-
-display:
-  - platform: mipi_spi
-    id: panel_display
-    model: JC3248W535
-    spi_id: panel_qspi
-    auto_clear_enabled: false
-    update_interval: never
-
-touchscreen:
-  - platform: axs15231
-    id: panel_touch
-    display: panel_display
-    i2c_id: panel_i2c
-    interrupt_pin:
-      number: GPIO3
-      ignore_strapping_warning: true
-    update_interval: 30ms
+packages:
+  qspi_bus: !include bus/jc3248w535cn-qspi.yaml
+  i2c_bus: !include bus/jc3248w535cn-i2c.yaml
+  backlight: !include power/backlight-gpio1.yaml
+  display: !include display/jc3248w535.yaml
+  touch: !include touchscreen/axs15231.yaml

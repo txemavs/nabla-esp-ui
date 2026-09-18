@@ -1,0 +1,13 @@
+# JC3248W535 display — MIPI/QSPI 320×480 IPS LCD
+# Requires: panel_qspi SPI bus, panel_backlight power supply
+#
+# The display component needs a QSPI bus; define it in bus/ or inline.
+# LVGL owns rotation; do not rotate native display coordinates.
+
+display:
+  - platform: mipi_spi
+    id: panel_display
+    model: JC3248W535
+    spi_id: panel_qspi
+    auto_clear_enabled: false
+    update_interval: never

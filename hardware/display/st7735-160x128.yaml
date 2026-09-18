@@ -1,0 +1,23 @@
+# ST7735 display — SPI 160×128 TFT LCD
+# Native 128×160; display driver owns rotation=270 for logical 160×128 landscape.
+# Requires: SPI bus with cs_pin, dc_pin, reset_pin defined by the board.
+#
+# The compact shell renders directly via display API; no LVGL required.
+# See profiles/tft160.yaml for geometry and hardware/nodemcu-32s-st7735.md for wiring.
+
+# Board-specific ST7735 configuration is owned by the device YAML.
+# This file documents the display type; actual pins vary by wiring.
+#
+# Example from NodeMCU-32S:
+#   display:
+#     - platform: st7735
+#       model: INITR_BLACKTAB
+#       cs_pin: GPIO5
+#       dc_pin: GPIO16
+#       reset_pin: GPIO17
+#       rotation: 270
+#       dimensions:
+#         width: 128
+#         height: 160
+#         offset_width: 0
+#         offset_height: 0

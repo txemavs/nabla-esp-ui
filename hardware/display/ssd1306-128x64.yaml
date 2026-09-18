@@ -1,0 +1,21 @@
+# SSD1306 OLED — I2C 128×64 monochrome
+# Used by tiny/readable compact profiles.
+#
+# The compact shell renders 1-bit graphics; no LVGL required.
+# See profiles/tiny.yaml and profiles/readable.yaml for geometry.
+#
+# Hardware validation remains pending; this documents the target display.
+# Board-specific I2C address and pins are owned by the device YAML.
+#
+# Example configuration:
+#   i2c:
+#     sda: GPIO21
+#     scl: GPIO22
+#
+#   display:
+#     - platform: ssd1306_i2c
+#       model: SSD1306_128X64
+#       address: 0x3C
+#       update_interval: 100ms
+#       lambda: |-
+#         nabla::compact_shell.render(it, ...);

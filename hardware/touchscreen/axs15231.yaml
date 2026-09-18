@@ -1,0 +1,12 @@
+# AXS15231 touchscreen over I2C
+# Requires: panel_i2c I2C bus, panel_display display reference
+
+touchscreen:
+  - platform: axs15231
+    id: panel_touch
+    display: panel_display
+    i2c_id: panel_i2c
+    interrupt_pin:
+      number: GPIO3
+      ignore_strapping_warning: true
+    update_interval: 30ms

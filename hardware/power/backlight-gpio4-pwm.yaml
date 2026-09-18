@@ -1,0 +1,8 @@
+# PWM backlight on GPIO4 (NodeMCU-32S/ST7735)
+# LEDC 1000 Hz, active high
+
+output:
+  - platform: ledc
+    id: panel_backlight
+    pin: GPIO4
+    frequency: 1000Hz
