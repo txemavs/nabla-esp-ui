@@ -29,15 +29,33 @@ Wi-Fi, VPN, Edge o HA no están.
 
 ## El mapa Nabla (dónde encaja cada pieza)
 
-| Pieza | Quién la lleva | Rol |
+| Pieza | Repo | Rol |
 | --- | --- | --- |
-| **nabla-esp-ui** (este repo) | UI de dispositivo | Pantallas, tema, navegación, formularios, perfiles, simulador, componentes externos |
-| **Nabla Edge** (Pi en el sitio) | Router / servicios | Uplink, NablaNet (AP), Tailscale, menús de configuración del Pi |
-| **Home Assistant** | Sitio | Estados y comandos de entidades del sitio |
-| **YAML privado del dispositivo** | Instalación | Árbol de navegación, formularios, Wi-Fi/OTA/API, bindings reales |
+| **nabla-esp-ui** (este repo) | [txemavs/nabla-esp-ui](https://github.com/txemavs/nabla-esp-ui) | UI de dispositivo ESPHome+LVGL: pantallas, tema, navegación, formularios, perfiles, simulador |
+| **Nabla Edge** | [txemavs/nabla-edge](https://github.com/txemavs/nabla-edge) | Pi / router de sitio: uplink, NablaNet AP, Tailscale, servicios del borde |
+| **Nabla Net** | [txemavs/nabla-net](https://github.com/txemavs/nabla-net) | Red / conectividad del sitio (contrato y piezas de red Nabla) |
+| **Nabla Linux** | [txemavs/nabla-linux](https://github.com/txemavs/nabla-linux) | Imagen/OS Linux de los nodos Nabla |
+| **Nabla Inference** | [txemavs/nabla-inference](https://github.com/txemavs/nabla-inference) | Stack opcional de servicios de cómputo/IA para la red (ver detalle abajo) |
+| **Home Assistant** | *(instalación del sitio)* | Estados y comandos de entidades del sitio |
+| **YAML privado del dispositivo** | *(fuera de GitHub público)* | Árbol de navegación, formularios, Wi-Fi/OTA/API, bindings reales, secretos |
+
+**Nabla Inference** se instala en un PC o nodo con GPU para **ofrecer servicios
+de inferencia (LLM Ollama/vLLM, generación de imágenes ComfyUI, voz STT/TTS) al
+resto de la red Nabla**. No es la UI ni Home Assistant; es un Compose con
+perfiles que publica sus capacidades en `capabilities.json`. Aplicaciones de la
+red (o Edge) pueden consumir esas APIs, típicamente por red privada (p.ej.
+Tailscale).
 
 Los **ESP32** usan nabla-esp-ui para estandarizar **cómo se ve y se navega**,
 sin reinventar la UI en cada dispositivo.
+
+> **Nota:** El portal cautivo compartido vive en
+> [txemavs/nabla-esphome-captive](https://github.com/txemavs/nabla-esphome-captive),
+> importado como componente externo opcional.
+>
+> El paraguas de laboratorio está en
+> [txemavs/nabla](https://github.com/txemavs/nabla) (índice de experimentos,
+> no es un componente de runtime).
 
 ---
 
