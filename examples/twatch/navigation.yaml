@@ -1,5 +1,6 @@
 substitutions:
   nabla_resource_root: ".."
+  nabla_ui_ref: "1df2123"
 
 # Kit1-style navigation tree for square touch displays.
 # Simplified menu with Settings, Control, and generic Site A lights.
@@ -8,8 +9,10 @@ packages:
 
 external_components:
   - source:
-      type: local
-      path: ${nabla_resource_root}/external_components
+      type: git
+      url: https://github.com/txemavs/nabla-esp-ui
+      ref: ${nabla_ui_ref}
+      path: external_components
 
 nabla_navigation:
 
