@@ -1,184 +1,90 @@
 # Display profiles
 
-M1 provides three named profiles and a regular portrait fixture. All consume
-examples/hello-world/navigation.yaml; none duplicates the menu or entity mapping.
-The tiny profile uses examples/tiny/navigation.yaml for a simplified menu.
+Profiles own geometry and presentation defaults; device YAML owns menu content.
+Regular profiles use LVGL. Compact profiles use the ESPHome display API without
+requiring LVGL or PSRAM. See [UI consistency](../docs/UI-CONSISTENCY.md) for shared
+appearance rules and [device adoption](../docs/DEVICE-ADOPTION.md) for validation.
 
-- regular: LVGL shell at 480x320, tile/list switch, 36 px header and footer.
-- tiny: actual 128x64 monochrome, two root views only: fullscreen icon or text list.
-- readable: actual 128x64 monochrome, single-row readable starting in icon view.
-- portrait fixture: regular shell at an actual 320x480 viewport, two-column grid.
+## Current profiles and host fixtures
 
-Start from the repository root:
-```sh
+- **regular:** 480×320 LVGL, tile/list views, 36 px header/footer.
+- **portrait fixture:** regular renderer at 320×480 with a two-column grid.
+- **tft160:** 160×128 compact color target; four rows, 16 px bars and
+  12/16/20 px small/body/large fonts. Optional compact-shell/color.yaml supplies
+  color icons, 2×2 tiles and a single-item presentation.
+- **tiny:** 128×64 monochrome; three rows, 12 px bars, 10/11/17 px
+  small/body/large fonts and a 16 px icon font.
+- **readable:** 128×64 monochrome; three rows, 12 px bars, 9/10/17 px
+  small/body/large fonts and a 20 px icon font.
+
+These values are build defaults in the corresponding profile YAML. Glyph
+geometry also depends on the renderer; font size is not a guarantee of physical
+legibility. The mono helper can change presentation state at initialization.
+
+From the repository root:
+
+~~~sh
 ./simulator/run.sh regular
 ./simulator/run.sh portrait
+./simulator/run.sh tft160
 ./simulator/run.sh tiny
 ./simulator/run.sh readable
-```
+~~~
 
-The compact renderer uses ESPHome's display API and 1-bit fonts, avoiding an
-LVGL dependency for the small-display view. The tiny/readable SDL viewports remain 128x64.
-It does not emulate a physical OLED driver, panel contrast or refresh timing.
-The regular renderer remains LVGL and retains its integrated Wi-Fi form.
+Tiny/readable use the simplified tiny example menu; they do not duplicate the
+regular example catalog. Applications retain the same navigation contracts,
+but fixtures need not expose identical menus.
 
-Tiny and readable use `single_icon_mode` from `components/compact-shell/mono.yaml`:
-the root menu toggles between fullscreen icon (readable=true) and text-only list
-(readable=false). List mode shows plain text rows without icon glyphs.
-There is no intermediate 2x2 tile grid on 128x64.
-The tft160 profile retains the 2x2 color tiles and list icons via `color.yaml`.
+## Monochrome presentation
 
-## Tiny (128×64 mono OLED) UX Philosophy
+The tiny/readable fixtures import compact-shell/mono.yaml. Root presentation
+switches between a single large icon with label and a text-only list; there is
+no 2×2 monochrome grid. List mode uses three rows and middle-scroll: focus stays
+near the center until the beginning or end of the list.
 
-The tiny profile encodes a distinct philosophy for 128×64 mono OLED displays,
-prioritizing readability on severely constrained screens:
+Normal selection uses a play marker beside the focused row. High contrast uses
+inversion. In single-item mode, normal presentation has no selection box and
+high contrast inverts the panel background. Monochrome output uses black and
+white; color TFT profiles are not subject to that palette restriction.
 
-### Two root views only
-Fullscreen icon OR text list. No 2×2 grid—space is too constrained.
+List footer visibility is controlled by compact_list_footer (false for these
+profiles); icon presentation retains pagination. Interior footer visibility uses
+compact_app_footer. The compact mono triangle has a brief 180-degree spin on
+boot/view change; monochrome does not mean animation-free rendering.
 
-### Appearance modes
-Renamed from "Borders" to **Normal / High contrast** in the tiny context:
-- **Normal** (borders=true): ▶ play marker on the LEFT of focused row, no box
-  borders. Clean appearance with minimal visual chrome.
-- **High contrast** (borders=false): current inverted/bar selection. Filled
-  background for selected items maximizes visibility.
-- **Single-item (icon) view**: High contrast inverts the panel background;
-  Normal shows no selection chrome (only one item visible anyway).
+## Navigation and detail views
 
-Spanish UI labels: «Normal» / «Alto contraste».
+Up/Down selects, Enter activates, Escape returns and Home opens the root in the
+host fixture. The physical encoder maps movement/activation/Back through its
+hardware package. The current title and status text are not focusable.
 
-### Typography floor
-Never use undersized fonts on tiny displays. Minimum font size = form body size
-(SSID/password row). In icon view, the single-item label uses the large font
-(«Conexiones» size), centered at the bottom. Icon is above, well-packed with
-less empty top space.
+Entering a child focuses its first content option. Returning restores content
+selection rather than a stale toolbar control. Long selected labels scroll
+within their clipped row. Compact detail text supports scrolling; wide-screen
+clickable ancestor breadcrumbs remain a regular-renderer feature.
 
-### List mode layout
-- No footer—all vertical space for content.
-- 3 rows visible, text-only (no icon glyphs in list).
-- Middle-scroll: focus stays center row until reaching list boundaries.
+Menu structure is device-owned. The tiny example's Settings/Information routes
+are a fixture, not a mandatory hierarchy for every small device.
 
-### Icon/single mode layout
-- HAS toolbar+footer (shows n/m pagination index).
-- Smaller centered icon (16px vs old 20px) for better label space.
-- Large font for label, centered below the icon.
+## Forms and real hardware boundaries
 
-### Nabla triangle animation
-On boot and when toggling view from main menu, the header triangle spins
-~180° as a brief visual acknowledgment of the mode change.
+Host Wi-Fi flows are simulated. Compact forms use a character selector;
+the optional nabla_wifi_compact component can connect device builds to real
+scan/connect operations while preserving declared fallback networks.
+See the [adapter](../external_components/nabla_wifi_compact/README.md)
+for its configuration and limits.
 
-### Settings structure (Kit1 ESPUI shape)
-```
-Settings
-├── Connections
-│   └── Wi-Fi (captive portal hint)
-├── Appearance
-│   ├── Dark (toggle dark/light)
-│   ├── Font (toggle font family)
-│   └── High contrast (toggle play marker / inverted bar)
-└── Information
-    ├── Model
-    ├── Wi-Fi
-    ├── IP
-    ├── Uptime
-    └── Language (last—moved from outer menu)
-```
+The compact Wi-Fi/form demo still uses a 128×64 layout. The current ST7735
+device menu does not expose that demo; it uses captive-portal provisioning.
+Normal compact menus derive their dimensions from the display.
 
-### Menu content (public example)
-Removed placeholders not useful on tiny (Photos, Music, Cameras, Weather,
-Lights, Sensors). Added Control > Site A with four generic lights (Storage,
-Office, Bench, Spotlight) mirroring the Kit1 pattern with Site A names.
+Host viewports validate layout, not OLED contrast, panel refresh timing or
+physical input. See the [evidence catalog](../docs/DISPLAY-CATALOG.md#tested-devices)
+and [ST7735 notes](../hardware/nodemcu-32s-st7735.md) before treating a profile
+as hardware-qualified.
 
-### Default behavior
-Settings and other menus default to list view; can toggle to centered large
-single-item view anywhere. Same two-view rule applies throughout on tiny.
+## Implementation ownership
 
-## Navigation and presentation
-
-Up/Down selects, Enter activates, Escape returns, Home opens the root.
-Touch selects the corresponding visible row. The current title is not clickable.
-The compact header triangle is reachable after the content entries:
-at root it switches tiny/readable, inside it returns to the parent.
-A leaf also shows an explicit Back row; its action is the same header target.
-The footer and status text do not participate in focus.
-
-Entering a child starts at the first option. Returning restores a content
-selection and scroll anchor, never a stale toolbar selection. Changing density
-keeps the current route and ensures the selected content fits in the viewport.
-Long selected labels scroll within their clipped row; they do not move focus.
-
-Both compact bars are 12 px high. The tiny profile controls footer visibility
-with `compact_list_footer`: list mode at root hides the footer (3 rows × 17 px
-= 51 px content), while fullscreen icon mode keeps footer + pagination.
-Interior/app footer defaults off and can be enabled with `compact_app_footer`.
-
-Fonts are 9 px for header/footer/label, 10 px for list body, 17 px for large.
-Icon size is 20 px (`compact_icon_size`), vertically centered with its label.
-Their one-bit raster output has been checked at native resolution. Physical
-legibility still depends on the OLED size and viewing distance.
-
-## Middle-scroll behavior (tiny)
-
-List mode uses middle-scroll: the selected item stays in the middle row while
-navigating through the list. At boundaries the selection moves to edge rows,
-providing a visual cue when reaching the start or end. The `scroll_anchor_middle`
-function in `navigation/focus.h` implements this logic.
-
-Settings > Appearance changes black/white polarity locally on either renderer.
-Compact output ignores RGB palettes: icons/selection/text use foreground,
-background uses its inverse. Captured output contains exactly two RGB values,
-black and white. OLED marks are pixel-aligned outlines; no smoothing or animation
-is used in the compact renderer.
-
-## Boundaries
-
-Wi-Fi is the same route in all profiles. Regular uses the native keyboard;
-compact uses the M2 character selector. The compact shell checks
-`WifiFlow::backend`: when `nabla_wifi_compact` is present, real scan and
-connect operations replace the mock flow. Host builds have no radio; the
-simulator always uses the mock flow regardless of component presence.
-
-### Real Wi-Fi for tiny/compact (device builds)
-
-Add `nabla_wifi_compact:` to a device YAML with `wifi.networks` fallbacks.
-The form shows a simplified menu (SSID, Password, Open toggle, Scan, Connect)
-without mock-only demo items. Success/failure labels drop the "(demo)" suffix.
-
-```yaml
-# Device YAML example (credentials in secrets.yaml)
-external_components:
-  - source:
-      type: local
-      path: external_components
-
-wifi:
-  networks:
-    - ssid: !secret wifi_ssid
-      password: !secret wifi_password
-
-nabla_wifi_compact:
-```
-
-Host simulator: mock flow active even if component is included (no radio).
-Test real Wi-Fi on physical hardware with OTA or USB flash.
-
-The compact header presents the current location; wide-screen clickable
-ancestor breadcrumbs remain a regular-profile feature. Leaf descriptions are
-clipped to the compact detail region; a paged detail reader is future work.
-
-Runtime metrics live in geometry.h. Input wrapping/content restoration/scroll
-policies live in navigation/focus.h. The compact state machine is in
-components/compact-shell/model.h and the renderer in render.h. These are
-bounded compile-time menu views, not a dynamic menu download implementation.
-
-
-## Landscape TFT / encoder
-
-The `tft160` profile uses 160x128 logical pixels, four rows, 16 px bars and
-12/16/20 px small/body/readable fonts. Build `simulator/tft160.yaml` to inspect
-the shared display renderer at native size. Tiny/readable defaults are unchanged.
-The compact shell accepts `compact_rows`, `compact_bar_height` and the three
-`compact_*_size` substitutions. Normal menus derive width/height from the display.
-
-See [NodeMCU ST7735](../hardware/nodemcu-32s-st7735.md). The current Wi-Fi/form
-demo renderer retains its 128x64 layout and is not exposed by this device menu.
+Profile YAML owns dimensions/font substitutions. Compact model.h and render.h
+own presentation state and drawing; navigation/focus.h owns shared focus policies.
+Extend those shared pieces instead of adding device-specific rendering forks.

@@ -3,7 +3,9 @@
 Compare display formats and input capabilities when choosing a Nabla hardware
 profile. A resolution may appear more than once because shape and controls vary.
 The reference matrix is not a claim of support; tested targets are recorded
-separately. Manufacturer references were checked on 2026-09-19.
+separately. Confirm the exact variant against its manufacturer documentation
+before choosing drivers or pins. Follow the [adoption workflow](DEVICE-ADOPTION.md)
+to add a target; this register owns the summary of verification evidence.
 
 ## Displays and Controls
 
@@ -18,9 +20,9 @@ Dimensions are in pixels; width and height swap when the display rotates. Input 
 | 160×80 | Rectangular color LCD, wristband | Single touch input on the original model; not a touchscreen | [Original LILYGO T-Wristband input example](https://github.com/Xinyuan-LilyGO/T-Wristband/blob/master/examples/T-Wristband-DRV2605/T-Wristband-DRV2605.ino) |
 | 135×240 | Rectangular color LCD | Onboard buttons on the original model | [Original LILYGO T-Display](https://lilygo.cc/products/t-display) |
 | 170×320 | Rectangular color LCD, 1.9″ | User and BOOT buttons; no touchscreen on the basic variant | [Basic LILYGO T-Display-S3](https://wiki.lilygo.cc/products/t-display-series/t-display-s3/) |
-| 172×320 | Rectangular color LCD, 1.47″ | Module-dependent; touch variants exist | [Waveshare LCD module family](https://www.waveshare.com/1.69inch-LCD-Module.htm) |
+| 172×320 | Rectangular color LCD, 1.47″ | Module-dependent; touch variants exist | Exact module reference pending verification |
 | 240×240 | Square color LCD, 1.54″ | Touchscreen | [LILYGO T-Watch S3](https://wiki.lilygo.cc/products/t-watch-series/t-watch-s3/) |
-| 240×240 | Round color LCD, 1.28″ | None on the non-touch LCD module | [GC9A01 LCD module, non-touch variant](https://www.waveshare.com/1.69inch-lcd-module.htm) |
+| 240×240 | Round color LCD, 1.28″ | None on the non-touch LCD module | GC9A01 family; exact module reference pending verification |
 | 240×280 | Rectangular color LCD, 1.69″ | None on the reference LCD module | [Waveshare 1.69inch LCD Module](https://www.waveshare.com/1.69inch-LCD-Module.htm) |
 | 390×390 | Color AMOLED, 2.04″ | Touchscreen and rotary encoder with push button | [LILYGO T-Encoder Pro](https://wiki.lilygo.cc/products/t-encoder-series/t-encoder-pro/) |
 | 480×320 | Rectangular color LCD, 3.5″ | Depends on the module and touch controller | [Waveshare resistive-touch example](https://www.waveshare.com/3.5inch-HDMI-LCD.htm); HDMI format reference, not a direct ESPHome connection example |
@@ -35,7 +37,7 @@ credentials and issue details that identify a site in the private installation.
 
 | Device / profile | Display and input | Verified scope | Remaining checks / issues | Public YAML and evidence |
 | --- | --- | --- | --- | --- |
-| JC3248W535CN | 3.5-inch IPS; native 320×480, logical 480×320; touch | Initial physical launcher/touch navigation, USB installation, OTA/API and initial primary Wi-Fi scan/save/rollback checks documented | M3 usability, power-cycle/recovery and 24-hour reconnect/navigation soak remain open; see watchdog investigation for rotation follow-up | [Device](../devices/jc3248w535cn.yaml), [editable consumer example](../examples/github/panel.yaml), [hardware notes](../hardware/README.md), [watchdog investigation](platform/M3-WATCHDOG.md) |
+| JC3248W535CN | 3.5-inch IPS; native 320×480, logical 480×320; touch | Initial physical launcher/touch navigation, USB installation, OTA/API and initial primary Wi-Fi scan/save/rollback checks documented | M3 usability, power-cycle/recovery and 24-hour reconnect/navigation soak remain open; see watchdog investigation for rotation follow-up | [Device](../devices/jc3248w535cn.yaml), [editable consumer example](../examples/github/panel.yaml), [hardware notes](../hardware/jc3248w535cn.md), [watchdog investigation](platform/M3-WATCHDOG.md) |
 | NodeMCU-32S + ST7735 | Native 128×160, logical 160×128; encoder, push and K0 Back | Physical color-launcher photo, OTA installation, encrypted API reconnection and MQTT state reception documented | Physical legibility, encoder direction, brightness/Cancel, captive-AP recovery and extended reconnect/soak checks remain open | [Hardware](../hardware/nodemcu-32s-st7735.yaml), [compact example](../examples/mqtt-lights/compact.yaml), [test evidence](../hardware/nodemcu-32s-st7735.md) |
 | Tiny / readable OLED profiles | 128×64 monochrome host viewport; simulated sequential input | Host rendering and shared navigation/form baseline | Physical OLED validation pending; a host build does not validate panel contrast, wiring or input hardware | [Tiny fixture](../simulator/tiny.yaml), [readable fixture](../simulator/readable.yaml), [profile notes](../profiles/README.md) |
 
@@ -45,7 +47,7 @@ correctness. Record test dates, exact library revision and tested behavior when
 adding evidence; retain detailed private YAML links in the installation's own
 test register. See [private installations](PRIVATE-INSTALLATIONS.md).
 
-T-Watch changes are being developed separately; add their verified public YAML
+T-Watch changes are being developed in [PR #23](https://github.com/txemavs/nabla-esp-ui/pull/23); add their verified public YAML
 and physical results when that work is merged. T-Wristband is a different target:
 confirm its exact revision before assigning drivers or pins. Other reference
 rows are not verified Nabla targets merely because their resolution matches.

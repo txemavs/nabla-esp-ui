@@ -72,11 +72,15 @@ The library never reads secrets directly. Examples use placeholder keys like
 ## Examples directory
 
 Files under `examples/` are synthetic fixtures for demonstration and testing.
-They use invented networks, brokers and entity names (Site A, Site B, generic
-rooms). They do not compile without a `secrets.yaml` stub.
+Examples use generic bindings where applicable. Distinguish complete consumer
+examples (which may require a secrets stub), host fixtures (which do not need
+real network credentials), and illustrative fragments (which need additional
+composition, not just secrets). Check the owning README before compiling.
 
-These examples exist to show composition structure, not to serve as deployable
-configurations. Copy and customize; do not import them as packages.
+For instance, the compact MQTT example is a fragment; the simulator has complete
+host roots and devices/ has a complete touch-panel bring-up root. See
+[device compositions](../devices/README.md). Real deployments own their menu;
+do not import the demonstration menu as an application package.
 
 ## Private device template
 
