@@ -15,6 +15,14 @@ local navigation and settings do not depend on a server.
 NodeMCU-32S with a 160×128 ST7735 display and encoder on the right.
 The menus shown belong to a private installation; the reusable library is public.*
 
+### Monochrome panel in a reused telephone
+
+<img src="docs/images/tcall-ssd1309-phone.jpg" alt="T-Call with a 128×64 OLED and rotary encoder in a desk-phone enclosure" width="420">
+
+*The owner-confirmed T-Call/SSD1309 assembly running the compact interface.
+The photograph shows a private menu; public examples use generic bindings.
+See [device YAML, wiring and verification](hardware/tcall-ssd1309.md).*
+
 ## Shared UI contract
 
 **Declare what the device does; Nabla owns how its standard UI looks and works.**

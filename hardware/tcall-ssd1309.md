@@ -5,6 +5,13 @@ This assembly combines an ESP32 T-Call board, an external 2.42-inch monochrome
 through ESPHome's ssd1306_spi / SSD1306_128X64 configuration. It is not an
 integrated T-Watch display. Confirm the exact board/module revision before reuse.
 
+![T-Call OLED and rotary encoder installed in a reused desk-phone enclosure](../docs/images/tcall-ssd1309-phone.jpg)
+
+*Owner-provided photograph, published with permission on 2026-09-19.
+The display shows the private installation's light list and reported states.
+The photo documents physical presentation; it does not independently establish
+that each load was actuated. Private bindings are not distributed.*
+
 ## Public composition
 
 - [Complete bring-up YAML](../devices/tcall-ssd1309.yaml).
@@ -50,9 +57,8 @@ their existing topics; individual load actuation was not independently verified
 during this deployment. Real Wi-Fi credential replacement, rollback under failure,
 power-cycle recovery and prolonged soak still need recorded physical tests.
 
-The owner may supply a new photo for publication. No new photo is bundled with
-this record yet. This evidence applies to this wired assembly, not every T-Call
-variant or every OLED panel.
+The photograph above accompanies the owner-confirmed operation. This evidence
+applies to this wired assembly, not every T-Call variant or every OLED panel.
 
 ## Build and recovery
 
