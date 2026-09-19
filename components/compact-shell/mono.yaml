@@ -1,0 +1,35 @@
+# Monochrome icon mode for tiny OLED displays (128x64).
+# Two views only: fullscreen icon or text-only list (no icon glyphs in list).
+# Does not use the 2x2 tile grid; single_icon_mode disables list icons too.
+#
+# Tiny UX philosophy:
+# - Normal mode (borders=true): play marker ▶ on left of focused row, no box borders.
+# - High contrast (borders=false): inverted bar selection.
+# - Icon mode uses large font for labels, smaller centered icon.
+# - Triangle spin animation on boot and view toggle.
+substitutions:
+  compact_list_footer: "false"
+font:
+  - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
+    id: compact_icons
+    size: ${compact_icon_size}
+    bpp: 1
+    glyphsets: []
+    glyphs: ["\uf013", "\uf1eb", "\uf11b", "\uf015", "\uf03d", "\uf185", "\uf0eb", "\uf2db", "\uf05a", "\uf1bb", "\uf086", "\uf03e", "\uf001", "\uf2c9", "\uf494"]
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          nabla::compact_shell.icons=id(compact_icons);
+          nabla::compact_shell.color_icons=false;
+          nabla::compact_shell.root_tiles=true;
+          nabla::compact_shell.single_icon_mode=true;
+          nabla::compact_shell.list_footer=${compact_list_footer};
+          nabla::compact_shell.middle_scroll=true;
+          // Tiny profile: enable play marker in Normal mode, init callbacks.
+          nabla::compact_shell.tiny_play_marker=true;
+          nabla::compact_shell.tiny_icon_reduce=2;  // Make icon slightly smaller
+          nabla::compact_shell.init_tiny_callbacks();
+          // Start boot animation (one 180° spin).
+          nabla::compact_shell.start_triangle_spin(1);

@@ -1,0 +1,10 @@
+# Tiny OLED simulator (128x64 monochrome).
+# Two views only: fullscreen icon or text list. No intermediate 4-item grid.
+# Uses tiny-specific navigation with simplified menu (no placeholders).
+packages:
+  base: !include compact-tiny.yaml
+  mono: !include ../components/compact-shell/mono.yaml
+substitutions:
+  compact_profile: tiny
+esphome:
+  name: nabla-tiny
