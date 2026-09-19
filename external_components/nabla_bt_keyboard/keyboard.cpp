@@ -101,7 +101,7 @@ void Keyboard::gap(esp_bt_gap_cb_event_t event,esp_bt_gap_cb_param_t *p) {
 void Keyboard::hid(esp_hidh_cb_event_t event,esp_hidh_cb_param_t *p) {
   Event e{};
   if(event==ESP_HIDH_INIT_EVT){e.kind=6;e.value=p->init.status;}
-  else if(event==ESP_HIDH_OPEN_EVT){e.kind=7;e.value=p->open.status;e.report[0]=p->open.handle;memcpy(e.address,p->open.bd_addr,6);}
+  else if(event==ESP_HIDH_OPEN_EVT){e.kind=7;e.value=p->open.status;e.mode=p->open.conn_status;e.report[0]=p->open.handle;memcpy(e.address,p->open.bd_addr,6);}
   else if(event==ESP_HIDH_CLOSE_EVT){e.kind=8;}
   else if(event==ESP_HIDH_SET_PROTO_EVT){e.kind=9;e.value=p->set_proto.status;}
   else if(event==ESP_HIDH_GET_DSCP_EVT){
@@ -138,7 +138,13 @@ void Keyboard::loop() {
     }else if(e.kind==6){ready_=e.value==ESP_HIDH_OK;status_=ready_?"Ready":"HID failed";}
     else if(e.kind==7){
       if(memcmp(selected_,e.address,6) || !connecting_){esp_bt_hid_host_disconnect(e.address);continue;}
-      connecting_=false;connected_=e.value==ESP_HIDH_OK;handle_=e.report[0];
+      ESP_LOGI("bt_keyboard","Open status=%d state=%d",e.value,e.mode);
+      // ESP-IDF emits OPEN for both CONNECTING and CONNECTED. The first is
+      // acknowledgement only; keep the pending peer and pairing window alive.
+      if(e.value==ESP_HIDH_OK && e.mode==ESP_HIDH_CONN_STATE_CONNECTING)continue;
+      connecting_=false;
+      connected_=e.value==ESP_HIDH_OK && e.mode==ESP_HIDH_CONN_STATE_CONNECTED;
+      handle_=e.report[0];
       status_=connected_?"Negotiating":"Connection failed";pairing_="--";
       if(connected_)esp_bt_hid_host_set_protocol(selected_,ESP_HIDH_BOOT_MODE);
     }else if(e.kind==8){reconnect_at_=millis()+5000;connected_=boot_=false;memset(previous_,0,6);status_="Disconnected";}
