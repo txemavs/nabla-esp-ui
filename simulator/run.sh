@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Builds and launches a selected SDL fixture so shared UI behavior can be inspected locally.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [[ ! -x .venv/bin/esphome ]]; then

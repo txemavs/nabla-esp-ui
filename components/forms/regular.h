@@ -1,3 +1,5 @@
+// LVGL form controls and event handling; presents validated form metadata through shared edit transactions.
+
 #pragma once
 #include "lvgl.h"
 #include "esphome/components/nabla_navigation/control_style.h"

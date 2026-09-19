@@ -1,3 +1,5 @@
+# Synthetic demonstration menu and forms; exercises shared navigation without private installation bindings.
+
 substitutions:
   nabla_resource_root: ".."
 

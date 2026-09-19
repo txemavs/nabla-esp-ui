@@ -1,3 +1,5 @@
+# Validates Home Assistant adapter configuration and generates clients; keeps endpoints and bindings consumer-owned.
+
 import re
 import esphome.codegen as cg
 import esphome.config_validation as cv

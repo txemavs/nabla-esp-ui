@@ -1,3 +1,5 @@
+// LVGL control-panel grid and input helpers; renders consumer-defined sections and cells consistently.
+
 #pragma once
 #include "lvgl.h"
 #include <string>

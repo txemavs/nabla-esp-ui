@@ -1,2 +1,2 @@
-# Compatibility entry point.
+# Compatibility entry point for the shared toolbar; preserves existing package imports.
 !include toolbar/widget.yaml

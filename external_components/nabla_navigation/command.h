@@ -1,3 +1,5 @@
+// ESPHome navigation action bridge; lets declarative automations invoke shared controller commands.
+
 #pragma once
 #include "esphome/core/automation.h"
 #include "navigation.h"

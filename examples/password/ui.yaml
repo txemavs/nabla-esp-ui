@@ -1,3 +1,5 @@
+# Standalone password-editor demonstration; isolates keyboard and masking behavior for inspection.
+
 esphome:
   on_boot:
     priority: -100

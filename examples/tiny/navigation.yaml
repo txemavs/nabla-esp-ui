@@ -1,3 +1,5 @@
+# Synthetic menu for tiny display fixtures; exercises compact settings and controls with generic data.
+
 substitutions:
   nabla_resource_root: ".."
 

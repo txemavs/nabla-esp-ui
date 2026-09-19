@@ -1,3 +1,5 @@
+# Exports light-card runtime helpers; lets layout packages reuse the same light widget implementation.
+
 nabla_runtime:
   - headers:
       - components/light-card/light_card.h

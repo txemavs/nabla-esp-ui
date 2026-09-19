@@ -33,9 +33,10 @@ From the repository root:
 The script activates the project environment, compiles, and launches the
 480 x 320 landscape window. It defaults to the X11 SDL backend for WSLg.
 The desktop opens immediately and its toolbar logo spins once in place.
-The 4-column, 2-row launcher contains: Ajustes, Comunicaciones, Fotos, Música, Cámaras, Tiempo, Luces, Sensores.
-Ajustes opens Conexiones (then Wi-Fi), Idioma, Acerca de and Apariencia. Sensores opens folders and sensor
-leaves. Breadcrumbs show the route; X returns to the parent and the triangle
+The 4-column, 2-row launcher contains Settings, Communications, Photos, Music,
+Cameras, Weather, Lights and Sensors (translated by the selected UI locale).
+Settings opens Connections (then Wi-Fi), Language, About and Appearance. Sensors
+opens folders and sensor leaves. Breadcrumbs show the route; X returns to the parent and the triangle
 returns to the parent; at the root it toggles tiles/list. Other applications remain placeholders.
 These are navigation demonstrations, not implemented applications.
 The UI currently uses Spanish labels; source documentation remains English.

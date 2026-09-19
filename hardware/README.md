@@ -4,6 +4,9 @@ Hardware packages provide display, touch, backlight and platform configuration.
 They compose the same application UI as the simulator; they do not duplicate
 the navigation catalog or forms.
 
+See the [display and interaction catalog](../docs/DISPLAY-CATALOG.md) for
+reference formats and a tested-device register with evidence and open checks.
+
 ## Capability folders
 
 Hardware is organized by capability. Board composers (e.g. `jc3248w535cn.yaml`)

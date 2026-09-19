@@ -1,3 +1,5 @@
+// Home Assistant client interface and bounded state; exposes remote operations to reusable bindings.
+
 #pragma once
 #include "esphome/core/component.h"
 #include <array>

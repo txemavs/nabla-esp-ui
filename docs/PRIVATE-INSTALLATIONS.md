@@ -108,9 +108,9 @@ primary editor on an ESP32/LVGL composition, add nabla_wifi: at the private root
 The adapter derives its fallbacks from wifi.networks; see its README for limits.
 Without this opt-in the on-screen form remains the M2 simulation.
 
-An arbitrary remote YAML package import is not supported by this recipe: the
-resources must exist in the local checkout selected by nabla_resource_root.
-Direct GitHub-only asset packaging remains a separate improvement.
+This local-checkout recipe requires resources under nabla_resource_root.
+Remote GitHub packages and assets are already supported by the separate
+[GitHub library setup](GITHUB-LIBRARY.md); follow that recipe for remote use.
 
 Validation includes a hardware firmware build from a private consumer directory
 outside this repository without sibling asset symlinks, and configuration

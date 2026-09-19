@@ -1,3 +1,5 @@
+# Nabla logo image declarations; provides shared artwork for widgets and animations.
+
 substitutions:
   nabla_resource_root: ".."
 

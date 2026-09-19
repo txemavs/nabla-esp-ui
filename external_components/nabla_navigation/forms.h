@@ -1,3 +1,5 @@
+// Form metadata and transactional editing state; shares confirmation and rollback behavior across renderers.
+
 #pragma once
 #include <array>
 #include <algorithm>

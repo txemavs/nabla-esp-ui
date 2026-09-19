@@ -1,3 +1,5 @@
+// Shared focus and scrolling policies; keeps sequential navigation and return behavior consistent across profiles.
+
 #pragma once
 #include <algorithm>
 namespace nabla {

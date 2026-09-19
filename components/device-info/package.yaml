@@ -1,3 +1,5 @@
+# Device-information bindings and defaults; exposes shared live status fields without installation-specific UI code.
+
 substitutions:
   nabla_display_kind: "${tr_info_display_simulator}"
   nabla_display_monochrome: "false"

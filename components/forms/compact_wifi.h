@@ -1,3 +1,5 @@
+// Compact Wi-Fi form input and rendering; adapts the shared form flow to small displays.
+
 #pragma once
 #include "wifi_flow.h"
 #include "focus.h"

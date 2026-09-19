@@ -1,3 +1,5 @@
+# ESPHome navigation component schema and code generation; validates device-owned trees and form bindings.
+
 from esphome import automation
 import esphome.codegen as cg
 import esphome.config_validation as cv

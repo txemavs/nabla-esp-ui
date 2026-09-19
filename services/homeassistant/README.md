@@ -1,5 +1,9 @@
 # Nabla Camera Cache (experimental)
 
+The custom_components/nabla_camera_cache/manifest.json file registers the
+integration domain, dependencies and version with Home Assistant; JSON does not
+support an inline explanatory comment.
+
 Optional Home Assistant custom integration. Produces small baseline JPEGs on
 request, without polling when idle. No firmware changes are needed to install
 the service; existing viewers continue using their original URL until migrated.

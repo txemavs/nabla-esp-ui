@@ -1,3 +1,5 @@
+// Semantic device-information storage; decouples displayed fields from menu route positions.
+
 #pragma once
 #include <array>
 #include <string>

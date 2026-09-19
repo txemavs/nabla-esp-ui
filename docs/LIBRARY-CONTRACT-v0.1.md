@@ -16,6 +16,14 @@ Assistant; optional adapters integrate MQTT lights, HA cameras and Wi-Fi provisi
 - A source of working secrets, broker addresses or Home Assistant endpoints.
 - A plug-and-play device image: consumer YAML owns its menu, hardware and credentials.
 
+## Shared presentation ownership
+
+The device owns menu meaning and actions; Nabla owns the standard rendering and
+interaction of its pieces. System applications and embedded Nabla widgets share
+global appearance rules. Extend the shared primitive/profile instead of adding
+per-screen fonts, borders or input conventions. See [UI consistency](UI-CONSISTENCY.md)
+for current behavior, icon/size coverage requirements and the custom-drawing boundary.
+
 ## Public entry points
 
 | Entry point | Purpose |

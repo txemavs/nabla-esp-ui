@@ -1,3 +1,5 @@
+# English UI translation substitutions; supplies matching semantic labels for shared components and menus.
+
 substitutions:
   tr_wifi_real_0: "Primary Wi-Fi (optional)"
   tr_wifi_real_1: "Primary network saved"

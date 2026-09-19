@@ -1,3 +1,5 @@
+// Camera fetcher component interface and bounded queues; bridges worker results to UI-owned image decoding.
+
 #pragma once
 #include "esphome/core/component.h"
 #include "esphome/core/automation.h"

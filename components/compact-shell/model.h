@@ -1,3 +1,5 @@
+// Compact menu state and actions; shares navigation semantics without requiring LVGL.
+
 #pragma once
 #include "esphome/components/nabla_navigation/navigation.h"
 #include "focus.h"

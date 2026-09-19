@@ -1,3 +1,5 @@
+# Camera viewer composition and refresh state; provides reusable viewing behavior for consumer-defined sources.
+
 substitutions:
   nabla_camera_count: "3"
   nabla_camera_use_cache: "false"

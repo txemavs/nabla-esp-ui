@@ -1,3 +1,5 @@
+# Tiny monochrome profile defaults; supplies geometry and fonts for a native 128x64 compact display.
+
 substitutions:
   ui_profile: tiny
   compact_readable: "false"

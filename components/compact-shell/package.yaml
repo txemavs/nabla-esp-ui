@@ -1,3 +1,5 @@
+# Compact shell fonts, helpers and defaults; composes the display-API UI for small-device consumers.
+
 substitutions:
   nabla_resource_root: ".."
   compact_borders: "true"

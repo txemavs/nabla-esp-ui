@@ -1,3 +1,5 @@
+# Wi-Fi adapter regression checks; verifies state transitions and recovery using controlled fixtures.
+
 from pathlib import Path
 import subprocess
 import tempfile

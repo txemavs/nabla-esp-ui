@@ -2,9 +2,36 @@
 
 Applies to the entire nabla-esp-ui repository.
 
+## Language and file explanations
+- Write project documentation, code comments, help text and new identifiers in
+  English. Preserve explicit es/en UI localization and user-owned names/bindings.
+  Conversations and explicitly Spanish issue/discussion threads may use Spanish.
+- Start each owned source/configuration file with a brief English comment saying
+  what it does and why it exists. Keep useful existing headers and explain
+  non-obvious dependencies. Preserve shebangs, encoding declarations and licenses.
+- Do not edit generated assets or verbatim upstream source just to add a header;
+  document those files, and comment-free formats such as JSON, in a nearby README.
+- Keep headers current and distinguish implemented behavior from planned work.
+
+## Shared presentation rules
+- Follow docs/UI-CONSISTENCY.md. Menus declare content/actions; Nabla owns standard
+  presentation, navigation and adaptation through shared components/profiles.
+- Global appearance applies to every Nabla piece, including system applications,
+  overlays and Nabla controls embedded in custom applications.
+- Extend shared primitives or semantic variants; do not invent per-screen fonts,
+  border/spacing policies, icon visibility or physical input gestures.
+- Preserve profile legibility floors and reachable Back/Cancel; reflow, scroll
+  or paginate instead of shrinking text to fit.
+- Existing local exceptions are coverage gaps to fix centrally, not precedent.
+- Preserve the tested touch/encoder behavior and existing appearance controls.
+  Do not describe implemented menus, renderers or Wi-Fi adapters as future work.
+- Distinguish runtime settings from build-time defaults and view modes from a
+  universal icon/size API. Verify coverage rather than claiming it from a demo.
+
 ## Read first
 - README.md and simulator/README.md for working entry points.
 - docs/ARCHITECTURE.md for the implementation boundary.
+- docs/UI-CONSISTENCY.md for shared appearance and docs/DISPLAY-CATALOG.md for hardware evidence.
 - docs/platform/README.md and docs/platform/ROADMAP.md for planned work and completion gates.
 - navigation/README.md, navigation/INPUT.md and locales/README.md for current contracts.
 - docs/BRAND.md before changing brand geometry or motion.

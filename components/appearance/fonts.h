@@ -1,3 +1,5 @@
+// Applies the selected font family to LVGL descendants; keeps shared controls synchronized with appearance settings.
+
 #pragma once
 #include "lvgl.h"
 #include "esphome/components/nabla_navigation/control_style.h"

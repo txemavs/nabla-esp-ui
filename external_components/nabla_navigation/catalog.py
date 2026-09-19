@@ -1,3 +1,5 @@
+# Navigation catalog validation and C++ generation; turns declarative menu data into compile-time descriptors.
+
 import json
 import re
 

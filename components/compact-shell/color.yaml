@@ -1,3 +1,5 @@
+# Color icon font and renderer configuration; enables color tiles in compatible compact profiles.
+
 font:
   - file: ${nabla_resource_root}/assets/fonts/fa-solid-900.ttf
     id: compact_icons

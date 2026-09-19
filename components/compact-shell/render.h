@@ -1,3 +1,5 @@
+// Compact display renderer; draws shared menu state within the active profile geometry.
+
 #pragma once
 #include "model.h"
 #include "compact_wifi.h"

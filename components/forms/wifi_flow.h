@@ -1,3 +1,5 @@
+// Shared Wi-Fi form state machine; coordinates drafts, scan/connect results and cancellation across renderers.
+
 #pragma once
 #include <cstdint>
 #include <string>

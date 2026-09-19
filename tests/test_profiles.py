@@ -1,3 +1,5 @@
+# Profile geometry and focus tests; checks usable layout bounds across supported viewports.
+
 from pathlib import Path
 import subprocess
 import tempfile

@@ -1,3 +1,5 @@
+# Shared Wi-Fi flow tests; checks scanning, editing and cancellation independently of physical networking.
+
 from pathlib import Path
 import subprocess
 import tempfile

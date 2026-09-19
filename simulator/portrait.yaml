@@ -1,3 +1,5 @@
+# Portrait host fixture; verifies regular UI composition in a 320x480 viewport.
+
 packages:
   main: !include hello-world.yaml
 substitutions:

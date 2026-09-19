@@ -1,3 +1,5 @@
+# Semantic icon substitutions; keeps menu and system icon choices in one reusable mapping.
+
 substitutions:
   icon_settings: "\uf013"
   icon_communications: "\uf086"

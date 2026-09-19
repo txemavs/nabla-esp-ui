@@ -1,0 +1,19 @@
+---
+description: Shared Nabla presentation and English documentation rules
+alwaysApply: true
+---
+
+# Nabla contributor contract
+
+Read AGENTS.md and docs/UI-CONSISTENCY.md before changing UI behavior.
+- Device YAML owns menu content/actions; Nabla owns standard presentation.
+- Shared appearance applies to system apps, overlays and embedded Nabla widgets.
+- Extend shared primitives/profiles instead of local fonts, borders or gestures.
+- Preserve the tested touch/encoder behavior and reachable Back/Cancel.
+- Verify icon/size coverage; do not confuse existing view modes with a global API.
+- Use English for project docs, comments, help and new identifiers. Preserve UI
+  locale resources and user-owned names. Spanish discussion threads are allowed.
+- Add short English purpose/why headers to owned source/config files; preserve
+  shebangs/licenses and document JSON/generated/upstream files in a README.
+- Keep private deployment YAML and credentials outside the public repository.
+- Current work belongs in nabla-esp-ui, not the older esphome-ui-kit fork.

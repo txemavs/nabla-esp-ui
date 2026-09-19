@@ -1,3 +1,5 @@
+# Readable host fixture; exercises the tiny renderer with the larger single-item presentation.
+
 packages:
   main: !include tiny.yaml
 substitutions:

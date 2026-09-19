@@ -1,3 +1,5 @@
+# Validates the optional regular Wi-Fi adapter and fallback configuration; wires the form to real device networking.
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import final_validate as fv

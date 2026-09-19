@@ -1,3 +1,5 @@
+// Reusable LVGL light-card rendering and callbacks; keeps light presentation independent of its data adapter.
+
 #pragma once
 #include "lvgl.h"
 #include <functional>

@@ -1,3 +1,5 @@
+# Catalog schema and generated-code tests; catches invalid declarations and navigation regressions.
+
 import copy
 import importlib.util
 from pathlib import Path

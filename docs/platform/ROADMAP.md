@@ -166,6 +166,10 @@ remains a compatibility alias. action: wifi selects the same form: mock by defau
 real with the optional nabla_wifi adapter on the physical LVGL composition.
 The standalone password preview remains available for isolated keyboard work.
 
+The [UI consistency follow-up](../UI-CONSISTENCY.md#implementation-follow-up)
+extends existing M1–M3/M8 work with shared appearance coverage; it does not
+restart implemented navigation, renderers, forms or hardware deployments.
+
 Next steps:
 1. Use the host demo to collect usability feedback without changing the M2 contract.
 2. Continue M3 hardware validation on JC3248W535CN and NodeMCU-32S/ST7735.

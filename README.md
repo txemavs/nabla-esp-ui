@@ -2,7 +2,7 @@
 
 **One UI library. Touch screens, rotary encoders and small displays.**
 
-[Documentación en español → docs/es/](docs/es/)
+[Getting started](docs/GETTING-STARTED.md) · [Display and test catalog](docs/DISPLAY-CATALOG.md)
 
 Build ESPHome panels with menus defined in YAML, reusable controls and a
 consistent visual style. Use LVGL on larger screens or the compact display
@@ -14,6 +14,19 @@ local navigation and settings do not depend on a server.
 *Two real devices running Nabla ESP UI: JC3248W535CN touch panel on the left,
 NodeMCU-32S with a 160×128 ST7735 display and encoder on the right.
 The menus shown belong to a private installation; the reusable library is public.*
+
+## Shared UI contract
+
+**Declare what the device does; Nabla owns how its standard UI looks and works.**
+Device YAML supplies menus, content and actions. Shared components and profiles
+own typography, spacing, borders, focus and supported presentation. System apps
+and Nabla widgets embedded in custom applications obey the same global settings.
+Custom drawing stays inside its application surface and preserves a usable exit.
+
+Existing themes, fonts, border modes and view choices are the starting point.
+Consistent global icon visibility and coordinated size choices are requirements
+to verify and complete across components, not a claim that every combination
+already works. See [the UI contract and remaining work](docs/UI-CONSISTENCY.md).
 
 ## Start here
 
@@ -73,6 +86,15 @@ complete. Physical OLED validation, generalized joystick/input adapters, BLE
 cooperation, Nabla Edge integration and vehicle telemetry remain planned.
 A working demonstration is not a completed hardware qualification.
 
+## Repository support files
+
+requirements.txt pins the ESPHome build dependency. .cursor/environment.json
+selects the cloud bootstrap in .cursor/install.sh; contributor rules live in
+.cursor/rules/. The camera service manifest is described in its
+[service guide](services/homeassistant/README.md). Generated assets and retained
+upstream sources keep their original contents and are explained by their module
+README rather than edited solely to add comments.
+
 ## How it fits together
 
 - **Device YAML:** application tree, hardware, private bindings and secrets.
@@ -86,6 +108,15 @@ ESPHome packages assemble the firmware; navigation validation happens during
 normal ESPHome compilation. There is no mandatory standalone generation step.
 See the [component catalog](components/README.md) and
 [navigation contract](navigation/README.md).
+
+## Documentation and contributor language
+
+Project documentation, comments, help and new identifiers use English. UI locale
+resources may provide matching English/Spanish translations; user names and
+bindings remain user-owned. Conversations and explicitly Spanish issue threads
+may use Spanish. Source/configuration files should explain their purpose in a
+short English header; preserve shebangs and third-party/generated content.
+See [contributor rules](AGENTS.md).
 
 ## Design principles
 

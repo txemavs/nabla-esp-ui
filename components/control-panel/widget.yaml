@@ -1,3 +1,5 @@
+# Exports control-panel runtime helpers; makes the reusable widget implementation available to ESPHome builds.
+
 nabla_runtime:
   - headers:
       - components/control-panel/control_panel.h

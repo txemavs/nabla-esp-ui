@@ -1,3 +1,5 @@
+// Runtime device/network information helpers; supplies semantic information fields to shared views.
+
 #pragma once
 #include "esphome/core/defines.h"
 #include "esphome/core/hal.h"

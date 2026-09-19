@@ -69,19 +69,19 @@ On boot and when toggling view from main menu, the header triangle spins
 
 ### Settings structure (Kit1 ESPUI shape)
 ```
-Ajustes (Settings)
-├── Conexiones
+Settings
+├── Connections
 │   └── Wi-Fi (captive portal hint)
-├── Apariencia
-│   ├── Oscuro (toggle dark/light)
-│   ├── Fuente (toggle font family)
+├── Appearance
+│   ├── Dark (toggle dark/light)
+│   ├── Font (toggle font family)
 │   └── High contrast (toggle play marker / inverted bar)
-└── Información
-    ├── Modelo
+└── Information
+    ├── Model
     ├── Wi-Fi
     ├── IP
-    ├── Encendido (Uptime)
-    └── Idioma (last—moved from outer menu)
+    ├── Uptime
+    └── Language (last—moved from outer menu)
 ```
 
 ### Menu content (public example)

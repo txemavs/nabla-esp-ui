@@ -1,3 +1,5 @@
+# Shared theme composition and bar defaults; assembles fonts and icons for standard UI consumers.
+
 substitutions:
   nabla_bar_height: "36"
   nabla_toolbar_align: "TOP_MID"

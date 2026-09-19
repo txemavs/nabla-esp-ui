@@ -1,3 +1,5 @@
+# Wi-Fi editor composition and keyboard defaults; provides a reusable form for regular displays.
+
 substitutions:
   nabla_resource_root: ".."
   nabla_keyboard_latin: "true"

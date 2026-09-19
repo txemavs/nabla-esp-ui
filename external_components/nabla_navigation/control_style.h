@@ -1,3 +1,5 @@
+// Shared control appearance helpers; applies theme and focus/border policy consistently to LVGL controls.
+
 #pragma once
 #include "esphome/core/defines.h"
 #ifdef USE_LVGL
