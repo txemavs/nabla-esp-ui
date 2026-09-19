@@ -264,3 +264,11 @@ smaller cells, tighter spacing, single-line text with ellipsis truncation.
 
 All data is local mock state. Toggle/momentary callbacks log to the console.
 See [Control Panel](../components/control-panel/README.md) for integration.
+
+## T-Call OLED preview
+
+Run ./simulator/run.sh tcall for a complete 128x64 monochrome composition with
+local light toggles, Wi-Fi, appearance and device information. All light actions
+and Wi-Fi operations are simulated. See [the fixture notes](../examples/tcall/README.md).
+Normal-mode selection uses the same pointer in menu rows, Wi-Fi and forms;
+inverse mode remains available. The preview raises the body font from 11 to 12 px; the header is 13 px high with an 11 px title; icon size stays unchanged.

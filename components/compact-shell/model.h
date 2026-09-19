@@ -8,6 +8,7 @@
 namespace nabla {
 struct CompactMenu {
   int current = 0, focus = 0, top = 0;
+  int root_content_focus = 0; // Preserve the item while the view-toggle logo has focus.
   bool dark = true, readable = false, borders = true;
   int font_family = 0;
   int list_rows = 3;
@@ -19,10 +20,21 @@ struct CompactMenu {
   int rows() const { return readable ? 1 : list_rows; }
   void anchor() {
     // Header focus must not force the list to scroll.
-    if (focus < children(current))
+    if (focus < children(current)) {
+      if(current==0)root_content_focus=focus;
       top = scroll_anchor(focus, top, rows(), children(current));
+    }
   }
-  void move(int delta) { focus = wrap_focus(focus, delta, total()); anchor(); }
+  void move(int delta) {
+    anchor();
+    focus = wrap_focus(focus, delta, total());
+    // Passing below the last root item previews the next Down destination.
+    if(current==0 && delta>0 && focus==children(0)){
+      top=0;
+      root_content_focus=0;
+    }
+    anchor();
+  }
   void open(int node) {
     if (!valid(node)) return;
     if (nodes[node].action == 5 || nodes[node].action == 6 || nodes[node].action == 7) {
@@ -49,13 +61,14 @@ struct CompactMenu {
     else if (current) back();
     else {
       readable = !readable;
+      focus = content_focus(root_content_focus, children(0), false);
       anchor();
       if (on_view_toggle) on_view_toggle();
     }
   }
   void touch_option(int index) {
     if (index < 0 || index >= total()) return;
-    focus = index; activate();
+    anchor(); focus = index; activate();
   }
 };
 }

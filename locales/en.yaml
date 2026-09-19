@@ -166,3 +166,4 @@ substitutions:
   tr_light_spot: "Spotlight"
   tr_high_contrast: "High contrast"
   tr_tiny_wifi_detail: "Scan and connect networks. Saves primary to preferences."
+  tr_normal_mode: "Normal mode"

@@ -21,3 +21,11 @@ Tests: tests/test_profiles.py covers matching touch/sequential route traces,
 scroll visibility, return/re-entry, theme leaves and geometry bounds for both
 compact densities and regular orientations. See ../../profiles/README.md for
 commands, measured pixel dimensions and explicit support limits.
+
+## Shared compact selection
+
+Menus, Wi-Fi rows/key selection, generic form rows and detail Back actions use
+CompactShell::draw_selection. Mono Normal mode uses the play pointer and reserves
+its text gutter; inverse mode fills the selection. Non-mono compositions retain
+their border/inversion behavior. Do not draw a separate focus frame in each form.
+The T-Call host fixture exercises this policy without connecting to a real site.

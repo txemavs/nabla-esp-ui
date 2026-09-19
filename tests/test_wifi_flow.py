@@ -62,6 +62,17 @@ int main(){
  // Sequential selector reaches cancel without a physical Escape key.
  e.edit(true);e.move(2);e.activate(0);assert(!e.editing);
  e.focus=7;assert(e.activate(0));
+ CompactWifi clean;clean.clean_ui=true;
+ assert(clean.total()==5);
+ clean.focus=4;clean.move(1);assert(clean.header_selected());
+ assert(clean.activate(0));
+ clean.edit(true);assert(clean.key==4);
+ clean.activate(0);assert(clean.draft.value=="a");
+ clean.key=3;clean.activate(0);assert(clean.palette==1 && clean.key==4);
+ clean.activate(0);assert(clean.draft.value=="aA");
+ clean.key=clean.total();assert(clean.header_selected());
+ assert(!clean.activate(0));assert(!clean.editing && clean.flow.password.empty());
+
 }
 """
         with tempfile.TemporaryDirectory() as tmp:
