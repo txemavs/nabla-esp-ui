@@ -8,6 +8,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "keymap.h"
+#include "report.h"
 #include <array>
 #include <atomic>
 #include <string>
@@ -28,7 +29,7 @@ class Keyboard : public Component {
   void add_key_callback(std::function<void(uint8_t,uint8_t)> cb) { keys_.add(std::move(cb)); }
  protected:
   struct Candidate { uint8_t address[6]{}; char name[40]{}; };
-  struct Event { int kind{}; int value{}; uint8_t address[6]{}; uint8_t report[8]{}; char name[40]{}; };
+  struct Event { int kind{}; int value{}; uint8_t address[6]{}; uint8_t report[33]{}; ReportLayout layout{}; uint16_t length{}; int mode{}; char name[40]{}; };
   static Keyboard *instance_;
   static void gap(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *p);
   static void hid(esp_hidh_cb_event_t event, esp_hidh_cb_param_t *p);
@@ -36,6 +37,7 @@ class Keyboard : public Component {
   QueueHandle_t queue_{nullptr};
   Candidate candidates_[4]{};
   int count_{0};
+  ReportLayout report_layout_{};
   uint8_t selected_[6]{}, previous_[6]{}, handle_{0};
   bool ready_{false}, scanning_{false}, connecting_{false}, connected_{false}, boot_{false}, confirmation_{false};
   uint32_t started_{0};

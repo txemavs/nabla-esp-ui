@@ -4,6 +4,7 @@
 #include "esp_bt_main.h"
 #include "esp_bt_device.h"
 #include "esp_random.h"
+#include "esphome/core/log.h"
 #include <cstring>
 #include <cstdio>
 namespace esphome::nabla_bt_keyboard {
@@ -46,6 +47,7 @@ void Keyboard::scan() {
 }
 void Keyboard::connect_slot(int slot) {
   if(!available(slot))return;
+  report_layout_={};boot_=false;
   memcpy(selected_,candidates_[slot].address,6);
   connecting_=true;started_=millis();pairing_="--";status_="Connecting";
   if(esp_bt_hid_host_connect(selected_)!=ESP_OK){connecting_=false;status_="Connection failed";}
@@ -102,9 +104,14 @@ void Keyboard::hid(esp_hidh_cb_event_t event,esp_hidh_cb_param_t *p) {
   else if(event==ESP_HIDH_OPEN_EVT){e.kind=7;e.value=p->open.status;e.report[0]=p->open.handle;memcpy(e.address,p->open.bd_addr,6);}
   else if(event==ESP_HIDH_CLOSE_EVT){e.kind=8;}
   else if(event==ESP_HIDH_SET_PROTO_EVT){e.kind=9;e.value=p->set_proto.status;}
+  else if(event==ESP_HIDH_GET_DSCP_EVT){
+    e.kind=11;e.value=p->dscp.status;
+    if(e.value==ESP_HIDH_OK)e.layout=keyboard_layout(p->dscp.dsc_list,p->dscp.dl_len);
+  }
   else if(event==ESP_HIDH_DATA_IND_EVT){
-    if(p->data_ind.status!=ESP_HIDH_OK || p->data_ind.proto_mode!=ESP_HIDH_BOOT_MODE || p->data_ind.len!=8)return;
-    e.kind=10;e.value=p->data_ind.handle;memcpy(e.report,p->data_ind.data,8);
+    if(p->data_ind.status!=ESP_HIDH_OK || p->data_ind.len>33)return;
+    e.kind=10;e.value=p->data_ind.handle;e.length=p->data_ind.len;e.mode=p->data_ind.proto_mode;
+    memcpy(e.report,p->data_ind.data,e.length);
   }else return;
   enqueue(e);
 }
@@ -136,10 +143,21 @@ void Keyboard::loop() {
       if(connected_)esp_bt_hid_host_set_protocol(selected_,ESP_HIDH_BOOT_MODE);
     }else if(e.kind==8){reconnect_at_=millis()+5000;connected_=boot_=false;memset(previous_,0,6);status_="Disconnected";}
     else if(e.kind==9){
-      boot_=connected_ && e.value==ESP_HIDH_OK;status_=boot_?"Connected":"Unsupported keyboard";
-      if(boot_){auto_reconnect_=true;reconnect_attempts_=0;std::array<uint8_t,6> value{};memcpy(value.data(),selected_,6);preference_.save(&value);global_preferences->sync();memcpy(saved_,selected_,6);}
+      boot_=connected_ && e.value==ESP_HIDH_OK;
+      ESP_LOGI("bt_keyboard","Protocol negotiation status=%d, descriptor=%s",e.value,report_layout_.valid?"keyboard":"unknown");
+      status_=(boot_ || report_layout_.valid)?"Connected":"Unsupported HID format";
+      if(boot_ || report_layout_.valid){auto_reconnect_=true;reconnect_attempts_=0;std::array<uint8_t,6> value{};memcpy(value.data(),selected_,6);preference_.save(&value);global_preferences->sync();memcpy(saved_,selected_,6);}
     }
-    else if(e.kind==10 && e.value==handle_ && connected_ && boot_){
+    else if(e.kind==11){
+      report_layout_=e.layout;
+      ESP_LOGI("bt_keyboard","Descriptor status=%d keyboard=%s report=%u bytes=%u",e.value,e.layout.valid?"yes":"no",e.layout.id,e.layout.bytes);
+      if(connected_ && !boot_ && report_layout_.valid)status_="Connected";
+    }
+    else if(e.kind==10 && e.value==handle_ && connected_){
+      uint8_t normalized[8]{};
+      if(e.mode==ESP_HIDH_BOOT_MODE && boot_ && e.length==8)memcpy(normalized,e.report,8);
+      else if(e.mode!=ESP_HIDH_REPORT_MODE || !decode_report(report_layout_,e.report,e.length,normalized))continue;
+      memcpy(e.report,normalized,8);
       bool invalid=false;for(int i=2;i<8;i++)invalid|=e.report[i]>0 && e.report[i]<4;
       if(invalid){memset(previous_,0,6);continue;}
       for(int i=2;i<8;i++){

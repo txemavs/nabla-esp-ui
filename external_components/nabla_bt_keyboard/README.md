@@ -13,7 +13,8 @@ saved peer and requests removal of its Bluetooth bond. No pairing keys enter YAM
 
 Successful peers are saved locally. On restart or link loss, reconnection is
 attempted at most three times; Search remains the manual recovery path.
-The first version requires HID boot keyboard reports (8 bytes), with press-edge
+Supports HID boot keyboard reports (8 bytes) and descriptor-validated byte-aligned
+keyboard-array reports (IDs 1–15, up to 32 payload bytes), with press-edge
 events and no typematic repeat. Rollover reports do not generate characters.
 Only the selected peer can deliver input. Queue overflow disconnects the session.
 
@@ -30,3 +31,6 @@ display and OTA must be measured before claiming support.
 
 Reference: Espressif ESP-IDF examples/bluetooth/esp_hid_host and the pinned
 ESP-IDF 5.5.5 esp_gap_bt_api.h / esp_hidh_api.h APIs.
+
+0.5.1 adds report-mode decoding after a physical keyboard was discovered but
+rejected boot-protocol negotiation. Actual report-mode typing remains pending.
