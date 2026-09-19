@@ -4,8 +4,8 @@ M1 provides three named profiles and a regular portrait fixture. All consume
 examples/hello-world/navigation.yaml; none duplicates the menu or entity mapping.
 
 - regular: LVGL shell at 480x320, tile/list switch, 36 px header and footer.
-- tiny: actual 128x64 monochrome display, three list rows, 10 px body font.
-- readable: actual 128x64 monochrome display, one row, 16 px body font.
+- tiny: actual 128x64 monochrome, two root views only: fullscreen icon or text list.
+- readable: actual 128x64 monochrome, single-row readable starting in icon view.
 - portrait fixture: regular shell at an actual 320x480 viewport, two-column grid.
 
 Start from the repository root:
@@ -20,6 +20,12 @@ The compact renderer uses ESPHome's display API and 1-bit fonts, avoiding an
 LVGL dependency for the small-display view. The tiny/readable SDL viewports remain 128x64.
 It does not emulate a physical OLED driver, panel contrast or refresh timing.
 The regular renderer remains LVGL and retains its integrated Wi-Fi form.
+
+Tiny and readable use `single_icon_mode` from `components/compact-shell/mono.yaml`:
+the root menu toggles between fullscreen icon (readable=true) and text-only list
+(readable=false). List mode shows plain text rows without icon glyphs.
+There is no intermediate 2x2 tile grid on 128x64.
+The tft160 profile retains the 2x2 color tiles and list icons via `color.yaml`.
 
 ## Navigation and presentation
 

@@ -179,7 +179,9 @@ From the repository root:
 Each command compiles and opens its own window. tiny/readable are native 128x64;
 portrait is a native 320x480 window. They use the same menu catalog.
 Up/Down/Enter and Escape navigate. At compact root, select the triangle after
-the eight options (or touch it) to switch density. A parent triangle/Back row
+the eight options (or touch it) to switch between fullscreen icon and text list.
+Tiny has only two root views: fullscreen icon or text-only list (no icon glyphs).
+There is no intermediate 2x2 tile grid on 128x64 displays. A parent triangle/Back row
 remains reachable without a physical Escape key.
 See [profiles](../profiles/README.md) and [M1 evidence](../docs/platform/M1-VERIFICATION.md).
 Compact Wi-Fi editing now uses the M2 character selector; see ../components/forms/README.md.

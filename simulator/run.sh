@@ -11,7 +11,7 @@ case "${1:-regular}" in
   regular) config=simulator/hello-world.yaml ;;
   portrait) config=simulator/portrait.yaml ;;
   tft160) config=simulator/tft160.yaml ;;
-  tiny) config=simulator/compact.yaml ;;
+  tiny) config=simulator/tiny.yaml ;;
   readable) config=simulator/readable.yaml ;;
   composition) config=simulator/composition.yaml ;;
   information) config=simulator/information.yaml ;;
