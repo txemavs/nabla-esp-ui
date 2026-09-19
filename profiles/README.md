@@ -95,3 +95,10 @@ Extend those shared pieces instead of adding device-specific rendering forks.
 [tcall128.yaml](tcall128.yaml) refines tiny for the approved OLED assembly:
 13 px header, 11 px small font and 12 px body, with three 17 px rows.
 See [physical evidence and limits](../hardware/tcall-ssd1309.md).
+
+## Square TFT / touch
+
+[tft240.yaml](tft240.yaml) uses a 240×240 LVGL viewport with 24 px bars and
+a 2×2 launcher. Run ./simulator/run.sh tft240 for the host fixture.
+The [T-Watch composition](../devices/lilygo-twatch-2020.yaml) uses this profile;
+host rendering alone does not validate touch or peripheral hardware.

@@ -131,3 +131,7 @@ hosts the Wi-Fi scan/password/OTA page without installation-specific data.
 Import it through external_components with a pinned Git revision; retain wifi.ap
 and captive_portal in device YAML. It is independent of the UI renderer and
 preserves ESPHome's fallback-AP behavior. ESPHome 2026.8.2 is the tested baseline.
+
+## T-Watch diagnostics
+
+[twatch-diag](twatch-diag/README.md) binds the square example to bounded motor/IR tests, battery voltage and identified BMA423 presence. The PEK adapter decodes PMU key events. ESPHome 2026.8.2 compilation passed; physical validation and revision confirmation are pending. See the module README for dependencies, refresh rates, input behavior and limitations.

@@ -1,0 +1,17 @@
+# Vibration motor for LilyGO T-Watch 2020 V1/V3
+# GPIO4 active-high motor driver.
+
+output:
+  - platform: gpio
+    id: twatch_motor
+    pin: GPIO4
+
+script:
+  - id: twatch_vibrate
+    mode: single
+    parameters:
+      duration_ms: int
+    then:
+      - output.turn_on: twatch_motor
+      - delay: !lambda return static_cast<uint32_t>(std::max(1, std::min(duration_ms, 500)));
+      - output.turn_off: twatch_motor

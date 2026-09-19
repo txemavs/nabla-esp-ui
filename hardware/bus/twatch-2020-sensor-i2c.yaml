@@ -1,0 +1,8 @@
+# I2C bus for LilyGO T-Watch 2020 sensor/PMU (AXP202, BMA423, PCF8563)
+# SDA GPIO21, SCL GPIO22
+
+i2c:
+  - id: sensor_i2c
+    sda: GPIO21
+    scl: GPIO22
+    frequency: 400kHz

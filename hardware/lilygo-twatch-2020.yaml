@@ -1,0 +1,45 @@
+# LilyGO T-Watch 2020 board composition
+# ESP32-D0WD, 16 MiB flash, 8 MiB quad PSRAM, ST7789 240×240 display, FT6336 touch, AXP202 PMU.
+#
+# This composer imports reusable capability packages. See hardware/ subfolders
+# for individual display, touchscreen, power and bus configurations.
+#
+# PSRAM is required: without quad PSRAM at 80MHz, the display framebuffer fails.
+# The AXP202 PMU controls backlight via LDO2; this config enables it at boot.
+#
+# Pin mapping based on LilyGO T-Watch 2020 V1:
+# - Display: ST7789 SPI (SCLK 18, MOSI 19, CS 5, DC 27)
+# - Touch: FT6336 I2C (SDA 23, SCL 32, INT 38, RST 14)
+# - PMU/Sensors: AXP202/BMA423/PCF8563 I2C (SDA 21, SCL 22)
+#
+# V2/V3 differences: backlight GPIO, touch reset. This config targets V1.
+# V2: uses GPIO25 backlight, touch reset via AXP202 EXTEN.
+# V3: uses GPIO15 backlight, touch reset GPIO14 (same as V1).
+
+substitutions:
+  nabla_display_kind: "ST7789 LCD"
+  nabla_device_model: "T-Watch 2020"
+
+esp32:
+  board: esp32dev
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+
+psram:
+  mode: quad
+  speed: 80MHz
+
+logger:
+  level: INFO
+
+packages:
+  spi_bus: !include bus/twatch-2020-spi.yaml
+  touch_i2c: !include bus/twatch-2020-touch-i2c.yaml
+  sensor_i2c: !include bus/twatch-2020-sensor-i2c.yaml
+  power: !include power/axp202-twatch-2020.yaml
+  display: !include display/st7789-twatch-2020.yaml
+  touch: !include touchscreen/ft6336-twatch-2020.yaml
+  pek: !include input/pek-twatch-2020.yaml
+  ir: !include ir/twatch-2020.yaml
+  haptics: !include haptics/twatch-2020.yaml

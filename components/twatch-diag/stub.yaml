@@ -1,0 +1,58 @@
+# T-Watch diagnostics stubs for simulator (no real hardware)
+# Provides dummy globals and scripts for navigation to work.
+
+globals:
+  - id: twatch_diag_ir_count
+    type: int
+    initial_value: '0'
+  - id: twatch_diag_bma_x
+    type: float
+    initial_value: '0'
+  - id: twatch_diag_bma_y
+    type: float
+    initial_value: '0'
+  - id: twatch_diag_bma_z
+    type: float
+    initial_value: '0'
+  - id: twatch_diag_bma_present
+    type: bool
+    initial_value: 'false'
+  - id: twatch_diag_axp_voltage
+    type: float
+    initial_value: '3.7'
+  - id: twatch_diag_axp_present
+    type: bool
+    initial_value: 'false'
+
+script:
+  - id: twatch_test_ir
+    then:
+      - lambda: |-
+          id(twatch_diag_ir_count)++;
+          ESP_LOGI("twatch_diag", "IR test (simulated) count=%d", id(twatch_diag_ir_count));
+
+  - id: twatch_test_motor
+    then:
+      - lambda: ESP_LOGI("twatch_diag", "Motor test (simulated)");
+
+  - id: twatch_scan_i2c
+    then:
+      - lambda: ESP_LOGI("twatch_diag", "I2C scan (simulated)");
+
+  - id: twatch_read_accel
+    then:
+      - lambda: |-
+          // Simulated accelerometer
+          id(twatch_diag_bma_x) = 0.01f;
+          id(twatch_diag_bma_y) = 0.02f;
+          id(twatch_diag_bma_z) = 1.0f;
+
+  - id: twatch_read_battery
+    then:
+      - lambda: id(twatch_diag_axp_voltage) = 3.85f;
+
+  - id: twatch_vibrate
+    parameters:
+      duration_ms: int
+    then:
+      - lambda: ESP_LOGI("twatch_diag", "Vibrate %dms (simulated)", duration_ms);

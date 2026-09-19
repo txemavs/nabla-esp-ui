@@ -7,7 +7,8 @@ and menu packages. They do not duplicate hardware definitions.
 
 ```
 devices/
-└── jc3248w535cn.yaml    # Guition touch panel
+├── jc3248w535cn.yaml       # Guition touch panel (320×480)
+└── lilygo-twatch-2020.yaml # LilyGO T-Watch 2020 (240×240)
 ```
 
 ## Composition pattern
@@ -56,6 +57,19 @@ consumers import the library entry point and declare their own navigation tree.
 | Device | Board | Display | Profile |
 |--------|-------|---------|---------|
 | jc3248w535cn.yaml | Guition JC3248W535CN | 320×480 IPS | regular |
+| lilygo-twatch-2020.yaml | LilyGO T-Watch 2020 | 240×240 TFT | tft240 |
+
+### LilyGO T-Watch 2020
+
+The T-Watch 2020 is an ESP32-based smartwatch with 240×240 ST7789 display,
+FT6336 capacitive touch, and AXP202 PMU. **PSRAM is required** (quad mode 80MHz)
+for the display framebuffer—without it the display stays black.
+
+The example uses a 2×2 tile launcher optimized for the square screen and
+Kit1-style navigation (Settings, Control with generic Site A lights).
+
+See [hardware/README.md](../hardware/README.md) for pin mapping and V1/V2/V3
+differences.
 
 ## Private devices
 

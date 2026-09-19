@@ -1,0 +1,41 @@
+# AXP202 PMU init for LilyGO T-Watch 2020
+# Enables LDO2 (backlight) and LDO3 (TFT rail on V2) via I2C bus writes.
+# Uses sensor_i2c (SDA GPIO21, SCL GPIO22), address 0x35.
+#
+# Basic backlight enable only. Full PMU features need an external component.
+
+esphome:
+  on_boot:
+    priority: 600
+    then:
+      - lambda: |-
+          // AXP202 @ 0x35 — REG 0x12 power output control
+          // Bit2 = LDO2EN (backlight), Bit3 = LDO3EN (TFT on V2)
+          const uint8_t addr = 0x35;
+          uint8_t reg = 0x12;
+          uint8_t v = 0;
+          if (id(sensor_i2c).write_readv(addr, &reg, 1, &v, 1) != i2c::ERROR_OK) {
+            ESP_LOGW("axp202", "Failed to read AXP202 power register");
+            return;
+          }
+          v |= (1 << 2);
+          v |= (1 << 3);
+          uint8_t out[2] = {0x12, v};
+          if (id(sensor_i2c).write(addr, out, 2) != i2c::ERROR_OK) {
+            ESP_LOGW("axp202", "Failed to enable AXP202 LDO2/LDO3");
+            return;
+          }
+          // REG 0x28: LDO2 voltage [7:4], 1.8V + n*0.1V → 0xF0 ≈ 3.3V
+          reg = 0x28;
+          uint8_t ldo = 0;
+          if (id(sensor_i2c).write_readv(addr, &reg, 1, &ldo, 1) != i2c::ERROR_OK) {
+            ESP_LOGW("axp202", "Failed to read AXP202 LDO2 voltage");
+            return;
+          }
+          ldo = (ldo & 0x0F) | 0xF0;
+          uint8_t out2[2] = {0x28, ldo};
+          if (id(sensor_i2c).write(addr, out2, 2) != i2c::ERROR_OK) {
+            ESP_LOGW("axp202", "Failed to set AXP202 LDO2 voltage");
+            return;
+          }
+          ESP_LOGI("axp202", "AXP202 LDO2/LDO3 enabled for backlight");

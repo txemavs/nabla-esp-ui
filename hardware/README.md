@@ -59,3 +59,15 @@ The [128×64 monochrome assembly](tcall-ssd1309.md) now has a
 [complete device root](../devices/tcall-ssd1309.yaml).
 Physical operation was confirmed by the owner after OTA on 2026-09-19;
 network recovery and long-duration qualification remain separate checks.
+
+## LilyGO T-Watch 2020
+
+The [device composition](../devices/lilygo-twatch-2020.yaml) imports the
+[board hardware](lilygo-twatch-2020.yaml) and square tft240 profile.
+ST7789 240×240, FT6336 touch, AXP202 power, IR and motor are declared for V1;
+check the revision before reusing the pin map.
+
+Firmware 0.4.0-hardware-tests compiled and passed OTA/API reconnection on
+2026-09-19. Motor/IR/key physical validation remains pending. The accelerometer
+has identity detection only, not live motion readings. See
+[diagnostics](../components/twatch-diag/README.md) for test actions and limits.

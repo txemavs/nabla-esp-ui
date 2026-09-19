@@ -64,4 +64,3 @@ display:
         shell.menu.font_family==0?id(compact_ubuntu_body):id(compact_body),
         shell.menu.font_family==0?id(compact_ubuntu_large):id(compact_large),
         "${tr_compact_back}", "${tr_compact_editor_pending}");
-

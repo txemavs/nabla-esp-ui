@@ -1,0 +1,31 @@
+# Decode AXP202 PEK events, rather than treating every PMU IRQ as a key.
+# AXP202: enable short-press IRQ in 0x42 bit 1; status/W1C in 0x4A bit 1.
+# Long-press power policy remains owned by the PMU.
+globals:
+  - id: twatch_pek_count
+    type: int
+    initial_value: "0"
+
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          uint8_t reg = 0x42, value = 0;
+          if (id(sensor_i2c).write_readv(0x35, &reg, 1, &value, 1) != i2c::ERROR_OK) return;
+          uint8_t clear[] = {0x4A, 0x02};
+          if (id(sensor_i2c).write(0x35, clear, 2) != i2c::ERROR_OK) return;
+          uint8_t enable[] = {0x42, static_cast<uint8_t>(value | 0x02)};
+          id(sensor_i2c).write(0x35, enable, 2);
+
+# Poll the latched status: other active IRQs cannot hide a subsequent key event.
+interval:
+  - interval: 100ms
+    then:
+      - lambda: |-
+          uint8_t reg = 0x4A, value = 0;
+          if (id(sensor_i2c).write_readv(0x35, &reg, 1, &value, 1) != i2c::ERROR_OK || !(value & 0x02)) return;
+          uint8_t clear[] = {0x4A, 0x02};
+          if (id(sensor_i2c).write(0x35, clear, 2) != i2c::ERROR_OK) return;
+          id(twatch_pek_count)++;
+          id(nav_activate).execute();

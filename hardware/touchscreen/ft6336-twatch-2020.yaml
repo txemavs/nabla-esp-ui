@@ -1,0 +1,15 @@
+# FT6336 capacitive touchscreen for LilyGO T-Watch 2020
+# Touch I2C: SDA GPIO23, SCL GPIO32, INT GPIO38, RST GPIO14 (V1/V3).
+# Mirror axes so touch tracks the LVGL framebuffer on the round panel.
+
+touchscreen:
+  - platform: ft63x6
+    id: panel_touch
+    display: panel_display
+    i2c_id: touch_i2c
+    interrupt_pin: GPIO38
+    reset_pin: GPIO14
+    update_interval: 16ms
+    transform:
+      mirror_x: true
+      mirror_y: true

@@ -1,0 +1,49 @@
+# 2×2 tile launcher for 240×240 square displays.
+# Shows first 4 menu items; navigation to list view for more options.
+# Tiles 4-7 are hidden off-screen (required by navigation/logic.yaml).
+obj:
+  id: launcher_content
+  width: 100%
+  y: ${nabla_bar_height}
+  height: ${(screen_height | int) - (nabla_bar_height | int)}
+  bg_opa: TRANSP
+  border_width: 0
+  pad_top: 4
+  pad_bottom: 4
+  pad_left: 4
+  pad_right: 4
+  layout:
+    type: grid
+    pad_row: 6
+    pad_column: 6
+    grid_columns: [FR(1), FR(1)]
+    grid_rows: [FR(1), FR(1)]
+  widgets:
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_0
+          slot: 0
+          column: 0
+          row: 0
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_1
+          slot: 1
+          column: 1
+          row: 0
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_2
+          slot: 2
+          column: 0
+          row: 1
+    - !include
+        file: ../components/menu-tile.yaml
+        vars:
+          tile_id: menu_tile_3
+          slot: 3
+          column: 1
+          row: 1
