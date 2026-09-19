@@ -91,7 +91,7 @@ Applies to the entire nabla-esp-ui repository.
 - MQTT regular/compact editors share transport.yaml and its freshness/confirmation
   rules. Compact brightness is a draft until Apply; Back cancels.
 - Real network information and MQTT state reception are deployed. Generalized
-  input adapters, OLED hardware validation and peer cooperation remain pending.
+  input adapters, broader OLED qualification and peer cooperation remain pending.
 
 ## Extension rules
 - New examples and documentation must use generic names (Site A, Site B, generic
