@@ -28,6 +28,7 @@ packages:
   theme: !include ../theme/nabla.yaml
   profile: !include ../profiles/tft240.yaml
   ui: !include ../examples/twatch/ui.yaml
+  twatch_diag: !include ../components/twatch-diag/package.yaml
 
 # No clock source or real network adapter yet: leave the footer unknown.
 # The Wi-Fi menu remains the explicitly labeled M2 simulation.

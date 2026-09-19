@@ -40,3 +40,6 @@ packages:
   power: !include power/axp202-twatch-2020.yaml
   display: !include display/st7789-twatch-2020.yaml
   touch: !include touchscreen/ft6336-twatch-2020.yaml
+  pek: !include input/pek-twatch-2020.yaml
+  ir: !include ir/twatch-2020.yaml
+  haptics: !include haptics/twatch-2020.yaml

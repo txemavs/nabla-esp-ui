@@ -21,7 +21,12 @@ hardware/
 │   ├── axs15231.yaml           # I2C capacitive touch
 │   └── ft6336-twatch-2020.yaml # I2C capacitive touch (T-Watch)
 ├── input/            # Physical input devices
-│   └── encoder-nodemcu-32s.yaml # Rotary encoder + buttons
+│   ├── encoder-nodemcu-32s.yaml # Rotary encoder + buttons
+│   └── pek-twatch-2020.yaml    # AXP202 PEK crown button
+├── ir/               # Infrared transmitters
+│   └── twatch-2020.yaml        # IR LED GPIO13 (V1)
+├── haptics/          # Vibration motors
+│   └── twatch-2020.yaml        # Motor driver GPIO4
 ├── power/            # Power/backlight
 │   ├── backlight-gpio1.yaml    # GPIO enable (JC3248W535CN)
 │   ├── backlight-gpio4-pwm.yaml # PWM LEDC (NodeMCU-32S)
@@ -166,18 +171,30 @@ T-Watch 2020 V1 (ESP32-D0WD classic, not S3).
 - Touch: FT6336 I2C (SDA 23, SCL 32, INT 38, RST 14)
 - PMU: AXP202 I2C (SDA 21, SCL 22), backlight via LDO2
 - PSRAM: **Required** — quad mode 80MHz for display framebuffer
+- Crown: AXP202 PEK (GPIO35 IRQ) — short press = Enter, long press = power off
+- IR: GPIO13 active-high LED (V1 only; V2 uses GPIO2)
+- Motor: GPIO4 active-high vibration driver
 
 The AXP202 PMU controls backlight via LDO2. The hardware package enables LDO2
 at boot using direct I2C register writes. Battery monitoring, charging control
 and other PMU features require an external component.
 
+**Diagnostics:** The device includes a "Probar T-Watch" / "Test T-Watch" menu
+under the home screen for hardware testing:
+- **Versión:** Show assumed V1 with identification hints for V1/V2/V3
+- **Infrarrojos:** Send a test IR burst (visible with phone camera)
+- **Motor:** Vibrate for 300ms
+- **Acelerómetro:** BMA423 I2C presence check and live X/Y/Z readings
+- **Batería:** AXP202 battery voltage reading
+- **Botón corona:** PEK (crown button) status and usage instructions
+
 **V2/V3 differences:** T-Watch 2020 versions differ in backlight GPIO and touch
 reset wiring. This config targets V1:
-- V1: backlight GPIO12 (also LDO2), touch reset GPIO14
-- V2: backlight GPIO25, touch reset via AXP202 EXTEN, has GPS
-- V3: backlight GPIO15, touch reset GPIO14
+- V1: backlight GPIO12 (also LDO2), touch reset GPIO14, IR GPIO13
+- V2: backlight GPIO25, touch reset via AXP202 EXTEN, has GPS, IR GPIO2
+- V3: backlight GPIO15, touch reset GPIO14, has microphone
 
-For V2/V3, modify the display and touch packages accordingly.
+For V2/V3, modify the display, touch and IR packages accordingly.
 
 **Build:**
 

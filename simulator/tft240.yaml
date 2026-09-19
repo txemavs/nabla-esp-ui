@@ -16,3 +16,4 @@ packages:
   theme: !include ../theme/nabla.yaml
   profile: !include ../profiles/tft240.yaml
   ui: !include ../examples/twatch/ui.yaml
+  twatch_diag: !include ../components/twatch-diag/stub.yaml

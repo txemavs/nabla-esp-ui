@@ -87,12 +87,30 @@ nabla_navigation:
               - key: light_spot
                 title: ${tr_light_spot}
                 detail: ${tr_light_unavailable}
-      - key: communications
-        icon_dark: 0x46D6A0
-        icon_light: 0x007653
-        title: ${tr_communications}
-        icon: ${icon_communications}
-        detail: ${tr_pending}
+      - key: twatch_test
+        icon_dark: 0xFF9870
+        icon_light: 0xAA3E12
+        title: ${tr_twatch_test}
+        icon: ${icon_sensors}
+        children:
+          - key: twatch_version
+            title: ${tr_twatch_version}
+            detail: ${tr_twatch_version_detail}
+          - key: twatch_ir
+            title: ${tr_twatch_ir}
+            detail: ${tr_twatch_ir_detail}
+          - key: twatch_motor
+            title: ${tr_twatch_motor}
+            detail: ${tr_twatch_motor_detail}
+          - key: twatch_accel
+            title: ${tr_twatch_accel}
+            detail: ${tr_twatch_accel_detail}
+          - key: twatch_battery
+            title: ${tr_twatch_battery}
+            detail: ${tr_twatch_battery_detail}
+          - key: twatch_pek
+            title: ${tr_twatch_pek}
+            detail: ${tr_twatch_pek_detail}
       - key: sensors
         icon_dark: 0xD6E96B
         icon_light: 0x617000
