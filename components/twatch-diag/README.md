@@ -27,8 +27,10 @@ The hardware composition declares V1 pins. Confirm the physical revision before
 upload; V2/V3 must not be inferred from the name alone. Existing display/touch
 bring-up changes are preserved pending physical confirmation.
 
-Firmware compilation passed with ESPHome 2026.8.2. Motor, IR and side-key physical
-tests remain pending. Detection does not verify accelerometer motion.
+Firmware compilation passed with ESPHome 2026.8.2. Version 0.4.0-hardware-tests
+was uploaded by OTA on 2026-09-19 and its version was verified over the API
+after reboot. A separate GitHub consumer passed source generation with pinned
+components and font assets. Motor, IR and side-key physical tests remain pending. Detection does not verify accelerometer motion.
 
 References:
 - [LilyGO V1](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/docs/watch_2020_v1.md)

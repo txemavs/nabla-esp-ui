@@ -1,6 +1,6 @@
 substitutions:
   nabla_resource_root: ".."
-  nabla_ui_ref: "1df2123"
+  nabla_ui_ref: "aac5b3551c8c0ebe4a15eca5c0f61a07255f3671"
 
 # Kit1-style navigation tree for square touch displays.
 # Simplified menu with Settings, Control, and generic Site A lights.
