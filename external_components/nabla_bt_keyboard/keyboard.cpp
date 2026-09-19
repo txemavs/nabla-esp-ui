@@ -47,6 +47,11 @@ void Keyboard::scan() {
 }
 void Keyboard::connect_slot(int slot) {
   if(!available(slot))return;
+  if(scanning_){
+    pending_slot_=slot;status_="Stopping search";
+    if(esp_bt_gap_cancel_discovery()!=ESP_OK){pending_slot_=-1;status_="Cancel search failed";}
+    return;
+  }
   report_layout_={};boot_=false;
   memcpy(selected_,candidates_[slot].address,6);
   connecting_=true;started_=millis();pairing_="--";status_="Connecting";
@@ -56,7 +61,8 @@ void Keyboard::confirm() {
   if(confirmation_){esp_bt_gap_ssp_confirm_reply(selected_,true);confirmation_=false;}
 }
 void Keyboard::disconnect() {
-  auto_reconnect_=false;
+  auto_reconnect_=false;pending_slot_=-1;
+  if(scanning_)esp_bt_gap_cancel_discovery();
   if(connected_ || connecting_)esp_bt_hid_host_disconnect(selected_);
   connecting_=false;connected_=false;boot_=false;confirmation_=false;
   memset(previous_,0,6);pairing_="--";status_="Disconnected";
@@ -90,6 +96,12 @@ void Keyboard::gap(esp_bt_gap_cb_event_t event,esp_bt_gap_cb_param_t *p) {
     enqueue(e);
   }else if(event==ESP_BT_GAP_DISC_STATE_CHANGED_EVT && p->disc_st_chg.state==ESP_BT_GAP_DISCOVERY_STOPPED){
     e.kind=2;enqueue(e);
+  }else if(event==ESP_BT_GAP_AUTH_CMPL_EVT){
+    e.kind=12;e.value=p->auth_cmpl.stat;enqueue(e);
+  }else if(event==ESP_BT_GAP_ACL_CONN_CMPL_STAT_EVT){
+    e.kind=13;e.value=p->acl_conn_cmpl_stat.stat;enqueue(e);
+  }else if(event==ESP_BT_GAP_ACL_DISCONN_CMPL_STAT_EVT){
+    e.kind=14;e.value=p->acl_disconn_cmpl_stat.reason;enqueue(e);
   }else if(event==ESP_BT_GAP_PIN_REQ_EVT){
     e.kind=3;memcpy(e.address,p->pin_req.bda,6);e.value=p->pin_req.min_16_digit?16:6;enqueue(e);
   }else if(event==ESP_BT_GAP_CFM_REQ_EVT){
@@ -123,9 +135,15 @@ void Keyboard::loop() {
     if(e.kind==1 && scanning_){
       bool known=false;for(int i=0;i<count_;i++)known|=!memcmp(candidates_[i].address,e.address,6);
       if(!known && count_<4){memcpy(candidates_[count_].address,e.address,6);memcpy(candidates_[count_++].name,e.name,40);}
-    }else if(e.kind==2){scanning_=false;status_=count_?"Select keyboard":"No keyboard";}
+    }else if(e.kind==2){
+      scanning_=false;status_=count_?"Select keyboard":"No keyboard";
+      int slot=pending_slot_;pending_slot_=-1;if(slot>=0)connect_slot(slot);
+    }else if(e.kind>=12 && e.kind<=14){
+      ESP_LOGI("bt_keyboard","Link event=%d status=%d",e.kind,e.value);
+    }
     else if(e.kind>=3 && e.kind<=5){
       if(!connecting_ || memcmp(selected_,e.address,6))continue;
+      ESP_LOGI("bt_keyboard","Pairing requested, type=%d",e.kind);
       char code[32];
       if(e.kind==3){
         if(e.value==16){disconnect();status_="16-digit PIN unsupported";continue;}

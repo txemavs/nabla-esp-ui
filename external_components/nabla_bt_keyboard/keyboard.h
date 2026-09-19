@@ -22,7 +22,7 @@ class Keyboard : public Component {
   void confirm();
   void disconnect();
   void forget();
-  bool available(int slot) const { return slot>=0 && slot<count_ && !connected_ && !connecting_ && !scanning_; }
+  bool available(int slot) const { return slot>=0 && slot<count_ && !connected_ && !connecting_; }
   std::string candidate(int slot) const { return slot>=0 && slot<count_ ? candidates_[slot].name : "--"; }
   std::string status() const { return status_; }
   std::string pairing() const { return pairing_; }
@@ -37,6 +37,7 @@ class Keyboard : public Component {
   QueueHandle_t queue_{nullptr};
   Candidate candidates_[4]{};
   int count_{0};
+  int pending_slot_{-1};
   ReportLayout report_layout_{};
   uint8_t selected_[6]{}, previous_[6]{}, handle_{0};
   bool ready_{false}, scanning_{false}, connecting_{false}, connected_{false}, boot_{false}, confirmation_{false};
