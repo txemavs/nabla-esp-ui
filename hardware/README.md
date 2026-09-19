@@ -15,18 +15,25 @@ hardware/
 │   ├── jc3248w535.yaml         # MIPI/QSPI 320×480 IPS LCD
 │   ├── st7735-nodemcu-32s.yaml # SPI 160×128 TFT LCD
 │   ├── st7735-160x128.yaml     # SPI TFT template (docs)
+│   ├── st7789-twatch-2020.yaml # SPI 240×240 TFT LCD
 │   └── ssd1306-128x64.yaml     # I2C 128×64 OLED (docs/template)
 ├── touchscreen/      # Touch controllers
-│   └── axs15231.yaml           # I2C capacitive touch
+│   ├── axs15231.yaml           # I2C capacitive touch
+│   └── ft6336-twatch-2020.yaml # I2C capacitive touch (T-Watch)
 ├── input/            # Physical input devices
 │   └── encoder-nodemcu-32s.yaml # Rotary encoder + buttons
 ├── power/            # Power/backlight
 │   ├── backlight-gpio1.yaml    # GPIO enable (JC3248W535CN)
-│   └── backlight-gpio4-pwm.yaml # PWM LEDC (NodeMCU-32S)
+│   ├── backlight-gpio4-pwm.yaml # PWM LEDC (NodeMCU-32S)
+│   └── axp202-twatch-2020.yaml # AXP202 PMU LDO2 backlight
 ├── bus/              # Communication buses
 │   ├── jc3248w535cn-qspi.yaml  # QSPI for display
-│   └── jc3248w535cn-i2c.yaml   # I2C for touch
+│   ├── jc3248w535cn-i2c.yaml   # I2C for touch
+│   ├── twatch-2020-spi.yaml    # SPI for T-Watch display
+│   ├── twatch-2020-touch-i2c.yaml  # I2C for T-Watch touch
+│   └── twatch-2020-sensor-i2c.yaml # I2C for T-Watch PMU/sensors
 ├── jc3248w535cn.yaml # Board composer: touch panel
+├── lilygo-twatch-2020.yaml # Board composer: T-Watch 2020
 └── nodemcu-32s-st7735.yaml # Board composer: encoder panel
 ```
 
@@ -35,6 +42,7 @@ hardware/
 | Display | Resolution | Interface | Profile | Status |
 |---------|------------|-----------|---------|--------|
 | JC3248W535 | 320×480 | MIPI/QSPI | regular | Verified |
+| ST7789 | 240×240 | SPI | tft240 | Pending |
 | ST7735 | 160×128 | SPI | tft160 | Verified |
 | SSD1306 | 128×64 | I2C | tiny/readable | Pending |
 
@@ -43,6 +51,7 @@ hardware/
 | Board | Display | Input | Profile |
 |-------|---------|-------|---------|
 | JC3248W535CN | JC3248W535 | Touch | regular |
+| LilyGO T-Watch 2020 | ST7789 | Touch | tft240 |
 | NodeMCU-32S | ST7735 | Encoder | tft160 |
 
 ### Adding a new board
@@ -147,6 +156,36 @@ Sources for the initial hardware mapping:
 - [ESPHome maintainer's JC3248W535 example](https://gist.github.com/clydebarrow/565251df8221f9045cd013dbc7faa3bf).
 - Installed ESPHome 2026.8.2: components/mipi_spi/models/jc.py and axs15231.
 - [Guition product specifications](https://www.guition.com/ku/icms/upload/fb081940d6fc11f09850077a33e1404f/FTPData/UEditor/file/2026121/1768961095054/JC3248W535%20Specifications-EN.pdf).
+
+## LilyGO T-Watch 2020
+
+Entry point: devices/lilygo-twatch-2020.yaml. This configuration targets the
+T-Watch 2020 V1 (ESP32-D0WD classic, not S3).
+
+- Display: ST7789 240×240 SPI (SCLK 18, MOSI 19, CS 5, DC 27)
+- Touch: FT6336 I2C (SDA 23, SCL 32, INT 38, RST 14)
+- PMU: AXP202 I2C (SDA 21, SCL 22), backlight via LDO2
+- PSRAM: **Required** — quad mode 80MHz for display framebuffer
+
+The AXP202 PMU controls backlight via LDO2. The hardware package enables LDO2
+at boot using direct I2C register writes. Battery monitoring, charging control
+and other PMU features require an external component.
+
+**V2/V3 differences:** T-Watch 2020 versions differ in backlight GPIO and touch
+reset wiring. This config targets V1:
+- V1: backlight GPIO12 (also LDO2), touch reset GPIO14
+- V2: backlight GPIO25, touch reset via AXP202 EXTEN, has GPS
+- V3: backlight GPIO15, touch reset GPIO14
+
+For V2/V3, modify the display and touch packages accordingly.
+
+**Build:**
+
+    source .venv/bin/activate
+    esphome compile devices/lilygo-twatch-2020.yaml
+
+**Private deployment:** Wi-Fi credentials and API keys belong in a private
+device YAML outside this repository. See [private installations](../docs/PRIVATE-INSTALLATIONS.md).
 
 ## NodeMCU-32S + ST7735 + encoder
 

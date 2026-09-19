@@ -1,0 +1,18 @@
+# 240×240 square touch profile simulator.
+# Uses LVGL with 2×2 tile launcher for small square displays.
+
+substitutions:
+  ui_language: es
+  screen_width: "240"
+  screen_height: "240"
+  nabla_initial_rotation: "0"
+
+esphome:
+  name: nabla-tft240
+
+packages:
+  locale: !include ../locales/${ui_language}.yaml
+  hardware: !include hardware/sdl.yaml
+  theme: !include ../theme/nabla.yaml
+  profile: !include ../profiles/tft240.yaml
+  ui: !include ../examples/twatch/ui.yaml

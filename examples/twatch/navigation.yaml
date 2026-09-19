@@ -1,0 +1,110 @@
+substitutions:
+  nabla_resource_root: ".."
+
+# Kit1-style navigation tree for square touch displays.
+# Simplified menu with Settings, Control, and generic Site A lights.
+packages:
+  device_info: !include ../../components/device-info/package.yaml
+
+external_components:
+  - source:
+      type: local
+      path: ${nabla_resource_root}/external_components
+
+nabla_navigation:
+  forms:
+    - key: brightness
+      label: ${tr_form_brightness}
+      type: number
+      min: 0
+      max: 100
+      step: 5
+      initial: 50
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: settings
+        icon_dark: 0x499EFF
+        icon_light: 0x0055BB
+        title: ${tr_settings}
+        icon: ${icon_settings}
+        children:
+          - key: information
+            title: ${tr_information}
+            children:
+              - key: device_model
+                title: ${tr_info_model}
+                info: model
+              - key: device_wifi
+                title: Wi-Fi
+                info: wifi
+              - key: device_ip
+                title: IP
+                info: ip
+              - key: device_version
+                title: ESPHome
+                info: version
+              - key: device_uptime
+                title: ${tr_info_uptime}
+                info: uptime
+          - key: connections
+            title: ${tr_wifi_form_connections}
+            children:
+              - key: wifi
+                title: ${tr_wifi}
+                action: wifi
+          - key: appearance
+            title: ${tr_appearance}
+            children:
+              - key: dark_mode
+                title: ${tr_dark_mode}
+                action: toggle_dark
+              - key: font_family
+                title: ${tr_font_family}
+                action: toggle_font
+              - key: borders
+                title: ${tr_borders}
+                action: toggle_borders
+      - key: control
+        icon_dark: 0x65D8E8
+        icon_light: 0x006A7C
+        title: ${tr_control}
+        icon: ${icon_building}
+        children:
+          - key: site_a
+            title: ${tr_site_a}
+            children:
+              - key: light_storage
+                title: ${tr_light_storage}
+                detail: ${tr_light_unavailable}
+              - key: light_office
+                title: ${tr_light_office}
+                detail: ${tr_light_unavailable}
+              - key: light_bench
+                title: ${tr_light_bench}
+                detail: ${tr_light_unavailable}
+              - key: light_spot
+                title: ${tr_light_spot}
+                detail: ${tr_light_unavailable}
+      - key: communications
+        icon_dark: 0x46D6A0
+        icon_light: 0x007653
+        title: ${tr_communications}
+        icon: ${icon_communications}
+        detail: ${tr_pending}
+      - key: sensors
+        icon_dark: 0xD6E96B
+        icon_light: 0x617000
+        title: ${tr_sensors}
+        icon: ${icon_sensors}
+        children:
+          - key: living_room
+            title: ${tr_living_room}
+            children:
+              - key: living_temperature
+                title: ${tr_temperature}
+                detail: ${tr_offline}
+              - key: living_humidity
+                title: ${tr_humidity}
+                detail: ${tr_offline}
