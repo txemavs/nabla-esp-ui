@@ -70,3 +70,10 @@ esphome compile devices/jc3248w535cn.yaml
 ```
 
 See [hardware/README.md](../hardware/README.md) for flashing instructions.
+
+## T-Call monochrome encoder panel
+
+[tcall-ssd1309.yaml](tcall-ssd1309.yaml) is a complete public bring-up root for
+the 128×64 external OLED assembly. Its controls are synthetic; use the
+[hardware notes](../hardware/tcall-ssd1309.md) for wiring, private deployment
+boundaries and the owner-confirmed physical evidence.

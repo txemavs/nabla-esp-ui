@@ -1,0 +1,38 @@
+# Complete public T-Call bring-up firmware; synthetic controls, no installation credentials.
+substitutions:
+  nabla_resource_root: ".."
+  nabla_display_monochrome: "true"
+  ui_language: es
+  compact_profile: tcall128
+  compact_wifi_clean_ui: "true"
+  compact_body_size: "12"
+  compact_small_size: "11"
+  compact_bar_height: "13"
+  tcall_site_title: "${tr_site_a}"
+  nabla_device_model: "LILYGO T-Call"
+  nabla_display_kind: "SSD1309 OLED"
+  nabla_info_preview: "false"
+
+esphome:
+  name: nabla-tcall-oled
+  friendly_name: "Nabla T-Call OLED"
+
+packages:
+  hardware: !include ../hardware/tcall-ssd1309.yaml
+  profile: !include ../profiles/${compact_profile}.yaml
+  locale: !include ../locales/${ui_language}.yaml
+  catalog: !include ../examples/tcall/navigation.yaml
+  device_info: !include ../components/device-info/package.yaml
+  mono: !include ../components/compact-shell/mono.yaml
+  icons: !include ../theme/icons.yaml
+  shell: !include ../components/compact-shell/package.yaml
+
+globals:
+  - id: preview_lights
+    type: std::vector<bool>
+    initial_value: '{false, true, false, false}'
+
+external_components:
+  - source:
+      type: local
+      path: ../external_components

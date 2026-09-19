@@ -182,3 +182,9 @@ The compact shell accepts `compact_rows`, `compact_bar_height` and the three
 
 See [NodeMCU ST7735](../hardware/nodemcu-32s-st7735.md). The current Wi-Fi/form
 demo renderer retains its 128x64 layout and is not exposed by this device menu.
+
+## T-Call 128×64 hardware profile
+
+[tcall128.yaml](tcall128.yaml) refines tiny for the approved OLED assembly:
+13 px header, 11 px small font and 12 px body, with three 17 px rows.
+See [physical evidence and limits](../hardware/tcall-ssd1309.md).

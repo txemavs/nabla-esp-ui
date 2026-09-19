@@ -77,12 +77,14 @@ the regular renderer uses LVGL 9.5.
   OTA installation, encrypted API reconnection and live MQTT reception verified.
   Build resource figures and remaining checks are in the
   [target notes](hardware/nodemcu-32s-st7735.md).
+- **T-Call / SSD1309 OLED:** 128×64 monochrome encoder assembly; OTA/API verified
+  and physical operation confirmed by the owner. [Device and evidence](hardware/tcall-ssd1309.md).
 - **Host profiles:** 480×320 regular, 320×480 portrait, 160×128 compact color
   and 128×64 tiny/readable.
 
 M1 adaptive profiles and M2 local forms have a host baseline. M3 remains open:
 physical usability, recovery and prolonged reconnect/navigation testing are not
-complete. Physical OLED validation, generalized joystick/input adapters, BLE
+complete. Broader OLED qualification, generalized joystick/input adapters, BLE
 cooperation, Nabla Edge integration and vehicle telemetry remain planned.
 A working demonstration is not a completed hardware qualification.
 

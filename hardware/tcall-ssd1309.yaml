@@ -1,0 +1,67 @@
+# T-Call with external SSD1309 SPI OLED and encoder; verified wiring for this assembly.
+# Modem is not enabled. Do not reuse this pin map for an unverified board revision.
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+  level: INFO
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+
+
+
+sensor:
+  - platform: rotary_encoder
+    id: enc
+    pin_a:
+      number: GPIO14
+      mode: {input: true, pullup: true}
+    pin_b:
+      number: GPIO13
+      mode: {input: true, pullup: true}
+    on_clockwise:
+      - lambda: nabla::compact_shell.move(-1);
+    on_anticlockwise:
+      - lambda: nabla::compact_shell.move(1);
+
+binary_sensor:
+  - platform: gpio
+    id: enc_sw
+    pin:
+      number: GPIO19
+      mode: {input: true, pullup: true}
+      inverted: true
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+    on_click:
+      - min_length: 30ms
+        max_length: 700ms
+        then:
+          - lambda: nabla::compact_shell.activate();
+      - min_length: 800ms
+        max_length: 5s
+        then:
+          - lambda: nabla::compact_shell.back();
+
+display:
+  - platform: ssd1306_spi
+    model: SSD1306_128X64
+    id: disp
+    cs_pin: GPIO33
+    dc_pin: GPIO32
+    reset_pin: GPIO25
+    rotation: 180
+    update_interval: 33ms
+    lambda: |-
+      auto &shell=nabla::compact_shell;
+      shell.render(it, shell.menu.font_family==0?id(compact_ubuntu_small):id(compact_small),
+        shell.menu.font_family==0?id(compact_ubuntu_body):id(compact_body),
+        shell.menu.font_family==0?id(compact_ubuntu_large):id(compact_large),
+        "${tr_compact_back}", "${tr_compact_editor_pending}");
+
