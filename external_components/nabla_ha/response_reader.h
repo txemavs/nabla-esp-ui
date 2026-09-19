@@ -1,3 +1,5 @@
+// Bounded HTTP response parsing; handles partial transport reads for the Home Assistant client.
+
 #pragma once
 #include <cstdint>
 #include <string>

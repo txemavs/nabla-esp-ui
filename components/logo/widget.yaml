@@ -1,3 +1,4 @@
+# Reusable logo image widget; keeps shared artwork placement consistent.
 # Parameters: widget_id, size, image_id.
 obj:
   id: ${widget_id}

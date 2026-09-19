@@ -1,3 +1,5 @@
+# Profile geometry and focus tests; checks usable layout bounds across supported viewports.
+
 from pathlib import Path
 import subprocess
 import tempfile
@@ -82,6 +84,21 @@ int main() {
    m.activate(); assert(m.borders && m.focus==4);
 
  }
+ // Switching views via the logo returns focus to the previous content item.
+ CompactMenu toggle;
+ toggle.move(1);
+ toggle.touch_option(children(0));
+ assert(toggle.readable && toggle.focus==1);
+ toggle.move(1);
+ assert(toggle.focus==2); // Down continues, rather than wrapping from logo to item zero.
+ toggle.move(children(0)-2);
+ assert(toggle.focus==children(0) && toggle.root_content_focus==0 && toggle.top==0);
+ toggle.activate();
+ assert(!toggle.readable && toggle.focus==0);
+ toggle.move(children(0));
+ assert(toggle.focus==children(0) && toggle.top==0);
+ toggle.move(1);
+ assert(toggle.focus==0 && toggle.top==0);
  // Landscape encoder target: four rows, with and without its footer.
  for(bool footer : {false,true}) {
    auto g=Geometry::compact(false,footer,160,128,16,4);

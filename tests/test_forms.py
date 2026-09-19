@@ -1,3 +1,5 @@
+# Form schema and transaction tests; verifies validation and shared edit behavior.
+
 import copy
 import importlib.util
 from pathlib import Path

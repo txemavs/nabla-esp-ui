@@ -1,3 +1,5 @@
+// LVGL thumbnail placement helper; fits camera previews inside shared light-card content.
+
 #pragma once
 #include "lvgl.h"
 namespace nabla_camera {

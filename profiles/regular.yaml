@@ -1,3 +1,5 @@
+# Regular LVGL profile defaults; supplies the baseline viewport and layout settings for large-screen compositions.
+
 substitutions:
   ui_profile: regular
   screen_width: "480"

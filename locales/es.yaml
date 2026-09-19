@@ -1,3 +1,5 @@
+# Spanish UI translation substitutions; preserves localized labels while project documentation remains English.
+
 substitutions:
   tr_wifi_real_0: "Wi-Fi principal (opcional)"
   tr_wifi_real_1: "Red principal guardada"
@@ -183,3 +185,4 @@ substitutions:
   tr_twatch_not_detected: "No detectado"
   tr_twatch_ir_sent: "IR enviado"
   tr_twatch_vibrated: "Vibró"
+  tr_normal_mode: "Modo normal"

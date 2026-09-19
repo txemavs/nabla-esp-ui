@@ -1,3 +1,5 @@
+# Validates the optional compact Wi-Fi adapter; connects compact forms to device networking when explicitly enabled.
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import final_validate as fv

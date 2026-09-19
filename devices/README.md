@@ -38,7 +38,21 @@ packages:
 The hardware package (e.g. `hardware/jc3248w535cn.yaml`) is itself a composer
 that imports capability packages from `hardware/display/`, `hardware/bus/`, etc.
 
-## Available devices
+## Entry points and other compositions
+
+This directory currently contains the complete public touch-panel bring-up root.
+It is not the full supported-hardware inventory. The ST7735 encoder target has
+[a reusable board composer](../hardware/nodemcu-32s-st7735.yaml) and
+[board notes](../hardware/nodemcu-32s-st7735.md); its deployed installation root
+stays private. The compact MQTT example is an illustrative fragment.
+Host roots live under [simulator/](../simulator/README.md).
+
+See the [catalog](../docs/DISPLAY-CATALOG.md#tested-devices) for evidence and
+[adoption guide](../docs/DEVICE-ADOPTION.md) for adding a complete target.
+The composition sketch above illustrates the public bring-up fixture; deployed
+consumers import the library entry point and declare their own navigation tree.
+
+## Complete public device roots
 
 | Device | Board | Display | Profile |
 |--------|-------|---------|---------|
@@ -83,4 +97,11 @@ source .venv/bin/activate
 esphome compile devices/jc3248w535cn.yaml
 ```
 
-See [hardware/README.md](../hardware/README.md) for flashing instructions.
+See [JC3248W535CN notes](../hardware/jc3248w535cn.md) for flashing instructions.
+
+## T-Call monochrome encoder panel
+
+[tcall-ssd1309.yaml](tcall-ssd1309.yaml) is a complete public bring-up root for
+the 128×64 external OLED assembly. Its controls are synthetic; use the
+[hardware notes](../hardware/tcall-ssd1309.md) for wiring, private deployment
+boundaries and the owner-confirmed physical evidence.

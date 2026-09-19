@@ -1,3 +1,5 @@
+// Compact light editor rendering and input; reuses the shared MQTT state and draft-confirmation rules.
+
 #pragma once
 #include "mqtt_model.h"
 #include "esphome/components/display/display.h"

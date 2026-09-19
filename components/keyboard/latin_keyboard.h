@@ -1,3 +1,5 @@
+// Latin keyboard maps for LVGL; extends text entry while retaining the shared editor behavior.
+
 #pragma once
 #include "lvgl.h"
 namespace nabla_keyboard {

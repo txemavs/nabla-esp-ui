@@ -1,3 +1,5 @@
+# English UI translation substitutions; supplies matching semantic labels for shared components and menus.
+
 substitutions:
   tr_wifi_real_0: "Primary Wi-Fi (optional)"
   tr_wifi_real_1: "Primary network saved"
@@ -183,3 +185,4 @@ substitutions:
   tr_twatch_not_detected: "Not detected"
   tr_twatch_ir_sent: "IR sent"
   tr_twatch_vibrated: "Vibrated"
+  tr_normal_mode: "Normal mode"

@@ -226,14 +226,13 @@ Conceptual flow:
 - A compromised panel can send arbitrary commands on its authorized topics;
   server-side validation and entity-level rate limits are additional defenses.
 
-## Resumen (ES)
+## Protocol summary
 
-Este protocolo conecta paneles ESP con luces de Home Assistant a través de un
-broker MQTT compartido, sin API nativa. Los topics de estado son retenidos;
-los comandos no. El panel valida frescura (SNTP, máximo 90 s de antigüedad).
-El broker debe restringir los topics por allowlist. Los 16 slots permiten
-controlar hasta 16 luces por panel. La configuración real (hosts, contraseñas)
-permanece en YAML privado fuera de este repositorio.
+This protocol connects ESP panels to Home Assistant lights through a shared MQTT
+broker without the native API. State topics are retained; commands are not.
+The panel checks freshness using SNTP and a maximum age of 90 seconds.
+Broker permissions must allowlist topics. Sixteen slots support up to sixteen
+lights per panel. Real hosts and credentials stay in private installation YAML.
 
 ## Related documentation
 

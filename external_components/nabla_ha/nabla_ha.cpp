@@ -1,3 +1,5 @@
+// Home Assistant client transport and state updates; implements the optional remote data adapter.
+
 #include "nabla_ha.h"
 #include "response_reader.h"
 #include "esphome/components/wifi/wifi_component.h"

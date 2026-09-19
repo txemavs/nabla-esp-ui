@@ -1,3 +1,5 @@
+// Bounded MQTT light state and edit transactions; keeps availability, freshness and confirmation independent of rendering.
+
 #pragma once
 #include <array>
 #include <algorithm>

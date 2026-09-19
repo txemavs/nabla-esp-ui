@@ -1,3 +1,4 @@
+# Shared operation-progress state and updates; coordinates the toolbar/footer across callers.
 # Negative progress restores the desktop footer; applications hide it by default.
 globals:
   - id: toolbar_progress

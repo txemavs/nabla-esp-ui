@@ -1,3 +1,5 @@
+// Shared navigation descriptors and controller; keeps menu actions independent of renderer and input hardware.
+
 #pragma once
 #include <string>
 #include <functional>

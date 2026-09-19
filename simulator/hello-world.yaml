@@ -1,3 +1,5 @@
+# Regular host demonstration entry point; composes the shared UI with synthetic menu data for development.
+
 substitutions:
   ui_language: es
   screen_width: "480"

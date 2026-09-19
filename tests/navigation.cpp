@@ -1,3 +1,5 @@
+// Navigation controller regression checks; verifies shared actions and focus behavior independently of a device.
+
 #include "../external_components/nabla_navigation/navigation.h"
 #include <cassert>
 namespace nabla {

@@ -1,3 +1,5 @@
+# Home Assistant adapter schema tests; checks client and binding configuration constraints.
+
 import importlib.util
 from pathlib import Path
 import unittest

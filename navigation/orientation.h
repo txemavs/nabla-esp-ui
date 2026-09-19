@@ -1,3 +1,5 @@
+// Orientation and focus-order helpers; keeps navigation aligned with the logical rotated viewport.
+
 #pragma once
 #include <vector>
 #include <algorithm>

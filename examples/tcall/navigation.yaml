@@ -1,0 +1,83 @@
+# Synthetic T-Call navigation: local light actions, Wi-Fi, appearance and information.
+nabla_navigation:
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: site_a
+        title: ${tcall_site_title}
+        icon: ${icon_building}
+        children:
+          - key: light_storage
+            title: ${tr_light_storage}
+            action: command
+          - key: light_office
+            title: ${tr_light_office}
+            action: command
+          - key: light_bench
+            title: ${tr_light_bench}
+            action: command
+          - key: light_spot
+            title: ${tr_light_spot}
+            action: command
+      - key: wifi
+        title: ${tr_wifi}
+        icon: "\uf1eb"
+        action: wifi
+      - key: appearance
+        title: ${tr_appearance}
+        icon: ${icon_settings}
+        children:
+          - key: dark_mode
+            title: ${tr_dark_mode}
+            action: toggle_dark
+          - key: font_family
+            title: ${tr_font_family}
+            action: toggle_font
+          - key: high_contrast
+            title: ${tr_normal_mode}
+            action: toggle_borders
+      - key: information
+        title: ${tr_information}
+        icon: "\uf05a"
+        children:
+          - key: device_model
+            title: ${tr_info_model}
+            info: model
+          - key: device_wifi
+            title: Wi-Fi
+            info: wifi
+          - key: device_ip
+            title: IP
+            info: ip
+          - key: device_version
+            title: ESPHome
+            info: version
+          - key: device_uptime
+            title: ${tr_info_uptime}
+            info: uptime
+  commands:
+    - node: light_storage
+      available: !lambda return true;
+      state: !lambda |-
+        return std::string(id(preview_lights)[0] ? "${tr_light_on}" : "${tr_light_off}");
+      on_press:
+        - lambda: id(preview_lights)[0] = !id(preview_lights)[0];
+    - node: light_office
+      available: !lambda return true;
+      state: !lambda |-
+        return std::string(id(preview_lights)[1] ? "${tr_light_on}" : "${tr_light_off}");
+      on_press:
+        - lambda: id(preview_lights)[1] = !id(preview_lights)[1];
+    - node: light_bench
+      available: !lambda return true;
+      state: !lambda |-
+        return std::string(id(preview_lights)[2] ? "${tr_light_on}" : "${tr_light_off}");
+      on_press:
+        - lambda: id(preview_lights)[2] = !id(preview_lights)[2];
+    - node: light_spot
+      available: !lambda return false;
+      state: !lambda |-
+        return std::string("${tr_light_unavailable}");
+      on_press:
+        - lambda: id(preview_lights)[3] = !id(preview_lights)[3];

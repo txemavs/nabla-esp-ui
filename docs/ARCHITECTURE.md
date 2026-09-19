@@ -10,6 +10,9 @@ It includes component families, editors, adaptive display/input profiles,
 commissioning, peer cooperation, vehicle startup and a gated delivery roadmap.
 Proposed YAML is marked as design-only; it is not the current accepted schema.
 
+The [shared UI contract](UI-CONSISTENCY.md) defines presentation ownership and
+global appearance coverage without replacing the existing implementation.
+
 ## Current implementation
 
 examples/hello-world/navigation.yaml is validated by the local nabla_navigation
@@ -29,8 +32,11 @@ Application views hide the idle footer. See navigation/README.md.
 
 The current example still uses fixed widget IDs, eight row slots and some
 profile-specific metrics. General module manifests, typed bindings and actual peer services are not
-implemented. M2 provides bounded form metadata and host-only transactional editors. M1 now supplies a separate 128x64
-ESPHome display renderer with shared catalog and focus policies.
+implemented. M2 provides bounded form metadata and a host-tested transactional
+editing baseline; optional Wi-Fi adapters connect those flows to real networking
+with documented target limits. M1 supplies a separate compact ESPHome display
+renderer with shared catalog and focus policies, including 128x64 host profiles
+and the deployed 160x128 ST7735 target.
 Do not describe these as completed because an illustrative YAML file exists.
 
 Incrementally extract navigation/focus, operation state and layout policies.

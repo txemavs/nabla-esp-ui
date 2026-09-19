@@ -1,3 +1,5 @@
+// Regular-device primary Wi-Fi adapter; manages scan, persistence and rollback without discarding declared fallbacks.
+
 #pragma once
 #include "esphome/core/component.h"
 #include "esphome/core/preferences.h"

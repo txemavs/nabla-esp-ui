@@ -33,9 +33,10 @@ From the repository root:
 The script activates the project environment, compiles, and launches the
 480 x 320 landscape window. It defaults to the X11 SDL backend for WSLg.
 The desktop opens immediately and its toolbar logo spins once in place.
-The 4-column, 2-row launcher contains: Ajustes, Comunicaciones, Fotos, Música, Cámaras, Tiempo, Luces, Sensores.
-Ajustes opens Conexiones (then Wi-Fi), Idioma, Acerca de and Apariencia. Sensores opens folders and sensor
-leaves. Breadcrumbs show the route; X returns to the parent and the triangle
+The 4-column, 2-row launcher contains Settings, Communications, Photos, Music,
+Cameras, Weather, Lights and Sensors (translated by the selected UI locale).
+Settings opens Connections (then Wi-Fi), Language, About and Appearance. Sensors
+opens folders and sensor leaves. Breadcrumbs show the route; X returns to the parent and the triangle
 returns to the parent; at the root it toggles tiles/list. Other applications remain placeholders.
 These are navigation demonstrations, not implemented applications.
 The UI currently uses Spanish labels; source documentation remains English.
@@ -263,3 +264,11 @@ smaller cells, tighter spacing, single-line text with ellipsis truncation.
 
 All data is local mock state. Toggle/momentary callbacks log to the console.
 See [Control Panel](../components/control-panel/README.md) for integration.
+
+## T-Call OLED preview
+
+Run ./simulator/run.sh tcall for a complete 128x64 monochrome composition with
+local light toggles, Wi-Fi, appearance and device information. All light actions
+and Wi-Fi operations are simulated. See [the fixture notes](../examples/tcall/README.md).
+Normal-mode selection uses the same pointer in menu rows, Wi-Fi and forms;
+inverse mode remains available. The preview raises the body font from 11 to 12 px; the header is 13 px high with an 11 px title; icon size stays unchanged.

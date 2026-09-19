@@ -1,3 +1,5 @@
+# SDL hardware for control-panel fixtures; supplies host display/input adapters for repeatable UI inspection.
+
 host:
 
 esphome:

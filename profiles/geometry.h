@@ -1,3 +1,5 @@
+// Shared layout metrics and bounds; adapts presentation to supported viewport and density choices.
+
 #pragma once
 #include <algorithm>
 namespace nabla {

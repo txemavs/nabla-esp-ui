@@ -1,3 +1,5 @@
+// Regular LVGL Wi-Fi editor; connects controls to the shared Wi-Fi flow rather than duplicating network policy.
+
 #pragma once
 #include "lvgl.h"
 #include "esphome/components/nabla_navigation/control_style.h"

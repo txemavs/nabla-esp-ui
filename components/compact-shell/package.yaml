@@ -1,6 +1,9 @@
+# Compact shell fonts, helpers and defaults; composes the display-API UI for small-device consumers.
+
 substitutions:
   nabla_resource_root: ".."
   compact_borders: "true"
+  compact_wifi_clean_ui: "false"
 
 esphome:
   on_boot:
@@ -8,6 +11,9 @@ esphome:
     then:
       - lambda: |-
           App.set_loop_interval(1);
+          nabla::compact_shell.wifi.clean_ui=${compact_wifi_clean_ui};
+          nabla::compact_shell.title_preview=id(compact_title_preview);
+          nabla::compact_shell.title_ubuntu_preview=id(compact_ubuntu_title_preview);
           static const char *words[] = {"${tr_flow_0}", "${tr_flow_1}", "${tr_flow_2}", "${tr_flow_3}", "${tr_flow_4}", "${tr_flow_5}", "${tr_flow_6}", "${tr_flow_7}", "${tr_flow_8}", "${tr_flow_9}", "${tr_flow_10}", "${tr_flow_11}", "${tr_flow_12}", "${tr_flow_13}", "${tr_flow_14}", "${tr_flow_15}", "${tr_flow_16}", "${tr_flow_17}", "${tr_flow_18}", "${tr_flow_19}", "${tr_flow_20}", "${tr_flow_21}", "${tr_flow_22}", "${tr_flow_23}", "${tr_flow_24}", "${tr_flow_25}"};
           nabla::compact_shell.wifi.text = words;
           static const char *form_words[] = {"${tr_form_0}", "${tr_form_1}", "${tr_form_2}", "${tr_form_3}", "${tr_form_4}", "${tr_form_5}", "${tr_form_6}", "${tr_form_7}", "${tr_form_8}", "${tr_form_9}"};
@@ -23,6 +29,18 @@ font:
   - file: ${nabla_resource_root}/assets/fonts/DejaVuSans-Bold.ttf
     id: compact_small
     size: ${compact_small_size}
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+  - file: ${nabla_resource_root}/assets/fonts/DejaVuSans-Bold.ttf
+    id: compact_title_preview
+    size: 12
+    bpp: 1
+    glyphsets: []
+    glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"
+  - file: ${nabla_resource_root}/assets/fonts/UbuntuMono-B.ttf
+    id: compact_ubuntu_title_preview
+    size: 12
     bpp: 1
     glyphsets: []
     glyphs: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~áéíóúÁÉÍÓÚñÑüÜ¿¡°"

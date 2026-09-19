@@ -1,3 +1,5 @@
+# SDL host hardware and inputs; runs the same UI composition on a desktop instead of an ESP32 display.
+
 host:
 
 esphome:

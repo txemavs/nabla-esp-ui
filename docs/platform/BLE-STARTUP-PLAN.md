@@ -8,22 +8,22 @@ and [Edge configuration](EDGE-CONFIG.md). It does not complete M3–M6.
 
 The panel opens its local menu immediately. A persistent status item/footer
 explains the selected system's progress; opening it shows individual dependencies.
-Use “System / Sistema” as the default user-facing name, with a configurable alias.
+Use “System” as the default user-facing name, with a configurable alias.
 Do not require the user to understand Raspberry Pi, Bluetooth profiles or Tailscale.
 
-Suggested Spanish messages, with English locale counterparts during implementation:
+Suggested English messages; add matching locale keys during implementation:
 
-- **Esperando sistema**: no live, trusted status yet. Show elapsed waiting time.
-- **Sistema detectado**: a compatible BLE advertisement was observed; identity
+- **Waiting for system**: no live, trusted status yet. Show elapsed waiting time.
+- **System detected**: a compatible BLE advertisement was observed; identity
   and status still need verification.
-- **Vincular sistema**: the target is new and requires pairing/authorization.
-- **Sistema arrancando**: the authenticated service explicitly reports starting.
-- **Preparando NablaNet**: AP or the selected startup readiness policy is pending.
-- **Conectando a NablaNet**: the panel is attempting Wi-Fi association.
-- **Comprobando servicios**: Wi-Fi is up; required endpoints are being checked.
-- **Sistema listo**: the configured capability's dependencies have been verified.
-- **Acceso remoto pendiente**, **Necesita conexión de subida**, **Autorización
-  requerida**, **Sin respuesta**: actionable degraded states, not an endless
+- **Pair system**: the target is new and requires pairing/authorization.
+- **System starting**: the authenticated service explicitly reports starting.
+- **Preparing NablaNet**: AP or the selected startup readiness policy is pending.
+- **Connecting to NablaNet**: the panel is attempting Wi-Fi association.
+- **Checking services**: Wi-Fi is up; required endpoints are being checked.
+- **System ready**: the configured capability's dependencies have been verified.
+- **Remote access pending**, **Uplink required**, **Authorization
+  required**, **No response**: actionable degraded states, not an endless
   “starting” animation.
 
 Before the Pi's first announcement there is no evidence that it is powered or

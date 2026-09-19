@@ -1,3 +1,5 @@
+// Compact-device primary Wi-Fi adapter; supplies real scan/connect operations to the shared Wi-Fi flow.
+
 #pragma once
 #include "esphome/core/component.h"
 #include "esphome/core/preferences.h"

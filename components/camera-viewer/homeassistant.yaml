@@ -1,3 +1,5 @@
+# Binds a Home Assistant camera picture attribute to the viewer; keeps private entities and origins consumer-supplied.
+
 text_sensor:
   - platform: homeassistant
     id: ${binding_id}

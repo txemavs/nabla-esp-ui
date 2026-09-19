@@ -1,3 +1,5 @@
+// Background HTTPS image fetching; keeps bounded camera downloads off the main UI loop.
+
 #include "nabla_camera_fetch.h"
 #include "esphome/components/wifi/wifi_component.h"
 #include "esphome/core/log.h"

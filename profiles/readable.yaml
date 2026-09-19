@@ -1,3 +1,5 @@
+# Readable compact profile defaults; starts the small-display composition in its larger single-item view.
+
 substitutions:
   ui_profile: readable
   compact_readable: "true"

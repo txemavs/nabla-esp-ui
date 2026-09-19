@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Builds and launches a selected SDL fixture so shared UI behavior can be inspected locally.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [[ ! -x .venv/bin/esphome ]]; then
@@ -12,6 +13,7 @@ case "${1:-regular}" in
   portrait) config=simulator/portrait.yaml ;;
   tft160) config=simulator/tft160.yaml ;;
   tft240) config=simulator/tft240.yaml ;;
+  tcall) config=simulator/tcall.yaml ;;
   tiny) config=simulator/tiny.yaml ;;
   readable) config=simulator/readable.yaml ;;
   composition) config=simulator/composition.yaml ;;
@@ -19,6 +21,6 @@ case "${1:-regular}" in
   password) config=simulator/password.yaml ;;
   control-panel) config=simulator/control-panel.yaml ;;
   control-panel-core2) config=simulator/control-panel-core2.yaml ;;
-  *) echo "Usage: $0 [regular|portrait|tiny|readable|tft160|tft240|password|information|composition|control-panel|control-panel-core2]" >&2; exit 2 ;;
+  *) echo "Usage: $0 [regular|portrait|tft240|tcall|tiny|readable|tft160|password|information|composition|control-panel|control-panel-core2]" >&2; exit 2 ;;
 esac
 exec esphome run "$config"

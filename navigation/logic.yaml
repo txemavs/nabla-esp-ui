@@ -1,3 +1,5 @@
+# Regular menu rendering, focus and appearance scripts; centralizes behavior used by LVGL shell consumers.
+
 substitutions:
   nabla_input_captured: "false"
   nabla_move_handler: ";"

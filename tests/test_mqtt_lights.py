@@ -1,3 +1,5 @@
+# MQTT light model tests; checks state freshness, ranges and edit confirmation behavior.
+
 import pathlib, subprocess, tempfile, unittest
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 class MqttLights(unittest.TestCase):

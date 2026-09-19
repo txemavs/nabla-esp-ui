@@ -1,3 +1,5 @@
+// Bounded logo animation geometry; keeps Nabla motion consistent between callers.
+
 #pragma once
 #include <cmath>
 
