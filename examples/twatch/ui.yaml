@@ -1,0 +1,4 @@
+# Example composition for square touch displays: reusable shell plus this example's navigation catalog.
+packages:
+  shell: !include ../../components/shell/package-square.yaml
+  catalog: !include navigation.yaml

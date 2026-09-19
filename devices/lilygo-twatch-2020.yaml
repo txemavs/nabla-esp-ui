@@ -1,0 +1,34 @@
+# LilyGO T-Watch 2020 device composition
+#
+# Composes: hardware (board + display + touch + PMU), UI profile, locale and example menu.
+# See hardware/lilygo-twatch-2020.yaml for board capability imports.
+#
+# This is the build entry point; it does not duplicate hardware definitions.
+#
+# Requirements:
+# - PSRAM: quad mode 80MHz (required for ST7789 framebuffer)
+# - AXP202 PMU: backlight enabled via LDO2 at boot
+#
+# Private Wi-Fi credentials and API keys belong in a separate device YAML
+# outside this repository. See docs/PRIVATE-INSTALLATIONS.md.
+
+substitutions:
+  ui_language: es
+  nabla_initial_rotation: "0"
+  screen_width: "240"
+  screen_height: "240"
+
+esphome:
+  name: nabla-twatch-2020
+  friendly_name: T-Watch 2020
+
+packages:
+  hardware: !include ../hardware/lilygo-twatch-2020.yaml
+  locale: !include ../locales/${ui_language}.yaml
+  theme: !include ../theme/nabla.yaml
+  profile: !include ../profiles/tft240.yaml
+  ui: !include ../examples/twatch/ui.yaml
+  twatch_diag: !include ../components/twatch-diag/package.yaml
+
+# No clock source or real network adapter yet: leave the footer unknown.
+# The Wi-Fi menu remains the explicitly labeled M2 simulation.

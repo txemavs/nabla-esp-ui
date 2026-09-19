@@ -1,0 +1,8 @@
+# IR transmitter for LilyGO T-Watch 2020 V1
+# GPIO13 active-high IR LED. V2 uses GPIO2.
+
+remote_transmitter:
+  id: twatch_ir
+  pin: GPIO13
+  carrier_duty_percent: 50%
+  non_blocking: true

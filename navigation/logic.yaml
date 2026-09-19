@@ -236,12 +236,16 @@ script:
           int screen_w = lv_display_get_horizontal_resolution(lv_display_get_default());
           int screen_h = lv_display_get_vertical_resolution(lv_display_get_default());
           const bool portrait = screen_w < screen_h;
+          const bool square = screen_w == screen_h;
           const auto base_geometry = nabla::Geometry::regular(screen_w, screen_h, false, ${nabla_bar_height}, !id(nav_borders));
           const auto foreground = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
           const auto background = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
           static const int32_t grid_four[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
           static const int32_t grid_two[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-          lv_obj_set_grid_dsc_array(id(launcher_content), portrait ? grid_two : grid_four, portrait ? grid_four : grid_two);
+          // Square displays (e.g. 240×240) use 2×2 grid; portrait 2×4; landscape 4×2
+          lv_obj_set_grid_dsc_array(id(launcher_content),
+            (portrait || square) ? grid_two : grid_four,
+            (portrait || square) ? grid_two : grid_four);
           lv_obj_set_style_pad_row(id(navigation_content), base_geometry.gap, 0);
           lv_obj_set_style_pad_row(id(launcher_content), id(nav_borders)?10:4, 0);
           lv_obj_set_style_pad_column(id(launcher_content), id(nav_borders)?10:4, 0);
@@ -276,8 +280,9 @@ script:
           lv_obj_t *tile_titles[] = {id(menu_tile_0_title), id(menu_tile_1_title), id(menu_tile_2_title), id(menu_tile_3_title), id(menu_tile_4_title), id(menu_tile_5_title), id(menu_tile_6_title), id(menu_tile_7_title)};
           // Commit every grid cell before any synchronous layout pass. During
           // rotation the old cells can exceed the new row/column descriptors.
-          const int columns = portrait ? 2 : 4;
-          const bool root_footer = current == 0 || id(toolbar_progress) >= 0;
+          const int columns = (portrait || square) ? 2 : 4;
+          // Square displays hide footer on home grid to maximize tile space
+          const bool root_footer = (current == 0 && !square) || id(toolbar_progress) >= 0;
           lv_obj_set_height(id(launcher_content),
             nabla::Geometry::regular(screen_w, screen_h, root_footer, ${nabla_bar_height}).content_height());
           for (int i = 0; i < 8; i++)
@@ -357,15 +362,24 @@ script:
             lv_obj_add_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
           } else {
-            lv_obj_remove_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
-            lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
-            lv_obj_remove_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+            // Square displays (e.g. 240×240 watch) show only Wi-Fi icon
+            if (square) {
+              lv_obj_add_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_set_x(id(toolbar_wifi), screen_w - 42);
+            } else {
+              lv_obj_remove_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_remove_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+            }
           }
           const bool loading = id(toolbar_progress) >= 0;
           const auto toolbar_bg = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
           const auto toolbar_fg = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
           lv_obj_set_style_bg_color(id(navigation_toolbar), toolbar_bg, 0);
-          const bool footer_visible = loading || current == 0;
+          // Square displays hide footer on home grid; show on interior pages or loading
+          const bool footer_visible = loading || (current == 0 && !square);
           lv_obj_set_style_bg_color(id(progress_footer), loading ? lv_color_hex(0x404040) : toolbar_bg, 0);
           lv_obj_set_style_text_color(id(footer_brand), lv_color_hex(${nabla_secondary}), 0);
           lv_obj_set_style_text_color(id(footer_clock), toolbar_fg, 0);

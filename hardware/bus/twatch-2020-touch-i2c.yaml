@@ -1,0 +1,8 @@
+# I2C bus for LilyGO T-Watch 2020 touch controller (FT6336)
+# SDA GPIO23, SCL GPIO32
+
+i2c:
+  - id: touch_i2c
+    sda: GPIO23
+    scl: GPIO32
+    frequency: 400kHz

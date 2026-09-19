@@ -5,6 +5,7 @@ examples/hello-world/navigation.yaml; none duplicates the menu or entity mapping
 The tiny profile uses examples/tiny/navigation.yaml for a simplified menu.
 
 - regular: LVGL shell at 480x320, tile/list switch, 36 px header and footer.
+- tft240: LVGL shell at 240x240, 2×2 tile grid, 28 px header for square touch displays.
 - tiny: actual 128x64 monochrome, two root views only: fullscreen icon or text list.
 - readable: actual 128x64 monochrome, single-row readable starting in icon view.
 - portrait fixture: regular shell at an actual 320x480 viewport, two-column grid.

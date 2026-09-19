@@ -1,0 +1,16 @@
+# AXP202 PEK (Power/Enter Key) input for LilyGO T-Watch 2020
+# GPIO35 active-low interrupt from AXP202.
+# Short press = Enter/activate; long press = AXP hardware power-off (handled by PMU).
+
+binary_sensor:
+  - platform: gpio
+    id: twatch_pek
+    name: "T-Watch PEK"
+    pin:
+      number: GPIO35
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 20ms
+    on_press:
+      - script.execute: nav_activate

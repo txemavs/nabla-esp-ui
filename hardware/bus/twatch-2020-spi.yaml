@@ -1,0 +1,7 @@
+# SPI bus for LilyGO T-Watch 2020 display
+# Clock GPIO18, MOSI GPIO19
+
+spi:
+  id: spi_tft
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
