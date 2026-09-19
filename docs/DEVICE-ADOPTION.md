@@ -16,9 +16,10 @@ register and the [hardware index](../hardware/README.md) for board-specific note
 - **NodeMCU-32S with ST7735 and encoder:** deployment evidence on 2026-09-18
   extended the compact path to a physical 160×128 color display. A photo shows
   the launcher; OTA/API/MQTT checks do not establish every input/recovery case.
-- **128×64 monochrome profiles:** host fixtures exercise single-icon and text
-  list presentations. Physical OLED wiring, contrast and legibility still need
-  target evidence.
+- **128×64 monochrome:** host fixtures exercise single-icon and text-list
+  presentations. The [T-Call / SSD1309 assembly](../hardware/tcall-ssd1309.md)
+  gained owner-confirmed physical operation after OTA on 2026-09-19; broader
+  hardware qualification and recovery checks remain open.
 - **T-Watch:** ongoing [PR #23](https://github.com/txemavs/nabla-esp-ui/pull/23)
   is a separate candidate effort. Review its current state before reusing it;
   an open PR is not a qualified target in main.

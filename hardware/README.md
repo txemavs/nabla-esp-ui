@@ -51,3 +51,11 @@ for the ST7735 composition. Verify input coordinates as well as image orientatio
 from fragments and hardware packages. Follow the individual board notes for
 build and recovery instructions; a USB port or flash layout from another board
 must not be copied blindly. Keep backups, credentials and firmware outside Git.
+
+## T-Call + SSD1309 OLED + encoder
+
+The [128×64 monochrome assembly](tcall-ssd1309.md) now has a
+[public hardware composer](tcall-ssd1309.yaml) and
+[complete device root](../devices/tcall-ssd1309.yaml).
+Physical operation was confirmed by the owner after OTA on 2026-09-19;
+network recovery and long-duration qualification remain separate checks.

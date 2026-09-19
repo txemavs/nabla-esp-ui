@@ -91,7 +91,7 @@ Applies to the entire nabla-esp-ui repository.
 - MQTT regular/compact editors share transport.yaml and its freshness/confirmation
   rules. Compact brightness is a draft until Apply; Back cancels.
 - Real network information and MQTT state reception are deployed. Generalized
-  input adapters, OLED hardware validation and peer cooperation remain pending.
+  input adapters, broader OLED qualification and peer cooperation remain pending.
 
 ## Extension rules
 - New examples and documentation must use generic names (Site A, Site B, generic
@@ -152,3 +152,17 @@ Applies to the entire nabla-esp-ui repository.
   Returning may restore a content selection, but never a saved toolbar control
   when the destination has options. Empty leaves can focus Back; the Wi-Fi
   editor starts at SSID. Same-page view/rotation updates preserve current focus.
+
+## T-Call integration experience
+
+- The T-Call + external SSD1309 assembly has a public device root and hardware
+  record; read hardware/tcall-ssd1309.md before adapting or flashing it.
+- Check the running API project version before trusting Device Builder YAML:
+  the saved configuration can be older than the installed firmware.
+- Compact forms must reuse the shared logo and selection policy, including
+  encoder-reachable Back and masked password drafts.
+- Host clean Wi-Fi presentation does not imply real radio connectivity.
+  Preserve network/API/OTA settings and private MQTT bindings during migration.
+- Distinguish owner-confirmed appearance/operation from unperformed recovery,
+  individual load-control and soak tests. Do not turn approval into a blanket
+  hardware qualification claim.

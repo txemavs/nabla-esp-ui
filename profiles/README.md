@@ -49,8 +49,9 @@ white; color TFT profiles are not subject to that palette restriction.
 
 List footer visibility is controlled by compact_list_footer (false for these
 profiles); icon presentation retains pagination. Interior footer visibility uses
-compact_app_footer. The compact mono triangle has a brief 180-degree spin on
-boot/view change; monochrome does not mean animation-free rendering.
+compact_app_footer. The compact mono triangle uses a one-second depth spin on boot/view change
+and a 60-degree in-plane turn for Back focus. Single-icon navigation uses a
+260 ms vertical transition; monochrome does not mean animation-free rendering.
 
 ## Navigation and detail views
 
@@ -88,3 +89,9 @@ as hardware-qualified.
 Profile YAML owns dimensions/font substitutions. Compact model.h and render.h
 own presentation state and drawing; navigation/focus.h owns shared focus policies.
 Extend those shared pieces instead of adding device-specific rendering forks.
+
+## T-Call 128×64 hardware profile
+
+[tcall128.yaml](tcall128.yaml) refines tiny for the approved OLED assembly:
+13 px header, 11 px small font and 12 px body, with three 17 px rows.
+See [physical evidence and limits](../hardware/tcall-ssd1309.md).

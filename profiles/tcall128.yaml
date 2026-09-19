@@ -1,0 +1,7 @@
+# T-Call OLED typography: 13px header plus three 17px rows in 128x64.
+packages:
+  base: !include tiny.yaml
+substitutions:
+  compact_small_size: "11"
+  compact_body_size: "12"
+  compact_bar_height: "13"

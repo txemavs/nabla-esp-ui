@@ -15,6 +15,14 @@ local navigation and settings do not depend on a server.
 NodeMCU-32S with a 160×128 ST7735 display and encoder on the right.
 The menus shown belong to a private installation; the reusable library is public.*
 
+### Monochrome panel in a reused telephone
+
+<img src="docs/images/tcall-ssd1309-phone.jpg" alt="T-Call with a 128×64 OLED and rotary encoder in a desk-phone enclosure" width="420">
+
+*The owner-confirmed T-Call/SSD1309 assembly running the compact interface.
+The photograph shows a private menu; public examples use generic bindings.
+See [device YAML, wiring and verification](hardware/tcall-ssd1309.md).*
+
 ## Shared UI contract
 
 **Declare what the device does; Nabla owns how its standard UI looks and works.**
@@ -79,12 +87,14 @@ the regular renderer uses LVGL 9.5.
   OTA installation, encrypted API reconnection and live MQTT reception verified.
   Build resource figures and remaining checks are in the
   [target notes](hardware/nodemcu-32s-st7735.md).
+- **T-Call / SSD1309 OLED:** 128×64 monochrome encoder assembly; OTA/API verified
+  and physical operation confirmed by the owner. [Device and evidence](hardware/tcall-ssd1309.md).
 - **Host profiles:** 480×320 regular, 320×480 portrait, 160×128 compact color
   and 128×64 tiny/readable.
 
 M1 adaptive profiles and M2 local forms have a host baseline. M3 remains open:
 physical usability, recovery and prolonged reconnect/navigation testing are not
-complete. Physical OLED validation, generalized joystick/input adapters, BLE
+complete. Broader OLED qualification, generalized joystick/input adapters, BLE
 cooperation, Nabla Edge integration and vehicle telemetry remain planned.
 A working demonstration is not a completed hardware qualification.
 

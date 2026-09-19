@@ -12,6 +12,7 @@ case "${1:-regular}" in
   regular) config=simulator/hello-world.yaml ;;
   portrait) config=simulator/portrait.yaml ;;
   tft160) config=simulator/tft160.yaml ;;
+  tcall) config=simulator/tcall.yaml ;;
   tiny) config=simulator/tiny.yaml ;;
   readable) config=simulator/readable.yaml ;;
   composition) config=simulator/composition.yaml ;;
@@ -19,6 +20,6 @@ case "${1:-regular}" in
   password) config=simulator/password.yaml ;;
   control-panel) config=simulator/control-panel.yaml ;;
   control-panel-core2) config=simulator/control-panel-core2.yaml ;;
-  *) echo "Usage: $0 [regular|portrait|tiny|readable|tft160|password|information|composition|control-panel|control-panel-core2]" >&2; exit 2 ;;
+  *) echo "Usage: $0 [regular|portrait|tcall|tiny|readable|tft160|password|information|composition|control-panel|control-panel-core2]" >&2; exit 2 ;;
 esac
 exec esphome run "$config"
