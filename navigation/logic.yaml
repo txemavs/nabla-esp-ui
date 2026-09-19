@@ -281,7 +281,8 @@ script:
           // Commit every grid cell before any synchronous layout pass. During
           // rotation the old cells can exceed the new row/column descriptors.
           const int columns = (portrait || square) ? 2 : 4;
-          const bool root_footer = current == 0 || id(toolbar_progress) >= 0;
+          // Square displays hide footer on home grid to maximize tile space
+          const bool root_footer = (current == 0 && !square) || id(toolbar_progress) >= 0;
           lv_obj_set_height(id(launcher_content),
             nabla::Geometry::regular(screen_w, screen_h, root_footer, ${nabla_bar_height}).content_height());
           for (int i = 0; i < 8; i++)
@@ -377,7 +378,8 @@ script:
           const auto toolbar_bg = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
           const auto toolbar_fg = lv_color_hex(id(nav_dark) ? 0xFFFFFF : 0x000000);
           lv_obj_set_style_bg_color(id(navigation_toolbar), toolbar_bg, 0);
-          const bool footer_visible = loading || current == 0;
+          // Square displays hide footer on home grid; show on interior pages or loading
+          const bool footer_visible = loading || (current == 0 && !square);
           lv_obj_set_style_bg_color(id(progress_footer), loading ? lv_color_hex(0x404040) : toolbar_bg, 0);
           lv_obj_set_style_text_color(id(footer_brand), lv_color_hex(${nabla_secondary}), 0);
           lv_obj_set_style_text_color(id(footer_clock), toolbar_fg, 0);
