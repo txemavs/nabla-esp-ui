@@ -9,7 +9,7 @@ class CompactShell {
  public:
   CompactMenu menu;
   esphome::font::Font *icons=nullptr;
-  bool color_icons=false, root_tiles=false, single_icon_mode=false;
+  bool color_icons=false, root_tiles=false, single_icon_mode=false, list_footer=false, middle_scroll=false;
   std::function<int(int)> icon_color;
   std::function<bool(int)> custom_move;
   std::function<bool()> custom_activate,custom_back;
@@ -135,7 +135,10 @@ class CompactShell {
       focus_since = millis();
     }
     display_width=d.get_width();display_height=d.get_height();
-    auto g = Geometry::compact(menu.readable, menu.current == 0 || app_footer,
+    // Footer: readable (icon) mode keeps footer; list mode at root uses list_footer flag.
+    bool footer_visible = menu.readable ? (menu.current == 0 || app_footer)
+                                        : (menu.current == 0 ? list_footer : app_footer);
+    auto g = Geometry::compact(menu.readable, footer_visible,
       display_width,display_height,bar_height,menu.list_rows);
     Color fg = menu.dark ? Color::WHITE : Color::BLACK;
     Color bg = menu.dark ? Color::BLACK : Color::WHITE;
@@ -165,20 +168,29 @@ class CompactShell {
         auto packed=menu.dark?nodes[node].icon_dark:nodes[node].icon_light;
         auto color=color_icons?Color((packed>>16)&255,(packed>>8)&255,packed&255):ink;
         if(selected&&!menu.borders)color=ink;
-        d.print(x+cw/2,y+ch/2-8,icons,color,display::TextAlign::CENTER,nodes[node].icon);
-        d.start_clipping(x+3,y,x+cw-4,y+ch-2);
+        // Measure label height for vertical centering.
         int bx,by,bw,bh;
         d.get_text_bounds(0,0,nodes[node].title,small,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
-        if(bw<=cw-6)d.print(x+cw/2,y+ch-15,small,ink,display::TextAlign::TOP_CENTER,nodes[node].title);
+        // For single_icon_mode, vertically center icon+label in content area.
+        int icon_h = icons->get_height();
+        int total_h = icon_h + 2 + bh;  // icon + gap + label
+        int base_y = y + (ch - total_h) / 2;
+        int icon_y = base_y + icon_h / 2;
+        int label_y = base_y + icon_h + 2;
+        d.print(x+cw/2,icon_y,icons,color,display::TextAlign::CENTER,nodes[node].icon);
+        d.start_clipping(x+3,y,x+cw-4,y+ch-2);
+        if(bw<=cw-6)d.print(x+cw/2,label_y,small,ink,display::TextAlign::TOP_CENTER,nodes[node].title);
         else {
           int offset=selected?std::min(bw-cw+6,std::max(0,int(((millis()-focus_since)/100)%(bw-cw+26))-10)):0;
-          d.print(x+3-offset,y+ch-15,small,ink,nodes[node].title);
+          d.print(x+3-offset,label_y,small,ink,nodes[node].title);
         }
         d.end_clipping();
       }
     } else if (n) {
+      // Use middle-scroll if enabled (selection stays in middle row when possible).
+      int list_top = middle_scroll ? scroll_anchor_middle(menu.focus, g.rows, n) : menu.top;
       for (int r = 0; r < g.rows; ++r) {
-        int index = menu.top + r;
+        int index = list_top + r;
         if (index >= n) break;
         int y = g.header + r * g.row_height;
         bool selected = menu.focus == index;

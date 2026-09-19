@@ -41,13 +41,22 @@ selection and scroll anchor, never a stale toolbar selection. Changing density
 keeps the current route and ensures the selected content fits in the viewport.
 Long selected labels scroll within their clipped row; they do not move focus.
 
-Both compact bars are 12 px high. Root footer is persistent; application footer
-defaults off and can be enabled with compact_app_footer: "true".
-Root content has 40 px: three 13 px rows (one spare pixel) or one 40 px row.
-Without footer, application content has 52 px: three 17 px rows or one 52 px row.
-Fonts are 8 px bold for title/footer, 10 px for tiny rows, 16 px for readable rows.
+Both compact bars are 12 px high. The tiny profile controls footer visibility
+with `compact_list_footer`: list mode at root hides the footer (3 rows × 17 px
+= 51 px content), while fullscreen icon mode keeps footer + pagination.
+Interior/app footer defaults off and can be enabled with `compact_app_footer`.
+
+Fonts are 9 px for header/footer/label, 10 px for list body, 17 px for large.
+Icon size is 20 px (`compact_icon_size`), vertically centered with its label.
 Their one-bit raster output has been checked at native resolution. Physical
 legibility still depends on the OLED size and viewing distance.
+
+## Middle-scroll behavior (tiny)
+
+List mode uses middle-scroll: the selected item stays in the middle row while
+navigating through the list. At boundaries the selection moves to edge rows,
+providing a visual cue when reaching the start or end. The `scroll_anchor_middle`
+function in `navigation/focus.h` implements this logic.
 
 Settings > Appearance changes black/white polarity locally on either renderer.
 Compact output ignores RGB palettes: icons/selection/text use foreground,

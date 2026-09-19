@@ -8,4 +8,7 @@ substitutions:
   compact_bar_height: "12"
   compact_small_size: "8"
   compact_body_size: "10"
-  compact_large_size: "16"
+  compact_large_size: "17"
+  compact_icon_size: "20"
+  # List mode hides footer; readable (fullscreen icon) keeps it.
+  compact_list_footer: "false"
