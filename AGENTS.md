@@ -45,6 +45,19 @@ Applies to the entire nabla-esp-ui repository.
 - English docs/identifiers; localized UI with matching es/en keys.
 - Work in this repository, not the older esphome-ui-kit fork.
 
+## Shell architecture (content vs chrome)
+- nabla-esp-ui is a small OS: you navigate a structure; the shell offers services.
+- Apps supply content (list rows, labels, actions). The shell owns all chrome/style.
+- Applications must NOT draw their own selection borders, play markers, nabla glyphs,
+  or Normal vs Alto contraste focus chrome. They present content; the shell applies
+  global appearance settings via shared primitives (RowChrome, NablaChrome in render.h).
+- To add a new list screen: wire content into the shell and inherit chrome automatically.
+- Wi-Fi, forms, and menu lists all use the same chrome primitives—no duplication.
+- Apps request semantic inputs only (e.g. "fill this text/password field"). They do NOT
+  choose the keyboard UI. The shell adapts input presentation by profile and hardware:
+  touch-capable/large displays get a full on-screen keyboard; encoder-only Tiny gets
+  whatever compact keyboard fits the space. Form asks for a string; shell owns how it's typed.
+
 ## Implemented baseline
 - Host SDL, shared tree, tiles/list, scrolling, four rotations and touch/keyboard.
 - Root triangle toggles tiles/list; interior triangle and X/ESC return to parent.
@@ -94,6 +107,7 @@ Applies to the entire nabla-esp-ui repository.
   input adapters, OLED hardware validation and peer cooperation remain pending.
 
 ## Extension rules
+- New list screens use shell chrome primitives; do not duplicate focus/selection drawing.
 - New examples and documentation must use generic names (Site A, Site B, generic
   rooms/entities). Do not introduce real installation names or personal site references.
 - Never present docs/platform/platform.proposal.yaml as accepted firmware syntax.
