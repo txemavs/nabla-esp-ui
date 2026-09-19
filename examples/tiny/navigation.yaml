@@ -37,7 +37,7 @@ nabla_navigation:
               - key: wifi
                 title: ${tr_wifi}
                 action: wifi
-                detail: ${tr_tiny_wifi_hint}
+                detail: ${tr_tiny_wifi_detail}
           - key: appearance
             title: ${tr_appearance}
             children:

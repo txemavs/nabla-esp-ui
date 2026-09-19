@@ -80,11 +80,12 @@ class CompactShell {
         static_cast<int>(wifi.draft.value.size()),static_cast<int>(wifi.draft.limit));
       return;
     }
-    int title=0;
+    int title=wifi.flow.real()?22:0;  // Real: "Wi-Fi" vs Demo: "Wi-Fi (demo)"
     switch(wifi.flow.stage) {
       case Stage::SCANNING:title=11;break;case Stage::CONNECTING:title=12;break;
       case Stage::SCAN_ERROR:title=18;break;
-      case Stage::SUCCESS:title=13;break;case Stage::FAILURE:title=14;break;
+      case Stage::SUCCESS:title=wifi.flow.real()?23:13;break;
+      case Stage::FAILURE:title=wifi.flow.real()?24:14;break;
       case Stage::RESULTS:if(!wifi.flow.results())title=17;break;
       default:if(wifi.flow.error==Error::SSID)title=15;
         else if(wifi.flow.error==Error::PASSWORD)title=16;break;
@@ -232,9 +233,9 @@ class CompactShell {
         // Position icon closer to top, label at bottom for better visual balance.
         int icon_y, label_y;
         if (single_icon_mode && menu.readable) {
-          // Tiny icon mode: icon lowered (less empty gap under top), label at bottom.
+          // Tiny icon mode: icon higher in content area, label at bottom.
           int total_h = icon_h + 4 + bh;  // icon + gap + label
-          int base_y = y + (ch - total_h) / 2 + 2;  // shift down to reduce top gap
+          int base_y = y + (ch - total_h) / 2 - 2;  // shift UP for better visual balance
           icon_y = base_y + icon_h / 2;
           label_y = base_y + icon_h + 4;
         } else {

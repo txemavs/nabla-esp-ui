@@ -29,6 +29,7 @@ esphome:
           nabla::compact_shell.middle_scroll=true;
           // Tiny profile: enable play marker in Normal mode, init callbacks.
           nabla::compact_shell.tiny_play_marker=true;
+          nabla::compact_shell.tiny_icon_reduce=2;  // Make icon slightly smaller
           nabla::compact_shell.init_tiny_callbacks();
           // Start boot animation (one 180° spin).
           nabla::compact_shell.start_triangle_spin(1);

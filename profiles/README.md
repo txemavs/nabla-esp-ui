@@ -133,11 +133,38 @@ is used in the compact renderer.
 ## Boundaries
 
 Wi-Fi is the same route in all profiles. Regular uses the native keyboard;
-compact now uses the M2 character selector and shared simulated Wi-Fi workflow.
-No radio, credentials or backend is needed for M1. The compact header presents
-the current location; wide-screen clickable ancestor breadcrumbs remain a
-regular-profile feature. Leaf descriptions are clipped to the compact detail
-region; a paged detail reader is future component work.
+compact uses the M2 character selector. The compact shell checks
+`WifiFlow::backend`: when `nabla_wifi_compact` is present, real scan and
+connect operations replace the mock flow. Host builds have no radio; the
+simulator always uses the mock flow regardless of component presence.
+
+### Real Wi-Fi for tiny/compact (device builds)
+
+Add `nabla_wifi_compact:` to a device YAML with `wifi.networks` fallbacks.
+The form shows a simplified menu (SSID, Password, Open toggle, Scan, Connect)
+without mock-only demo items. Success/failure labels drop the "(demo)" suffix.
+
+```yaml
+# Device YAML example (credentials in secrets.yaml)
+external_components:
+  - source:
+      type: local
+      path: external_components
+
+wifi:
+  networks:
+    - ssid: !secret wifi_ssid
+      password: !secret wifi_password
+
+nabla_wifi_compact:
+```
+
+Host simulator: mock flow active even if component is included (no radio).
+Test real Wi-Fi on physical hardware with OTA or USB flash.
+
+The compact header presents the current location; wide-screen clickable
+ancestor breadcrumbs remain a regular-profile feature. Leaf descriptions are
+clipped to the compact detail region; a paged detail reader is future work.
 
 Runtime metrics live in geometry.h. Input wrapping/content restoration/scroll
 policies live in navigation/focus.h. The compact state machine is in

@@ -28,7 +28,7 @@ struct CompactWifi {
     if(editing) return 4+glyphs().size();
     if(flow.stage==Stage::RESULTS) return flow.results()+1;
     if(flow.stage!=Stage::EDIT) return 1;
-    return 8;
+    return flow.real() ? 5 : 8;  // Real: SSID/Pass/Open/Scan/Connect/Back; Mock adds demo items
   }
   void move(int delta) {
     if(editing) {key=nabla::wrap_focus(key,delta,total());return;}
@@ -60,19 +60,33 @@ struct CompactWifi {
       focus=top=0;return false;
     }
     if(flow.stage!=Stage::EDIT) {flow.cancel();focus=top=0;return false;}
-    switch(focus) {
-      case 0: edit(false);break;
-      case 1: edit(true);break;
-      case 2: flow.open=!flow.open;flow.wipe_password();break;
-      case 3: flow.scan(now);focus=top=0;break;
-      case 4: flow.scan(now,true);focus=top=0;break;
-      case 5: flow.scan(now,ScanMode::ERROR);focus=top=0;break;
-      case 6:
-        if(!flow.connect(now) && flow.error!=Error::NONE){
-          focus=flow.error==Error::SSID?0:1;top=0;
-        }
-        break;
-      case 7: return back();
+    if(flow.real()) {
+      switch(focus) {
+        case 0: edit(false);break;
+        case 1: edit(true);break;
+        case 2: flow.open=!flow.open;flow.wipe_password();break;
+        case 3: flow.scan(now);focus=top=0;break;
+        case 4:
+          if(!flow.connect(now) && flow.error!=Error::NONE){
+            focus=flow.error==Error::SSID?0:1;top=0;
+          }
+          break;
+      }
+    } else {
+      switch(focus) {
+        case 0: edit(false);break;
+        case 1: edit(true);break;
+        case 2: flow.open=!flow.open;flow.wipe_password();break;
+        case 3: flow.scan(now);focus=top=0;break;
+        case 4: flow.scan(now,true);focus=top=0;break;
+        case 5: flow.scan(now,ScanMode::ERROR);focus=top=0;break;
+        case 6:
+          if(!flow.connect(now) && flow.error!=Error::NONE){
+            focus=flow.error==Error::SSID?0:1;top=0;
+          }
+          break;
+        case 7: return back();
+      }
     }
     return false;
   }
@@ -80,6 +94,16 @@ struct CompactWifi {
     if(flow.stage==Stage::RESULTS)
       return index<flow.results()?flow.result_label(index):text[6];
     if(flow.stage!=Stage::EDIT) return text[6];
+    if(flow.real()) {
+      switch(index) {
+        case 0:return std::string("SSID: ")+(flow.ssid.empty()?"...":flow.ssid);
+        case 1:return std::string(text[1])+": "+(flow.password.empty()?"...":"********");
+        case 2:return std::string(flow.open?"[x] ":"[ ] ")+text[2];
+        case 3:return text[3];  // Scan
+        case 4:return text[22]; // Connect (real)
+        default:return text[6]; // Back
+      }
+    }
     switch(index) {
       case 0:return std::string("SSID: ")+(flow.ssid.empty()?"...":flow.ssid);
       case 1:return std::string(text[1])+": "+(flow.password.empty()?"...":"********");
