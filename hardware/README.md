@@ -4,6 +4,54 @@ Hardware packages provide display, touch, backlight and platform configuration.
 They compose the same application UI as the simulator; they do not duplicate
 the navigation catalog or forms.
 
+## Capability folders
+
+Hardware is organized by capability. Board composers (e.g. `jc3248w535cn.yaml`)
+import these pieces; device YAMLs import the board composer.
+
+```
+hardware/
+├── display/          # Display controllers
+│   ├── jc3248w535.yaml         # MIPI/QSPI 320×480 IPS LCD
+│   ├── st7735-nodemcu-32s.yaml # SPI 160×128 TFT LCD
+│   ├── st7735-160x128.yaml     # SPI TFT template (docs)
+│   └── ssd1306-128x64.yaml     # I2C 128×64 OLED (docs/template)
+├── touchscreen/      # Touch controllers
+│   └── axs15231.yaml           # I2C capacitive touch
+├── input/            # Physical input devices
+│   └── encoder-nodemcu-32s.yaml # Rotary encoder + buttons
+├── power/            # Power/backlight
+│   ├── backlight-gpio1.yaml    # GPIO enable (JC3248W535CN)
+│   └── backlight-gpio4-pwm.yaml # PWM LEDC (NodeMCU-32S)
+├── bus/              # Communication buses
+│   ├── jc3248w535cn-qspi.yaml  # QSPI for display
+│   └── jc3248w535cn-i2c.yaml   # I2C for touch
+├── jc3248w535cn.yaml # Board composer: touch panel
+└── nodemcu-32s-st7735.yaml # Board composer: encoder panel
+```
+
+### Supported displays
+
+| Display | Resolution | Interface | Profile | Status |
+|---------|------------|-----------|---------|--------|
+| JC3248W535 | 320×480 | MIPI/QSPI | regular | Verified |
+| ST7735 | 160×128 | SPI | tft160 | Verified |
+| SSD1306 | 128×64 | I2C | tiny/readable | Pending |
+
+### Supported boards
+
+| Board | Display | Input | Profile |
+|-------|---------|-------|---------|
+| JC3248W535CN | JC3248W535 | Touch | regular |
+| NodeMCU-32S | ST7735 | Encoder | tft160 |
+
+### Adding a new board
+
+1. Create bus configs in `bus/` if the pins differ from existing configs.
+2. Reference existing display/touchscreen/power packages, or add new ones.
+3. Create a board composer YAML that imports the capabilities.
+4. Create a device YAML in `devices/` that imports the board composer.
+
 ## Guition JC3248W535CN
 
 Entry point: devices/jc3248w535cn.yaml. First physical bring-up passed on

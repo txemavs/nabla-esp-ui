@@ -59,15 +59,15 @@ nabla_navigation:
               - key: device_uptime
                 title: ${tr_info_uptime}
                 info: uptime
+              - key: language
+                title: ${tr_language}
+                detail: ${tr_language_detail}
           - key: connections
             title: ${tr_wifi_form_connections}
             children:
               - key: wifi
                 title: ${tr_wifi}
                 action: wifi
-          - key: language
-            title: ${tr_language}
-            detail: ${tr_language_detail}
           - key: appearance
             title: ${tr_appearance}
             children:

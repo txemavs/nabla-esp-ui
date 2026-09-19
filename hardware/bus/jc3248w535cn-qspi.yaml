@@ -1,0 +1,8 @@
+# QSPI bus for JC3248W535CN display panel
+# GPIO47 clock, GPIO21/48/40/39 quad data lines
+
+spi:
+  id: panel_qspi
+  type: quad
+  clk_pin: GPIO47
+  data_pins: [GPIO21, GPIO48, GPIO40, GPIO39]

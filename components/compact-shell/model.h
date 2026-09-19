@@ -2,6 +2,7 @@
 #include "esphome/components/nabla_navigation/navigation.h"
 #include "focus.h"
 #include <vector>
+#include <functional>
 namespace nabla {
 struct CompactMenu {
   int current = 0, focus = 0, top = 0;
@@ -10,6 +11,8 @@ struct CompactMenu {
   int list_rows = 3;
   std::vector<int> saved_focus = std::vector<int>(count, 0);
   std::vector<int> saved_top = std::vector<int>(count, 0);
+  // Callback for view toggle (list <-> icon) at root.
+  std::function<void()> on_view_toggle;
   int total() const { return children(current) + 1; } // reachable logo/Back
   int rows() const { return readable ? 1 : list_rows; }
   void anchor() {
@@ -42,7 +45,11 @@ struct CompactMenu {
   void activate() {
     if (focus < children(current)) open(child(current, focus));
     else if (current) back();
-    else { readable = !readable; anchor(); }
+    else {
+      readable = !readable;
+      anchor();
+      if (on_view_toggle) on_view_toggle();
+    }
   }
   void touch_option(int index) {
     if (index < 0 || index >= total()) return;

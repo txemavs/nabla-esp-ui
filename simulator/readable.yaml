@@ -1,5 +1,5 @@
 packages:
-  main: !include compact.yaml
+  main: !include tiny.yaml
 substitutions:
   compact_profile: readable
 esphome:

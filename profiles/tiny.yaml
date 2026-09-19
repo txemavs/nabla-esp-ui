@@ -6,6 +6,12 @@ substitutions:
   screen_height: "64"
   compact_rows: "3"
   compact_bar_height: "12"
-  compact_small_size: "8"
-  compact_body_size: "10"
-  compact_large_size: "16"
+  # Typography: header titles 10px, list body 11px, icon labels 17px.
+  # Header +1px for readability; body +1px uses spare bottom margin.
+  compact_small_size: "10"
+  compact_body_size: "11"
+  compact_large_size: "17"
+  # Smaller icon (16px vs 20px) for better label space in icon mode.
+  compact_icon_size: "16"
+  # List mode hides footer; readable (fullscreen icon) keeps it.
+  compact_list_footer: "false"
