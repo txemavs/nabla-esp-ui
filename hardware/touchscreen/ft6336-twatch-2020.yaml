@@ -9,4 +9,7 @@ touchscreen:
     i2c_id: touch_i2c
     interrupt_pin: GPIO38
     reset_pin: GPIO14
-    update_interval: 30ms
+    update_interval: 16ms
+    transform:
+      mirror_x: true
+      mirror_y: true

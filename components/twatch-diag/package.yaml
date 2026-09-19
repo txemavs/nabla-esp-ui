@@ -1,5 +1,6 @@
 # T-Watch 2020 diagnostics package
 # Provides hardware test functions for IR, motor, and sensors.
+# Uses write_readv/write for I2C (IDFI2CBus API).
 
 globals:
   - id: twatch_diag_ir_count
@@ -24,6 +25,12 @@ globals:
     type: bool
     initial_value: 'false'
 
+esphome:
+  on_boot:
+    priority: 400
+    then:
+      - script.execute: twatch_scan_i2c
+
 script:
   - id: twatch_test_ir
     then:
@@ -41,25 +48,41 @@ script:
   - id: twatch_scan_i2c
     then:
       - lambda: |-
-          // Scan for BMA423 at 0x18 or 0x19
-          uint8_t data;
-          id(twatch_diag_bma_present) = 
-            (id(sensor_i2c).read_register(0x18, 0x00, &data, 1, true) == esphome::i2c::ERROR_OK) ||
-            (id(sensor_i2c).read_register(0x19, 0x00, &data, 1, true) == esphome::i2c::ERROR_OK);
+          // Scan for BMA423 at 0x18 or 0x19 using write_readv
+          const uint8_t BMA423_CHIP_ID_REG = 0x00;
+          uint8_t chip_id = 0;
+          esphome::i2c::WriteBuffer w_buf = {&BMA423_CHIP_ID_REG, 1};
+          esphome::i2c::ReadBuffer r_buf = {&chip_id, 1};
+          
+          bool bma_at_18 = (id(sensor_i2c).write_readv(0x18, &w_buf, 1, &r_buf, 1) == esphome::i2c::ERROR_OK);
+          bool bma_at_19 = false;
+          if (!bma_at_18) {
+            bma_at_19 = (id(sensor_i2c).write_readv(0x19, &w_buf, 1, &r_buf, 1) == esphome::i2c::ERROR_OK);
+          }
+          id(twatch_diag_bma_present) = bma_at_18 || bma_at_19;
+          
           // AXP202 already confirmed working (backlight on)
           id(twatch_diag_axp_present) = true;
-          ESP_LOGI("twatch_diag", "I2C scan: BMA423=%s AXP202=%s",
+          
+          ESP_LOGI("twatch_diag", "I2C scan: BMA423=%s (chip_id=0x%02X) AXP202=%s",
             id(twatch_diag_bma_present) ? "found" : "not found",
+            chip_id,
             id(twatch_diag_axp_present) ? "found" : "not found");
 
   - id: twatch_read_accel
     then:
       - lambda: |-
           if (!id(twatch_diag_bma_present)) return;
-          // BMA423 accelerometer read (simplified - reads raw data)
-          uint8_t addr = 0x18;
+          
+          // BMA423 accelerometer read using write_readv
+          const uint8_t BMA423_ADDR = 0x18;
+          const uint8_t BMA423_DATA_REG = 0x12;
+          uint8_t reg = BMA423_DATA_REG;
           uint8_t data[6];
-          if (id(sensor_i2c).read_register(addr, 0x12, data, 6, true) == esphome::i2c::ERROR_OK) {
+          esphome::i2c::WriteBuffer w_buf = {&reg, 1};
+          esphome::i2c::ReadBuffer r_buf = {data, 6};
+          
+          if (id(sensor_i2c).write_readv(BMA423_ADDR, &w_buf, 1, &r_buf, 1) == esphome::i2c::ERROR_OK) {
             int16_t x = (data[1] << 8) | data[0];
             int16_t y = (data[3] << 8) | data[2];
             int16_t z = (data[5] << 8) | data[4];
@@ -74,10 +97,15 @@ script:
   - id: twatch_read_battery
     then:
       - lambda: |-
-          // Read AXP202 battery voltage from register 0x78-0x79
+          // Read AXP202 battery voltage from register 0x78-0x79 using write_readv
           const uint8_t AXP202_ADDR = 0x35;
+          const uint8_t AXP202_VBAT_H = 0x78;
+          uint8_t reg = AXP202_VBAT_H;
           uint8_t data[2];
-          if (id(sensor_i2c).read_register(AXP202_ADDR, 0x78, data, 2, true) == esphome::i2c::ERROR_OK) {
+          esphome::i2c::WriteBuffer w_buf = {&reg, 1};
+          esphome::i2c::ReadBuffer r_buf = {data, 2};
+          
+          if (id(sensor_i2c).write_readv(AXP202_ADDR, &w_buf, 1, &r_buf, 1) == esphome::i2c::ERROR_OK) {
             // 12-bit ADC, 1.1mV per LSB
             uint16_t raw = ((data[0] << 4) | (data[1] & 0x0F));
             id(twatch_diag_axp_voltage) = raw * 1.1f / 1000.0f;
