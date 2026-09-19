@@ -2,7 +2,7 @@
 
 **One UI library. Touch screens, rotary encoders and small displays.**
 
-[Getting started](docs/GETTING-STARTED.md) · [Display and test catalog](docs/DISPLAY-CATALOG.md)
+[Getting started](docs/GETTING-STARTED.md) · [Display and test catalog](docs/DISPLAY-CATALOG.md) · [Documentation map](docs/README.md)
 
 Build ESPHome panels with menus defined in YAML, reusable controls and a
 consistent visual style. Use LVGL on larger screens or the compact display
@@ -34,8 +34,10 @@ already works. See [the UI contract and remaining work](docs/UI-CONSISTENCY.md).
   [GitHub setup guide](docs/GITHUB-LIBRARY.md) and
   [editable device YAML](examples/github/panel.yaml).
 - **Try it on your computer:** [simulator guide](simulator/README.md).
-- **Choose hardware:** [touch panel](hardware/README.md) or
+- **Choose hardware:** [touch panel](hardware/jc3248w535cn.md) or
   [ST7735 encoder panel](hardware/nodemcu-32s-st7735.md).
+- **Adapt another device:** [adoption workflow and evidence](docs/DEVICE-ADOPTION.md),
+  covering touch panels, compact encoders and monochrome displays.
 - **Follow development:** [platform plan](docs/platform/README.md) and
   [milestones](docs/platform/ROADMAP.md).
 

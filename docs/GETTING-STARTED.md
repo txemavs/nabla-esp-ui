@@ -41,6 +41,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ./simulator/run.sh              # 480x320 landscape
 ./simulator/run.sh portrait     # 320x480 portrait
+./simulator/run.sh tft160       # 160x128 compact color
 ./simulator/run.sh tiny         # 128x64 compact
 ./simulator/run.sh readable     # 128x64 readable
 ```
@@ -64,6 +65,14 @@ Follow the [GitHub setup](GITHUB-LIBRARY.md) for exact package/resource syntax.
 Do not import an example menu into a real deployment: the device owns its tree.
 Changing the library pin is a deliberate upgrade; retain the previous pin for
 rollback. Existing appearance settings and working navigation are the baseline.
+
+## Adapt a physical device
+
+Follow the [device adoption guide](DEVICE-ADOPTION.md) for hardware composition,
+profile selection and staged validation. The [device guide](../devices/README.md)
+distinguishes complete firmware roots from illustrative fragments. Small encoder
+and monochrome targets have the same documentation/evidence requirements as
+the large touch panel. See the [documentation map](README.md) for topic ownership.
 
 ## Read the code
 
