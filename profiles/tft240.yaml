@@ -1,8 +1,8 @@
 # 240×240 square touch profile for LVGL shell.
-# Smaller bar height (28px) to maximize content area on compact square displays.
+# Compact bar height (24px) to fit header + content + footer within 240px.
 # Uses regular LVGL shell with touch input.
 substitutions:
   ui_profile: tft240
   screen_width: "240"
   screen_height: "240"
-  nabla_bar_height: "28"
+  nabla_bar_height: "24"

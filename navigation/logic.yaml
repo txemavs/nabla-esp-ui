@@ -361,9 +361,17 @@ script:
             lv_obj_add_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
           } else {
-            lv_obj_remove_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
-            lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
-            lv_obj_remove_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+            // Square displays (e.g. 240×240 watch) show only Wi-Fi icon
+            if (square) {
+              lv_obj_add_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_set_x(id(toolbar_wifi), screen_w - 42);
+            } else {
+              lv_obj_remove_flag(id(toolbar_rotate), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_remove_flag(id(toolbar_wifi), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_remove_flag(id(toolbar_bluetooth), LV_OBJ_FLAG_HIDDEN);
+            }
           }
           const bool loading = id(toolbar_progress) >= 0;
           const auto toolbar_bg = lv_color_hex(id(nav_dark) ? 0x000000 : 0xFFFFFF);
