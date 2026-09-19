@@ -58,4 +58,15 @@ inline bool decode_report(const ReportLayout &l,const uint8_t *data,size_t lengt
   for(unsigned i=0;i<l.count;i++)out[i+2]=data[l.keys+i];
   return true;
 }
+// Some classic keyboards retain their descriptor's report ID after accepting
+// boot mode. Accept that only through the validated descriptor and exact size.
+inline bool decode_input(const ReportLayout &layout, bool boot_mode, bool boot_ready,
+                         const uint8_t *data, size_t length, uint8_t out[8]) {
+  if (boot_mode && boot_ready && length == 8) {
+    for (unsigned i=0;i<8;i++) out[i]=data[i];
+    return true;
+  }
+  return decode_report(layout, data, length, out);
+}
+
 }

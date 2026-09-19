@@ -81,6 +81,9 @@ nabla_navigation:
                   - key: keyboards
                     title: ${tr_bt_keyboards}
                     children:
+                      - key: bt_confirm
+                        title: PIN
+                        action: command
                       - key: bt_scan
                         title: ${tr_bt_search}
                         action: command
@@ -95,9 +98,6 @@ nabla_navigation:
                         action: command
                       - key: bt_slot_3
                         title: "4"
-                        action: command
-                      - key: bt_confirm
-                        title: PIN
                         action: command
                       - key: bt_disconnect
                         title: ${tr_bt_disconnect}

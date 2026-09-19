@@ -177,10 +177,18 @@ void Keyboard::loop() {
       ESP_LOGI("bt_keyboard","Descriptor status=%d keyboard=%s report=%u bytes=%u",e.value,e.layout.valid?"yes":"no",e.layout.id,e.layout.bytes);
       if(connected_ && !boot_ && report_layout_.valid)status_="Connected";
     }
-    else if(e.kind==10 && e.value==handle_ && connected_){
+    else if(e.kind==10){
+      // Log transport metadata only, never typed keys or report contents.
+      static unsigned diagnostics = 0;
+      if (diagnostics < 10) {
+        ESP_LOGI("bt_keyboard", "Input mode=%d bytes=%u handle_match=%d connected=%d boot=%d",
+                 e.mode, unsigned(e.length), e.value==handle_, connected_, boot_);
+        ++diagnostics;
+      }
+      if (e.value!=handle_ || !connected_) continue;
       uint8_t normalized[8]{};
-      if(e.mode==ESP_HIDH_BOOT_MODE && boot_ && e.length==8)memcpy(normalized,e.report,8);
-      else if(e.mode!=ESP_HIDH_REPORT_MODE || !decode_report(report_layout_,e.report,e.length,normalized))continue;
+      if(e.mode!=ESP_HIDH_BOOT_MODE && e.mode!=ESP_HIDH_REPORT_MODE)continue;
+      if(!decode_input(report_layout_,e.mode==ESP_HIDH_BOOT_MODE,boot_,e.report,e.length,normalized))continue;
       memcpy(e.report,normalized,8);
       bool invalid=false;for(int i=2;i<8;i++)invalid|=e.report[i]>0 && e.report[i]<4;
       if(invalid){memset(previous_,0,6);continue;}

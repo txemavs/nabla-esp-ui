@@ -6,7 +6,7 @@ BLE stack in this first version.
 
 The T-Watch example adds Settings > Connections > Bluetooth > Keyboards.
 Search collects up to four keyboard-class devices. Choose one explicitly.
-PIN shows the code to type on the keyboard followed by Enter; numeric-comparison
+The first menu row, PIN, shows the code to type on the keyboard followed by Enter; numeric-comparison
 pairing requires selecting PIN to confirm after comparing. Pairing times out
 after 60 seconds. Disconnect stops automatic reconnection. Forget removes the
 saved peer and requests removal of its Bluetooth bond. No pairing keys enter YAML.
@@ -32,5 +32,22 @@ display and OTA must be measured before claiming support.
 Reference: Espressif ESP-IDF examples/bluetooth/esp_hid_host and the pinned
 ESP-IDF 5.5.5 esp_gap_bt_api.h / esp_hidh_api.h APIs.
 
-0.5.1 adds report-mode decoding after a physical keyboard was discovered but
-rejected boot-protocol negotiation. Actual report-mode typing remains pending.
+## Physical evidence (2026-09-19)
+
+The owner confirmed pairing and menu navigation on a T-Watch 2020 with a
+Bluetooth 3.0 Keyboard after USB deployment. Escape behavior and text entry
+remain unverified. This is one tested keyboard, not general HID qualification.
+
+The keyboard accepts boot negotiation but sends nine-byte packets retaining
+the report ID. The decoder accepts these only when the report descriptor,
+ID and exact length match; malformed or unknown reports remain rejected.
+Host regression tests cover this case and standard eight-byte boot packets.
+All 26 repository tests pass and the ESPHome target builds successfully.
+
+Reconnection also produced authentication failures during testing; forgetting
+the bond and pairing again recovered the connection. Reliable reconnection
+across restarts and Wi-Fi coexistence still need qualification.
+
+OPEN/CONNECTING is an acknowledgement, not a completed HID connection:
+protocol negotiation must wait for OPEN/CONNECTED. Diagnostics log only
+transport metadata, never key contents or PINs.

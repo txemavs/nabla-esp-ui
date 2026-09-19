@@ -20,6 +20,13 @@ auto l=keyboard_layout(descriptor,sizeof(descriptor));assert(l.valid && l.id==1 
 uint8_t input[]={1,2,0,4,0,0,0,0,0},output[8]{};
 assert(decode_report(l,input,sizeof(input),output));assert(output[0]==2 && output[2]==4);
 assert(!decode_report(l,input,3,output));input[0]=2;assert(!decode_report(l,input,sizeof(input),output));
+input[0]=1;input[3]=0x52;
+assert(decode_input(l,true,true,input,9,output) && output[2]==0x52);
+input[0]=2;assert(!decode_input(l,true,true,input,9,output));
+assert(!decode_input(l,true,true,input,7,output));
+uint8_t boot[]={0,0,0x51,0,0,0,0,0};
+assert(decode_input(l,true,true,boot,8,output) && output[2]==0x51);
+assert(!decode_input({},true,true,input,9,output));
 assert(!keyboard_layout(descriptor,7).valid);
 uint8_t bad[]={0x85,255};assert(!keyboard_layout(bad,sizeof(bad)).valid);
 }
