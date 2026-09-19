@@ -4,12 +4,32 @@
 #include "geometry.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
+#include <cmath>
 namespace nabla {
 class CompactShell {
  public:
   CompactMenu menu;
   esphome::font::Font *icons=nullptr;
   bool color_icons=false, root_tiles=false, single_icon_mode=false, list_footer=false, middle_scroll=false;
+  // Tiny profile: use play marker in Normal mode instead of box border.
+  bool tiny_play_marker=false;
+  // Animation state for triangle spin on boot and view toggle.
+  uint32_t triangle_anim_start=0;
+  bool triangle_animating=false;
+  float triangle_angle=0;  // Current angle in degrees (0=down, 180=up).
+  int triangle_spins=0;    // Number of 180° spins remaining.
+  // Icon size reduction for tiny profile (pixels to subtract from compact_icon_size).
+  int tiny_icon_reduce=0;
+
+  void start_triangle_spin(int spins=1) {
+    triangle_animating = true;
+    triangle_anim_start = millis();
+    triangle_spins = spins;
+  }
+
+  void init_tiny_callbacks() {
+    menu.on_view_toggle = [this]() { start_triangle_spin(1); };
+  }
   std::function<int(int)> icon_color;
   std::function<bool(int)> custom_move;
   std::function<bool()> custom_activate,custom_back;
@@ -60,11 +80,12 @@ class CompactShell {
         static_cast<int>(wifi.draft.value.size()),static_cast<int>(wifi.draft.limit));
       return;
     }
-    int title=0;
+    int title=wifi.flow.real()?22:0;  // Real: "Wi-Fi" vs Demo: "Wi-Fi (demo)"
     switch(wifi.flow.stage) {
       case Stage::SCANNING:title=11;break;case Stage::CONNECTING:title=12;break;
       case Stage::SCAN_ERROR:title=18;break;
-      case Stage::SUCCESS:title=13;break;case Stage::FAILURE:title=14;break;
+      case Stage::SUCCESS:title=wifi.flow.real()?23:13;break;
+      case Stage::FAILURE:title=wifi.flow.real()?24:14;break;
       case Stage::RESULTS:if(!wifi.flow.results())title=17;break;
       default:if(wifi.flow.error==Error::SSID)title=15;
         else if(wifi.flow.error==Error::PASSWORD)title=16;break;
@@ -146,10 +167,45 @@ class CompactShell {
     bool header_focus = menu.focus == children(menu.current);
     if(header_focus && !menu.borders) d.filled_rectangle(0,0,15,g.header,fg);
     auto mark_color=header_focus && !menu.borders?bg:fg;
-    // Equilateral triangle, fixed center. Up on parent focus, down otherwise.
-    if (header_focus && menu.current)
-      d.triangle(2, 10, 12, 10, 7, 1, mark_color);
-    else d.triangle(2, 1, 12, 1, 7, 10, mark_color);
+
+    // Update triangle animation state.
+    if (triangle_animating) {
+      uint32_t elapsed = millis() - triangle_anim_start;
+      const uint32_t spin_duration = 300;  // ms per 180° spin
+      uint32_t total_duration = spin_duration * triangle_spins;
+      if (elapsed >= total_duration) {
+        triangle_animating = false;
+        triangle_angle = 0;
+      } else {
+        // Linear interpolation of angle.
+        triangle_angle = (float(elapsed) / float(spin_duration)) * 180.0f;
+        triangle_angle = fmod(triangle_angle, 360.0f);
+      }
+    }
+
+    // Draw triangle with rotation. Center at (7, 5.5), radius ~5px.
+    // Base triangle points down (apex at bottom): angles 90, 210, 330 from center.
+    // Rotation angle: 0 = down, 180 = up.
+    float base_angle = (header_focus && menu.current) ? 180.0f : 0.0f;
+    float angle_deg = base_angle + triangle_angle;
+    float angle_rad = angle_deg * 3.14159f / 180.0f;
+    float cx = 7.0f, cy = 5.5f, r = 5.0f;
+    // Equilateral triangle vertices at 0°, 120°, 240° from top.
+    // For down-pointing: vertices at 90°, 210°, 330° (or 30° + 0/120/240).
+    auto vertex = [&](float offset_deg) -> std::pair<int,int> {
+      float a = (angle_rad + (90.0f + offset_deg) * 3.14159f / 180.0f);
+      return {int(cx + r * cos(a) + 0.5f), int(cy + r * sin(a) + 0.5f)};
+    };
+    auto v0 = vertex(0), v1 = vertex(120), v2 = vertex(240);
+    if (triangle_animating) {
+      d.filled_triangle(v0.first, v0.second, v1.first, v1.second, v2.first, v2.second, mark_color);
+    } else {
+      // Static triangle (filled for parent focus, outline for root toggle).
+      if (header_focus && menu.current)
+        d.triangle(2, 10, 12, 10, 7, 1, mark_color);
+      else
+        d.triangle(2, 1, 12, 1, 7, 10, mark_color);
+    }
     if (header_focus && !menu.current && menu.borders) d.rectangle(0, 0, 15, g.header, fg);
     d.start_clipping(16, 0, g.width-1, g.header-1);
     d.print(16, 0, small, fg, nodes[menu.current].title);
@@ -168,21 +224,33 @@ class CompactShell {
         auto packed=menu.dark?nodes[node].icon_dark:nodes[node].icon_light;
         auto color=color_icons?Color((packed>>16)&255,(packed>>8)&255,packed&255):ink;
         if(selected&&!menu.borders)color=ink;
-        // Measure label height for vertical centering.
+        // Tiny single-icon mode: use large font for label, centered at bottom.
+        auto *label_font = (single_icon_mode && menu.readable) ? large : small;
         int bx,by,bw,bh;
-        d.get_text_bounds(0,0,nodes[node].title,small,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
-        // For single_icon_mode, vertically center icon+label in content area.
-        int icon_h = icons->get_height();
-        int total_h = icon_h + 2 + bh;  // icon + gap + label
-        int base_y = y + (ch - total_h) / 2;
-        int icon_y = base_y + icon_h / 2;
-        int label_y = base_y + icon_h + 2;
+        d.get_text_bounds(0,0,nodes[node].title,label_font,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+        // For single_icon_mode, pack icon above label with less top padding.
+        int icon_h = icons->get_height() - tiny_icon_reduce;
+        // Position icon closer to top, label at bottom for better visual balance.
+        int icon_y, label_y;
+        if (single_icon_mode && menu.readable) {
+          // Tiny icon mode: icon higher in content area, label at bottom.
+          int total_h = icon_h + 4 + bh;  // icon + gap + label
+          int base_y = y + (ch - total_h) / 2 - 2;  // shift UP for better visual balance
+          icon_y = base_y + icon_h / 2;
+          label_y = base_y + icon_h + 4;
+        } else {
+          // Standard mode: center icon+label vertically.
+          int total_h = icon_h + 2 + bh;
+          int base_y = y + (ch - total_h) / 2;
+          icon_y = base_y + icon_h / 2;
+          label_y = base_y + icon_h + 2;
+        }
         d.print(x+cw/2,icon_y,icons,color,display::TextAlign::CENTER,nodes[node].icon);
         d.start_clipping(x+3,y,x+cw-4,y+ch-2);
-        if(bw<=cw-6)d.print(x+cw/2,label_y,small,ink,display::TextAlign::TOP_CENTER,nodes[node].title);
+        if(bw<=cw-6)d.print(x+cw/2,label_y,label_font,ink,display::TextAlign::TOP_CENTER,nodes[node].title);
         else {
           int offset=selected?std::min(bw-cw+6,std::max(0,int(((millis()-focus_since)/100)%(bw-cw+26))-10)):0;
-          d.print(x+3-offset,label_y,small,ink,nodes[node].title);
+          d.print(x+3-offset,label_y,label_font,ink,nodes[node].title);
         }
         d.end_clipping();
       }
@@ -194,10 +262,24 @@ class CompactShell {
         if (index >= n) break;
         int y = g.header + r * g.row_height;
         bool selected = menu.focus == index;
-        if (selected) { if(menu.borders) d.rectangle(0,y,g.width,g.row_height,fg); else d.filled_rectangle(0,y,g.width,g.row_height,fg); }
+        // Tiny profile: Normal mode uses play marker, Alto contraste uses inverted bar.
+        bool use_play_marker = tiny_play_marker && single_icon_mode && menu.borders;
+        if (selected) {
+          if (use_play_marker) {
+            // Play marker triangle on the left (pointing right).
+            int marker_h = 8, marker_w = 5;
+            int mx = 2, my = y + (g.row_height - marker_h) / 2;
+            d.filled_triangle(mx, my, mx, my + marker_h, mx + marker_w, my + marker_h/2, fg);
+          } else if (menu.borders) {
+            d.rectangle(0, y, g.width, g.row_height, fg);
+          } else {
+            d.filled_rectangle(0, y, g.width, g.row_height, fg);
+          }
+        }
         auto *font = menu.readable ? large : body;
         int row_node=child(menu.current,index);
-        int left=4;
+        // With play marker, leave space for the marker on the left.
+        int left = use_play_marker ? 10 : 4;
         if(icons && nodes[row_node].icon[0] && !single_icon_mode){
           left=32;int packed=icon_color?icon_color(row_node):(menu.dark?nodes[row_node].icon_dark:nodes[row_node].icon_light);
           auto ink=color_icons?Color((packed>>16)&255,(packed>>8)&255,packed&255):fg;
@@ -217,7 +299,8 @@ class CompactShell {
           if (phase > range+10) offset = std::max(0, 2*range+10-phase);
         }
         d.start_clipping(left-1, y+1, g.width-4, y+g.row_height-2);
-        d.print(left-offset, y+(g.row_height-bh)/2, font, selected && !menu.borders ? bg : fg, title);
+        // In play marker mode, text uses normal foreground (no inversion).
+        d.print(left-offset, y+(g.row_height-bh)/2, font, (selected && !menu.borders && !use_play_marker) ? bg : fg, title);
         d.end_clipping();
       }
     } else {
