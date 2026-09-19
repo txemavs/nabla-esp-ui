@@ -4,6 +4,8 @@ Reusable UI building blocks live here, grouped by component. New components
 should have a widget.yaml entry point and a README describing parameters,
 dependencies, focus/pressed behavior, examples and limitations.
 
+- [keyboard/](keyboard/README.md): on-screen keyboard maps for LVGL; includes
+  Latin/Spanish character layouts used by Wi-Fi forms.
 - Optional external_components/nabla_wifi: persistent primary Wi-Fi adapter for
   the LVGL form; see its README for limits and fallback guarantees.
 - [Control Panel](control-panel/README.md): dense grid of toggle/momentary/sensor

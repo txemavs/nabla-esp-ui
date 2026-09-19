@@ -1,0 +1,37 @@
+# Rotary encoder input for NodeMCU-32S
+# Encoder A GPIO32, B GPIO33, push GPIO27, K0 (back) GPIO14
+# All pins active-low with internal pull-ups
+
+sensor:
+  - platform: rotary_encoder
+    id: panel_encoder
+    pin_a:
+      number: GPIO32
+      mode: INPUT_PULLUP
+    pin_b:
+      number: GPIO33
+      mode: INPUT_PULLUP
+    resolution: 1
+    on_clockwise:
+      - lambda: nabla::compact_shell.move(1);
+    on_anticlockwise:
+      - lambda: nabla::compact_shell.move(-1);
+
+binary_sensor:
+  - platform: gpio
+    id: encoder_push
+    pin:
+      number: GPIO27
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - lambda: nabla::compact_shell.activate();
+
+  - platform: gpio
+    id: encoder_back
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - lambda: nabla::compact_shell.back();

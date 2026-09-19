@@ -1,0 +1,23 @@
+# NodeMCU-32S + ST7735 board composition
+# ESP32 Arduino, no PSRAM/LVGL requirement, compact 160×128 TFT with encoder.
+#
+# This composer imports reusable capability packages. See hardware/ subfolders
+# for individual display, input and power configurations.
+
+substitutions:
+  nabla_display_kind: "ST7735"
+  nabla_device_model: "NodeMCU-32S"
+  nabla_display_monochrome: "false"
+
+esp32:
+  board: nodemcuv2
+  framework:
+    type: arduino
+
+logger:
+  level: INFO
+
+packages:
+  display: !include display/st7735-nodemcu-32s.yaml
+  backlight: !include power/backlight-gpio4-pwm.yaml
+  input: !include input/encoder-nodemcu-32s.yaml

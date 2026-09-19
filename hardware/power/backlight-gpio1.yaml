@@ -1,0 +1,7 @@
+# Backlight power supply on GPIO1
+# Enable on boot for immediate display visibility.
+
+power_supply:
+  id: panel_backlight
+  pin: GPIO1
+  enable_on_boot: true

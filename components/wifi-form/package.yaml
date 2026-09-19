@@ -183,6 +183,6 @@ lvgl:
 # Export helpers from the same checkout as the external component.
 nabla_runtime:
   - headers:
-      - components/forms/latin_keyboard.h
+      - components/keyboard/latin_keyboard.h
       - components/forms/wifi_flow.h
       - components/wifi-form/form.h

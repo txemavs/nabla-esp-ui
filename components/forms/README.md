@@ -105,9 +105,9 @@ Every scan/busy/error state has a reachable Back or Cancel without physical ESC.
 [regular.h](regular.h) depends on generated metadata and LVGL; the compact renderer
 uses the same model without LVGL. Theme/focus colors are supplied by the shell.
 
-[latin_keyboard.h](latin_keyboard.h) installs optional native LVGL maps with
-lowercase, uppercase, digits, ASCII punctuation and Spanish accents. It retains
-LVGL editing/cursor/Ready/Cancel behavior. The Wi-Fi package enables it through
+The Latin keyboard is now in [components/keyboard/](../keyboard/README.md).
+It installs optional native LVGL maps with lowercase, uppercase, digits, ASCII
+punctuation and Spanish accents. The Wi-Fi package enables it through
 nabla_keyboard_latin: "true"; set "false" to retain the stock keyboard.
 The shared font combines DejaVu text with five bundled Font Awesome symbols.
 
