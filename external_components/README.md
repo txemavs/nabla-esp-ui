@@ -38,3 +38,8 @@ Do not use `main` or short SHAs for deployed installations.
 
 Note: `captive_portal` is a forked/branded ESPHome component that replaces the
 built-in version; the others are Nabla-specific implementations.
+
+## Experimental classic keyboard
+
+[nabla_bt_keyboard](nabla_bt_keyboard/README.md) is an optional original-ESP32 HID host.
+See its bounded discovery, pairing, input and compatibility limitations before use.

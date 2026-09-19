@@ -1,0 +1,251 @@
+# Optional classic keyboard integration fixture for the original ESP32.
+substitutions:
+  nabla_ui_ref: codex/classic-keyboard
+  ui_language: es
+  nabla_resource_root: ../..
+  nabla_initial_rotation: "0"
+  screen_width: "240"
+  screen_height: "240"
+esphome:
+  name: nabla-keyboard-test
+packages:
+  hardware: !include ../../hardware/lilygo-twatch-2020.yaml
+  locale: !include ../../locales/${ui_language}.yaml
+  theme: !include ../../theme/nabla.yaml
+  profile: !include ../../profiles/tft240.yaml
+  shell: !include ../../components/shell/package-square.yaml
+  diagnostics: !include ../../components/twatch-diag/package.yaml
+  info: !include ../../components/device-info/package.yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/txemavs/nabla-esp-ui
+      ref: ${nabla_ui_ref}
+      path: external_components
+nabla_bt_keyboard:
+  id: bt_keyboard
+  on_key:
+    - lambda: |-
+        if (nabla::nodes[id(nav_current)].action == 3) {
+          auto &editor = nabla_wifi_form::editor;
+          if (!editor.scanning() && editor.flow.stage == nabla_forms::Stage::EDIT) {
+            auto *field = lv_keyboard_get_textarea(editor.keyboard);
+            if (field && key == 0x2A) { lv_textarea_delete_char(field); return; }
+            char c = esphome::nabla_bt_keyboard::latin_key(key, modifiers);
+            if (field && c) { lv_textarea_add_char(field, c); return; }
+          }
+        }
+        if (key == 0x52) id(nav_move).execute(-1);
+        else if (key == 0x51) id(nav_move).execute(1);
+        else if (key == 0x28) id(nav_activate).execute();
+        else if (key == 0x29) id(nav_back).execute();
+        else if (key == 0x4A) id(nav_home).execute();
+nabla_navigation:
+  tree:
+    key: home
+    title: ${tr_main_menu}
+    children:
+      - key: settings
+        icon_dark: 0x499EFF
+        icon_light: 0x0055BB
+        title: ${tr_settings}
+        icon: ${icon_settings}
+        children:
+          - key: information
+            title: ${tr_information}
+            children:
+              - key: device_model
+                title: ${tr_info_model}
+                info: model
+              - key: device_wifi
+                title: Wi-Fi
+                info: wifi
+              - key: device_ip
+                title: IP
+                info: ip
+              - key: device_version
+                title: ESPHome
+                info: version
+              - key: device_uptime
+                title: ${tr_info_uptime}
+                info: uptime
+          - key: connections
+            title: ${tr_wifi_form_connections}
+            children:
+              - key: wifi
+                title: ${tr_wifi}
+                action: wifi
+              - key: bluetooth
+                title: Bluetooth
+                children:
+                  - key: keyboards
+                    title: ${tr_bt_keyboards}
+                    children:
+                      - key: bt_scan
+                        title: ${tr_bt_search}
+                        action: command
+                      - key: bt_slot_0
+                        title: "1"
+                        action: command
+                      - key: bt_slot_1
+                        title: "2"
+                        action: command
+                      - key: bt_slot_2
+                        title: "3"
+                        action: command
+                      - key: bt_slot_3
+                        title: "4"
+                        action: command
+                      - key: bt_confirm
+                        title: PIN
+                        action: command
+                      - key: bt_disconnect
+                        title: ${tr_bt_disconnect}
+                        action: command
+                      - key: bt_forget
+                        title: ${tr_bt_forget}
+                        action: command
+          - key: appearance
+            title: ${tr_appearance}
+            children:
+              - key: dark_mode
+                title: ${tr_dark_mode}
+                action: toggle_dark
+              - key: font_family
+                title: ${tr_font_family}
+                action: toggle_font
+              - key: borders
+                title: ${tr_borders}
+                action: toggle_borders
+      - key: control
+        icon_dark: 0x65D8E8
+        icon_light: 0x006A7C
+        title: ${tr_control}
+        icon: ${icon_building}
+        children:
+          - key: site_a
+            title: ${tr_site_a}
+            children:
+              - key: light_storage
+                title: ${tr_light_storage}
+                detail: ${tr_light_unavailable}
+              - key: light_office
+                title: ${tr_light_office}
+                detail: ${tr_light_unavailable}
+              - key: light_bench
+                title: ${tr_light_bench}
+                detail: ${tr_light_unavailable}
+              - key: light_spot
+                title: ${tr_light_spot}
+                detail: ${tr_light_unavailable}
+      - key: twatch_test
+        icon_dark: 0xFF9870
+        icon_light: 0xAA3E12
+        title: ${tr_twatch_test}
+        icon: ${icon_sensors}
+        children:
+          - key: twatch_version
+            title: ${tr_twatch_version}
+            detail: ${tr_twatch_version_detail}
+          - key: twatch_ir
+            title: ${tr_twatch_ir}
+            action: command
+          - key: twatch_motor
+            title: ${tr_twatch_motor}
+            action: command
+          - key: twatch_accel
+            title: ${tr_twatch_accel}
+            action: command
+          - key: twatch_battery
+            title: ${tr_twatch_battery}
+            action: command
+          - key: twatch_pek
+            title: ${tr_twatch_pek}
+            action: command
+      - key: sensors
+        icon_dark: 0xD6E96B
+        icon_light: 0x617000
+        title: ${tr_sensors}
+        icon: ${icon_sensors}
+        children:
+          - key: living_room
+            title: ${tr_living_room}
+            children:
+              - key: living_temperature
+                title: ${tr_temperature}
+                detail: ${tr_offline}
+              - key: living_humidity
+                title: ${tr_humidity}
+                detail: ${tr_offline}
+
+  commands:
+    - node: bt_scan
+      available: return true;
+      state: return id(bt_keyboard).status();
+      on_press:
+        - lambda: id(bt_keyboard).scan();
+    - node: bt_slot_0
+      available: return id(bt_keyboard).available(0);
+      state: return id(bt_keyboard).candidate(0);
+      on_press:
+        - lambda: id(bt_keyboard).connect_slot(0);
+    - node: bt_slot_1
+      available: return id(bt_keyboard).available(1);
+      state: return id(bt_keyboard).candidate(1);
+      on_press:
+        - lambda: id(bt_keyboard).connect_slot(1);
+    - node: bt_slot_2
+      available: return id(bt_keyboard).available(2);
+      state: return id(bt_keyboard).candidate(2);
+      on_press:
+        - lambda: id(bt_keyboard).connect_slot(2);
+    - node: bt_slot_3
+      available: return id(bt_keyboard).available(3);
+      state: return id(bt_keyboard).candidate(3);
+      on_press:
+        - lambda: id(bt_keyboard).connect_slot(3);
+    - node: bt_confirm
+      available: return true;
+      state: return id(bt_keyboard).pairing();
+      on_press:
+        - lambda: id(bt_keyboard).confirm();
+    - node: bt_disconnect
+      available: return true;
+      state: return std::string("");
+      on_press:
+        - lambda: id(bt_keyboard).disconnect();
+    - node: bt_forget
+      available: return true;
+      state: return std::string("");
+      on_press:
+        - lambda: id(bt_keyboard).forget();
+    - node: twatch_ir
+      available: return !id(twatch_test_ir).is_running();
+      state: return std::to_string(id(twatch_diag_ir_count));
+      on_press:
+        - script.execute: twatch_test_ir
+    - node: twatch_motor
+      available: return !id(twatch_vibrate).is_running();
+      state: return std::to_string(id(twatch_diag_motor_count));
+      on_press:
+        - script.execute: twatch_test_motor
+    - node: twatch_accel
+      available: return true;
+      state: |-
+        return id(twatch_diag_bma_present) ? "${tr_twatch_detected}" : "${tr_twatch_not_detected}";
+      on_press:
+        - script.execute: twatch_scan_i2c
+    - node: twatch_battery
+      available: return true;
+      state: |-
+        if (!std::isfinite(id(twatch_diag_axp_voltage))) return std::string("--");
+        char value[16];
+        snprintf(value, sizeof(value), "%.2f V", id(twatch_diag_axp_voltage));
+        return std::string(value);
+      on_press:
+        - script.execute: twatch_read_battery
+    - node: twatch_pek
+      available: return true;
+      state: return std::to_string(id(twatch_pek_count));
+      on_press:
+        - logger.log: "Press the physical side key; only a decoded PEK event increments its counter."
