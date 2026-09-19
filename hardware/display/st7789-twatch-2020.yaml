@@ -1,17 +1,20 @@
 # ST7789 display for LilyGO T-Watch 2020 — SPI 240×240 TFT LCD
-# CS GPIO5, DC GPIO27. The T-Watch has no hardware reset pin for the display.
-# Uses LVGL for touch-based UI.
-#
-# Uses mipi_spi driver which doesn't require reset_pin for ST7789V.
+# CS GPIO5, DC GPIO27. No hardware reset pin.
+# Matches the proven bring-up: ili9xxx ST7789V, MODE3, invert + BGR.
 
 display:
-  - platform: mipi_spi
-    id: panel_display
+  - platform: ili9xxx
     model: ST7789V
+    id: panel_display
+    spi_id: spi_tft
+    spi_mode: MODE3
+    data_rate: 20MHz
     cs_pin:
       number: GPIO5
       ignore_strapping_warning: true
     dc_pin: GPIO27
+    invert_colors: true
+    color_order: bgr
     dimensions:
       width: 240
       height: 240

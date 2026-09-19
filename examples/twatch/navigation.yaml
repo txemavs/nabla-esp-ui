@@ -12,6 +12,38 @@ external_components:
       path: ${nabla_resource_root}/external_components
 
 nabla_navigation:
+
+  commands:
+    - node: twatch_ir
+      available: return !id(twatch_test_ir).is_running();
+      state: return std::to_string(id(twatch_diag_ir_count));
+      on_press:
+        - script.execute: twatch_test_ir
+    - node: twatch_motor
+      available: return !id(twatch_vibrate).is_running();
+      state: return std::to_string(id(twatch_diag_motor_count));
+      on_press:
+        - script.execute: twatch_test_motor
+    - node: twatch_accel
+      available: return true;
+      state: |-
+        return id(twatch_diag_bma_present) ? "${tr_twatch_detected}" : "${tr_twatch_not_detected}";
+      on_press:
+        - script.execute: twatch_scan_i2c
+    - node: twatch_battery
+      available: return true;
+      state: |-
+        if (!std::isfinite(id(twatch_diag_axp_voltage))) return std::string("--");
+        char value[16];
+        snprintf(value, sizeof(value), "%.2f V", id(twatch_diag_axp_voltage));
+        return std::string(value);
+      on_press:
+        - script.execute: twatch_read_battery
+    - node: twatch_pek
+      available: return true;
+      state: return std::to_string(id(twatch_pek_count));
+      on_press:
+        - logger.log: "Press the physical side key; only a decoded PEK event increments its counter."
   forms:
     - key: brightness
       label: ${tr_form_brightness}
@@ -98,19 +130,19 @@ nabla_navigation:
             detail: ${tr_twatch_version_detail}
           - key: twatch_ir
             title: ${tr_twatch_ir}
-            detail: ${tr_twatch_ir_detail}
+            action: command
           - key: twatch_motor
             title: ${tr_twatch_motor}
-            detail: ${tr_twatch_motor_detail}
+            action: command
           - key: twatch_accel
             title: ${tr_twatch_accel}
-            detail: ${tr_twatch_accel_detail}
+            action: command
           - key: twatch_battery
             title: ${tr_twatch_battery}
-            detail: ${tr_twatch_battery_detail}
+            action: command
           - key: twatch_pek
             title: ${tr_twatch_pek}
-            detail: ${tr_twatch_pek_detail}
+            action: command
       - key: sensors
         icon_dark: 0xD6E96B
         icon_light: 0x617000

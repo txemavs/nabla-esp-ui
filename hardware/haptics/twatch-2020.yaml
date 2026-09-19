@@ -8,9 +8,10 @@ output:
 
 script:
   - id: twatch_vibrate
+    mode: single
     parameters:
       duration_ms: int
     then:
       - output.turn_on: twatch_motor
-      - delay: !lambda return duration_ms;
+      - delay: !lambda return static_cast<uint32_t>(std::max(1, std::min(duration_ms, 500)));
       - output.turn_off: twatch_motor

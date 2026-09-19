@@ -2,5 +2,6 @@
 # Clock GPIO18, MOSI GPIO19
 
 spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO19
+  - id: spi_tft
+    clk_pin: GPIO18
+    mosi_pin: GPIO19
