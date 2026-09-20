@@ -45,8 +45,13 @@ uint32_t Gateway::outgoing(uint8_t *data,uint32_t length) {
 void Gateway::test_audio(){
   if(!connected() || tone_requested_)return;
   remaining_=0;tone_requested_=true;tone_started_=millis();status_="Abriendo audio";
+  ESP_LOGI("bt_audio","Opening SCO for test tone...");
   esp_hf_ag_volume_control(peer_,ESP_HF_VOLUME_CONTROL_TARGET_SPK,3);
-  if(esp_hf_ag_audio_connect(peer_)!=ESP_OK){tone_requested_=false;status_="Fallo al abrir audio";}
+  esp_err_t err=esp_hf_ag_audio_connect(peer_);
+  if(err!=ESP_OK){
+    tone_requested_=false;status_="Fallo al abrir audio";
+    ESP_LOGE("bt_audio","esp_hf_ag_audio_connect failed: 0x%x",err);
+  }
 }
 void Gateway::scan() {
   if(!ready_ || scanning_ || waiting_ || connected())return;
@@ -116,8 +121,11 @@ void Gateway::disconnect() {
 }
 void Gateway::callback(esp_hf_cb_event_t event,esp_hf_cb_param_t *p) {
   auto *self=instance_;if(!self)return;
-  if(event==ESP_HF_AUDIO_STATE_EVT && !memcmp(p->audio_stat.remote_addr,self->peer_,6))
+  if(event==ESP_HF_AUDIO_STATE_EVT && !memcmp(p->audio_stat.remote_addr,self->peer_,6)){
     self->audio_event_=p->audio_stat.state;
+    ESP_LOGI("bt_audio","Audio event: state=%d handle=0x%04x frame_size=%u",
+             p->audio_stat.state,p->audio_stat.sync_conn_handle,p->audio_stat.preferred_frame_size);
+  }
   if(event==ESP_HF_CIND_RESPONSE_EVT && !memcmp(p->cind_rep.remote_addr,self->peer_,6)){
     esp_hf_ag_cind_response(self->peer_,ESP_HF_CALL_STATUS_NO_CALLS,
       ESP_HF_CALL_SETUP_STATUS_IDLE,ESP_HF_NETWORK_STATE_NOT_AVAILABLE,0,

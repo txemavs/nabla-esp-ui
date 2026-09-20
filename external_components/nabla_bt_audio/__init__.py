@@ -29,6 +29,8 @@ async def to_code(config):
         "CONFIG_BT_HFP_ENABLE": True, "CONFIG_BT_HFP_AG_ENABLE": True,
         # Keep IDF service-record capacity used by the validated AG connection.
         "CONFIG_BT_HFP_CLIENT_ENABLE": True,
+        # Enable SCO/eSCO: require at least one sync connection for audio.
+        "CONFIG_BTDM_CTRL_BR_EDR_MAX_SYNC_CONN": 1,
         "CONFIG_BTDM_CTRL_BR_EDR_SCO_DATA_PATH_HCI": True,
         "CONFIG_BTDM_CTRL_BR_EDR_SCO_DATA_PATH_PCM": False,
         "CONFIG_BT_HFP_AUDIO_DATA_PATH_HCI": True,
