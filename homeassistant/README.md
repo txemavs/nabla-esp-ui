@@ -55,7 +55,9 @@ exposes buttons and a Lovelace card remote.
    type: module
    ```
 
-3. Add a card to your dashboard:
+3. Add a card to your dashboard. The card appears in the UI card picker as
+   "Nabla Display Card" and can be added or duplicated from the editor.
+   Manual YAML configuration:
    ```yaml
    type: custom:nabla-display-card
    device_id: "192_168_1_100"  # Host IP with dots replaced by underscores

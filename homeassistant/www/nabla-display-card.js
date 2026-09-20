@@ -20,6 +20,7 @@ class NablaDisplayCard extends HTMLElement {
       throw new Error("You need to define a device_id");
     }
     this._config = {
+      type: "custom:nabla-display-card",
       device_id: config.device_id,
       name: config.name || "Nabla Display",
       poll_interval: config.poll_interval || 1000,
@@ -280,6 +281,7 @@ class NablaDisplayCard extends HTMLElement {
 
   static getStubConfig() {
     return {
+      type: "custom:nabla-display-card",
       device_id: "",
       name: "Nabla Display",
       poll_interval: 1000,
@@ -349,6 +351,7 @@ class NablaDisplayCardEditor extends HTMLElement {
 
   _valueChanged() {
     const config = {
+      type: "custom:nabla-display-card",
       device_id: this.querySelector("#device_id").value,
       name: this.querySelector("#name").value || "Nabla Display",
       poll_interval: parseInt(this.querySelector("#poll_interval").value) || 1000,
