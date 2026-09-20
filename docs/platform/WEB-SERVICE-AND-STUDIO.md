@@ -71,8 +71,8 @@ The page should contain:
 - Empty project, sample, import, validation and YAML download.
 - A visible Demo/Live distinction; never substitute fabricated live state.
 
-Start with OLED 128x64, ST7735 160x128 and touch 480x320. Add watch 240x240
-after equivalent tests. ST7735 logical height is 128, not the informal 120.
+Include OLED 128x64, ST7735 160x128, T-Watch 2020 240x240 and touch 480x320
+as the four initial gallery targets. Qualify each renderer before labelling its preview exact. ST7735 logical height is 128, not the informal 120.
 
 The gallery runs without a device or Home Assistant. It must not discover
 private devices, upload credentials or issue load-control commands.
@@ -178,3 +178,7 @@ must not block physical-device progress or require remote infrastructure.
 - Profile switch affects only preview, never connected hardware.
 - Failed Wi-Fi change restores fallbacks and Cancel clears credential drafts.
 - Exported menu compiles; unbound actions cannot operate real equipment.
+
+## First W1 increment implemented
+
+The [optional coordinator](../../external_components/nabla_web_service/README.md) now selects responsive/mirror/both with component-presence validation. Read-only mirror routing is available by omitting on_action. The proposed enabled:false schema above remains unimplemented; omit components for compile-time exclusion. Authentication integration, AP/resource qualification and compile-time control-code elimination remain pending.

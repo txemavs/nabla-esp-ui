@@ -12,6 +12,7 @@
 namespace esphome::nabla_web {
 class Web : public Component, public AsyncWebHandler {
  public:
+  void set_serve_root(bool value){serve_root_=value;}
   void set_camera_node(int node){camera_node_=node;}
   void set_camera_port(uint16_t port){port_=port;}
   float get_setup_priority() const override {return setup_priority::WIFI+2;}
@@ -22,7 +23,7 @@ class Web : public Component, public AsyncWebHandler {
     publish();
   }
   bool canHandle(AsyncWebServerRequest *r) const override {
-    return r->url()=="/" || r->url()=="/nabla" || r->url()=="/nabla/state" || r->url()=="/nabla/wifi";
+    return (serve_root_ && r->url()=="/") || r->url()=="/nabla" || r->url()=="/nabla/state" || r->url()=="/nabla/wifi";
   }
   void handleRequest(AsyncWebServerRequest *r) override {
     if(r->method()==HTTP_GET && (r->url()=="/" || r->url()=="/nabla")){
@@ -88,7 +89,7 @@ class Web : public Component, public AsyncWebHandler {
     });
     std::lock_guard<std::mutex> lock(mutex_);snapshot_=std::move(value);
   }
-  int camera_node_=1;uint16_t port_=8080;uint32_t published_=0;
+  bool serve_root_=true;int camera_node_=1;uint16_t port_=8080;uint32_t published_=0;
   nabla_forms::WifiFlow flow_;
   std::mutex mutex_;std::string snapshot_,token_,command_,ssid_,password_;bool open_=false;
 };

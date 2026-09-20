@@ -4,6 +4,7 @@ namespace esphome::nabla_display_mirror {
 inline constexpr char MIRROR_PAGE[]=R"MIRROR(<!doctype html>
 <html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Nabla · Pantalla</title><style>
+[hidden]{display:none!important}
 body{margin:0;background:#090a0c;color:#eee;font:18px monospace}
 header,footer{padding:18px;background:#16191d}main{padding:24px;max-width:820px;margin:auto}
 canvas{width:100%;image-rendering:pixelated;display:block;background:black;aspect-ratio:2}
@@ -16,8 +17,9 @@ button:focus-visible{outline:2px solid white}p{line-height:1.5;font-size:14px}
 <p>La ruleta y estos controles manejan la misma pantalla. Teclado: ↑, ↓, Enter y Escape.</p>
 </main><footer id="status">Conectando…</footer><script>
 const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),status=document.querySelector('#status');
-let token='',busy=false;
-async function action(value){if(busy||!token)return;busy=true;try{
+let token='',busy=false,allowInput=false;
+fetch("/mirror/capabilities").then(r=>r.json()).then(c=>{allowInput=c.input;document.querySelector(".controls").hidden=!allowInput;document.querySelector("main p").textContent=allowInput?"La ruleta y estos controles manejan la misma pantalla.":"Solo lectura: controla la pantalla desde el dispositivo."});
+async function action(value){if(!allowInput||busy||!token)return;busy=true;try{
 const r=await fetch('/mirror/action',{method:'POST',headers:{'X-Nabla-Token':token},body:new URLSearchParams({action:value})});
 if(!r.ok)throw Error();}catch{status.textContent='No se pudo enviar el control'}finally{busy=false}}
 document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dataset.action));

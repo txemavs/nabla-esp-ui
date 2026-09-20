@@ -1,5 +1,6 @@
 # Headless HTML renderer with shared navigation and transactional Wi-Fi.
 from esphome.core import CORE
+from esphome import final_validate as fv
 from esphome.components.nabla_navigation.catalog import flatten
 import esphome.codegen as cg
 import esphome.config_validation as cv
@@ -15,6 +16,7 @@ CONFIG_SCHEMA = cv.Schema({
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
+    cg.add(var.set_serve_root("nabla_web_service" not in CORE.config))
     cg.add(var.set_camera_port(config["camera_port"]))
     nodes=flatten(CORE.config["nabla_navigation"]["tree"])
     if any(n["action"] not in ("open", "wifi") for n in nodes):
@@ -23,3 +25,10 @@ async def to_code(config):
     if not matches:
         raise cv.Invalid("camera_node must refer to an existing navigation key")
     cg.add(var.set_camera_node(matches[0]))
+
+def validate_final(config):
+ full=fv.full_config.get()
+ if "nabla_display_mirror" in full and "nabla_web_service" not in full:
+  raise cv.Invalid("Combined renderers require nabla_web_service")
+ return config
+FINAL_VALIDATE_SCHEMA=validate_final

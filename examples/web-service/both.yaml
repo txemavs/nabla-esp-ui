@@ -1,0 +1,47 @@
+# Compile-only generic fixture: two views share one HTTP root; never flash over an installation.
+esphome:
+  name: nabla-web-service-test
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+logger:
+wifi:
+  networks:
+    - ssid: Example network
+      password: example-password
+external_components:
+  - source:
+      type: local
+      path: ../../external_components
+    components: [nabla_web_service, nabla_web, nabla_display_mirror, nabla_navigation, nabla_wifi_compact, nabla_runtime]
+nabla_runtime:
+  - headers: [components/forms/wifi_flow.h]
+nabla_navigation:
+  tree:
+    key: home
+    title: Example
+    children:
+      - {key: camera, title: Camera, icon: camera}
+      - {key: wifi, title: Wi-Fi, icon: wifi, action: wifi}
+nabla_wifi_compact:
+nabla_web:
+  camera_node: camera
+nabla_display_mirror:
+  id: mirror
+nabla_web_service:
+  mode: both
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+display:
+  - platform: ssd1306_spi
+    model: SSD1306_128X64
+    cs_pin: GPIO33
+    dc_pin: GPIO32
+    reset_pin: GPIO25
+    lambda: |-
+      auto &surface=id(mirror).begin(it);
+      surface.rectangle(0,0,128,64);
+      surface.line(0,0,127,63);
+      id(mirror).end();

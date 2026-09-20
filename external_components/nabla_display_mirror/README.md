@@ -10,9 +10,9 @@ does not publish frames. Hardware inversion, power and controller effects after
 the draw pass are not represented. The firmware must use the wrapper for every
 draw pass to mirror it.
 
-Dependencies: ESP32, Wi-Fi, display and web_server_base. The initial component
-owns / and /mirror, so it rejects web_server and nabla_web in the same config.
-Combining responsive and pixel views under one server remains a follow-up.
+Dependencies: ESP32, Wi-Fi, display and web_server_base. Standalone mode owns / and /mirror. With nabla_web_service it owns only /mirror
+and its API; the coordinator can combine both views. ESPHome web_server remains
+incompatible. Omit on_action for a read-only mirror.
 
 ## Integration
 

@@ -29,6 +29,8 @@ class Surface : public display::DisplayBuffer {
 };
 class Mirror : public Component,public AsyncWebHandler {
  public:
+  void set_serve_root(bool value){serve_root_=value;}
+  void set_allow_input(bool value){allow_input_=value;}
   Trigger<std::string> *get_action_trigger(){return &trigger_;}
   float get_setup_priority() const override {return setup_priority::WIFI+2;}
   void setup() override {
@@ -45,10 +47,12 @@ class Mirror : public Component,public AsyncWebHandler {
     std::lock_guard<std::mutex> lock(mutex_);snapshot_=surface_.pixels;ready_=true;
   }
   bool canHandle(AsyncWebServerRequest *r) const override {
-    auto url=r->url();return url=="/" || url=="/mirror" || url=="/mirror/frame" || url=="/mirror/token" || url=="/mirror/action";
+    auto url=r->url();return (serve_root_ && url=="/") || url=="/mirror" || url=="/mirror/frame" || url=="/mirror/token" || (allow_input_ && url=="/mirror/action") || url=="/mirror/capabilities";
   }
   void handleRequest(AsyncWebServerRequest *r) override {
     const auto url=r->url();
+    if(url=="/mirror/capabilities"){r->send(200,"application/json",allow_input_?"{\"input\":true}":"{\"input\":false}");return;}
+    if(url=="/mirror/action" && !allow_input_){r->send(404);return;}
     if(r->method()==HTTP_GET && (url=="/" || url=="/mirror")){r->send(200,"text/html; charset=utf-8",MIRROR_PAGE);return;}
     if(r->method()==HTTP_GET && url=="/mirror/token"){
       auto *response=r->beginResponse(200,"text/plain",token_);response->addHeader("Cache-Control","no-store");r->send(response);return;
@@ -72,7 +76,7 @@ class Mirror : public Component,public AsyncWebHandler {
   }
  protected:
   Surface surface_;std::array<uint8_t,1024> snapshot_{};
-  std::mutex mutex_;bool ready_=false,compatible_=false;std::string token_,pending_;
+  std::mutex mutex_;bool ready_=false,compatible_=false,serve_root_=true,allow_input_=false;std::string token_,pending_;
   Trigger<std::string> trigger_;
 };
 }
