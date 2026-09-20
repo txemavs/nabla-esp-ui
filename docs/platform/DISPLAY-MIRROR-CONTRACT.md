@@ -1,30 +1,33 @@
-# Display mirror HTTP contract
+# Contrato HTTP del mirror de pantalla
 
-Version: Phase 1 (2026-09-20). Related: [issue #34](https://github.com/txemavs/nabla-esp-ui/issues/34).
+Versión: Fase 1 (2026-09-20). Relacionado: [issue #34](https://github.com/txemavs/nabla-esp-ui/issues/34).
 
-The display mirror exposes logical framebuffer contents over HTTP for remote
-viewing and optional encoder input. Home Assistant or other consumers convert
-frames off-device; the ESP serves raw bytes without JPEG encoding.
+El mirror de pantalla expone el contenido del framebuffer lógico por HTTP para
+visualización remota y entrada opcional de encoder. Home Assistant u otros
+consumidores convierten los frames fuera del dispositivo; el ESP sirve bytes
+crudos sin codificación JPEG.
 
-## Reference profiles
+## Perfiles de referencia
 
-| Profile | Dimensions | Format | Frame size | Input |
-|---------|------------|--------|------------|-------|
-| Kit1 (ST7735) | 160×128 | `rgb332` | 20,480 bytes | encoder |
-| T-Call (SSD1309) | 128×64 | `mono1` | 1,024 bytes | encoder |
+| Perfil | Dimensiones | Formato | Tamaño frame | Entrada |
+|--------|-------------|---------|--------------|---------|
+| Kit1 (ST7735) | 160×128 | `rgb332` | 20.480 bytes | encoder |
+| T-Call (SSD1309) | 128×64 | `mono1` | 1.024 bytes | encoder |
 
-These are the two verified hardware configurations used to freeze this contract.
-Other sizes (LVGL 240×240, 480×320) follow the same format rules.
+Estas son las dos configuraciones de hardware verificadas usadas para congelar
+este contrato. Otros tamaños (LVGL 240×240, 480×320) siguen las mismas reglas
+de formato.
 
 ## Endpoints
 
-All endpoints are relative to the device HTTP root (e.g. `http://<device-ip>/`).
+Todos los endpoints son relativos a la raíz HTTP del dispositivo
+(ej. `http://<ip-dispositivo>/`).
 
 ### `GET /mirror/capabilities`
 
-Returns JSON describing the display and input configuration.
+Devuelve JSON describiendo la configuración de pantalla y entrada.
 
-**Response**: `200 OK`, `Content-Type: application/json`
+**Respuesta**: `200 OK`, `Content-Type: application/json`
 
 ```json
 {
@@ -35,99 +38,101 @@ Returns JSON describing the display and input configuration.
 }
 ```
 
-| Field | Type | Description |
+| Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `width` | integer | Logical display width in pixels |
-| `height` | integer | Logical display height in pixels |
-| `format` | string | Pixel format: `"mono1"` or `"rgb332"` |
-| `input` | boolean | Whether encoder input is accepted |
+| `width` | entero | Ancho lógico de pantalla en píxeles |
+| `height` | entero | Alto lógico de pantalla en píxeles |
+| `format` | cadena | Formato de píxel: `"mono1"` o `"rgb332"` |
+| `input` | booleano | Si se acepta entrada de encoder |
 
-Future extensions may add `touch`, `encoder`, `token_required` or other
-capability flags. Consumers should ignore unknown fields.
+Extensiones futuras pueden añadir `touch`, `encoder`, `token_required` u otros
+flags de capacidad. Los consumidores deben ignorar campos desconocidos.
 
 ### `GET /mirror/frame`
 
-Returns the raw framebuffer contents.
+Devuelve el contenido crudo del framebuffer.
 
-**Response**: `200 OK`, `Content-Type: application/octet-stream`  
-**Headers**: `Cache-Control: no-store`
+**Respuesta**: `200 OK`, `Content-Type: application/octet-stream`  
+**Cabeceras**: `Cache-Control: no-store`
 
-**Error responses**:
-- `409 Conflict`: Frame not yet ready or allocation failed
+**Respuestas de error**:
+- `409 Conflict`: Frame aún no listo o fallo de asignación de memoria
 
-#### Byte layout
+#### Disposición de bytes
 
-**`mono1` (monochrome)**:
-- Size: `ceil(width * height / 8)` bytes
-- Bit order: MSB first, row-major
-- Pixel 0 is bit 7 of byte 0; pixel 7 is bit 0 of byte 0
-- White pixel = bit set (1); black pixel = bit clear (0)
+**`mono1` (monocromo)**:
+- Tamaño: `ceil(width * height / 8)` bytes
+- Orden de bits: MSB primero, por filas
+- Píxel 0 es bit 7 del byte 0; píxel 7 es bit 0 del byte 0
+- Píxel blanco = bit activo (1); píxel negro = bit inactivo (0)
 
-For a 128×64 display: 128 × 64 / 8 = 1,024 bytes.
+Para pantalla 128×64: 128 × 64 / 8 = 1.024 bytes.
 
 ```
-Byte 0: [px0 px1 px2 px3 px4 px5 px6 px7]  (MSB to LSB)
+Byte 0: [px0 px1 px2 px3 px4 px5 px6 px7]  (MSB a LSB)
 Byte 1: [px8 px9 px10 px11 px12 px13 px14 px15]
 ...
 ```
 
-**`rgb332` (8-bit color)**:
-- Size: `width * height` bytes (one byte per pixel)
-- Byte layout: `RRRGGGBB` (3 bits red, 3 bits green, 2 bits blue)
-- Row-major order, top-left to bottom-right
+**`rgb332` (color 8 bits)**:
+- Tamaño: `width * height` bytes (un byte por píxel)
+- Disposición de byte: `RRRGGGBB` (3 bits rojo, 3 bits verde, 2 bits azul)
+- Orden por filas, de arriba-izquierda a abajo-derecha
 
-For a 160×128 display: 160 × 128 = 20,480 bytes.
+Para pantalla 160×128: 160 × 128 = 20.480 bytes.
 
 ```
-bits[7:5] = red   (0-7 → 0-255 as r * 255 / 7)
-bits[4:2] = green (0-7 → 0-255 as g * 255 / 7)
-bits[1:0] = blue  (0-3 → 0-255 as b * 255 / 3)
+bits[7:5] = rojo  (0-7 → 0-255 como r * 255 / 7)
+bits[4:2] = verde (0-7 → 0-255 como g * 255 / 7)
+bits[1:0] = azul  (0-3 → 0-255 como b * 255 / 3)
 ```
 
 ### `GET /mirror/token`
 
-Returns a per-boot CSRF token required for input actions.
+Devuelve un token CSRF por arranque requerido para acciones de entrada.
 
-**Response**: `200 OK`, `Content-Type: text/plain`  
-**Headers**: `Cache-Control: no-store`
+**Respuesta**: `200 OK`, `Content-Type: text/plain`  
+**Cabeceras**: `Cache-Control: no-store`
 
-The token is a 16-character hexadecimal string, regenerated on each device boot.
+El token es una cadena hexadecimal de 16 caracteres, regenerada en cada
+arranque del dispositivo.
 
 ### `POST /mirror/action`
 
-Sends an encoder/button action to the device controller.
+Envía una acción de encoder/botón al controlador del dispositivo.
 
-**Request**:
-- Header: `X-Nabla-Token: <token>` (from `/mirror/token`)
-- Body: `action=<value>` (form-urlencoded)
+**Petición**:
+- Cabecera: `X-Nabla-Token: <token>` (de `/mirror/token`)
+- Cuerpo: `action=<valor>` (form-urlencoded)
 
-**Allowed actions**: `up`, `down`, `enter`, `back`
+**Acciones permitidas**: `up`, `down`, `enter`, `back`
 
-**Response**:
-- `200 OK`: Action queued
-- `400 Bad Request`: Missing or invalid action
-- `401 Unauthorized`: Missing or invalid token
-- `404 Not Found`: Input disabled (no `on_action` configured)
-- `409 Conflict`: Previous action still pending
+**Respuesta**:
+- `200 OK`: Acción encolada
+- `400 Bad Request`: Acción faltante o inválida
+- `401 Unauthorized`: Token faltante o inválido
+- `404 Not Found`: Entrada deshabilitada (sin `on_action` configurado)
+- `409 Conflict`: Acción previa aún pendiente
 
-Only one action can be pending at a time. The main loop processes it and clears
-the queue before another can be accepted.
+Solo puede haber una acción pendiente a la vez. El bucle principal la procesa
+y limpia la cola antes de aceptar otra.
 
-### `GET /` and `GET /mirror`
+### `GET /` y `GET /mirror`
 
-Returns an HTML viewer page with canvas rendering and optional controls.
-Available when the mirror component owns the root (standalone mode) or when
-coordinated through `nabla_web_service`.
+Devuelve una página HTML de visor con renderizado canvas y controles opcionales.
+Disponible cuando el componente mirror posee la raíz (modo standalone) o cuando
+se coordina a través de `nabla_web_service`.
 
-## Security
+## Seguridad
 
-- **LAN only**: Do not expose the mirror to the public Internet.
-- **Token protection**: Input requires a per-boot token; this is CSRF protection,
-  not user authentication. Anyone on the LAN can obtain the token.
-- **No secrets in repo**: Device YAML with real credentials stays in private
-  installations, never in this repository.
+- **Solo LAN**: No exponer el mirror a Internet público.
+- **Protección por token**: La entrada requiere un token por arranque; esto es
+  protección CSRF, no autenticación de usuario. Cualquiera en la LAN puede
+  obtener el token.
+- **Sin secretos en el repo**: El YAML de dispositivo con credenciales reales
+  permanece en instalaciones privadas, nunca en este repositorio.
 
-## Conversion examples
+## Ejemplos de conversión
 
 **rgb332 → RGB888** (Python):
 ```python
@@ -138,7 +143,7 @@ def rgb332_to_rgb888(byte):
     return (r, g, b)
 ```
 
-**mono1 → pixels** (Python):
+**mono1 → píxeles** (Python):
 ```python
 def mono1_to_pixels(data, width, height):
     pixels = []
@@ -149,30 +154,32 @@ def mono1_to_pixels(data, width, height):
     return pixels
 ```
 
-## Frame rates and bandwidth
+## Tasas de frame y ancho de banda
 
-| Format | Frame size | ~10 FPS | Typical |
-|--------|------------|---------|---------|
+| Formato | Tamaño frame | ~10 FPS | Típico |
+|---------|--------------|---------|--------|
 | mono1 128×64 | 1 KB | 10 KB/s | 10 FPS polling |
 | rgb332 160×128 | 20 KB | 200 KB/s | ~2-3 FPS polling |
 | rgb332 240×240 | 56 KB | 560 KB/s | ~1-2 FPS |
-| rgb332 480×320 | 150 KB | 1.5 MB/s | <1 FPS |
+| rgb332 480×320 | 150 KB | 1,5 MB/s | <1 FPS |
 
-The browser viewer polls sequentially; actual FPS depends on network latency.
-Hidden tabs pause polling. Multiple viewers share the same captured frame.
+El visor del navegador hace polling secuencial; el FPS real depende de la
+latencia de red. Las pestañas ocultas pausan el polling. Múltiples visores
+comparten el mismo frame capturado.
 
-## Future extensions (not implemented)
+## Extensiones futuras (no implementadas)
 
-- **Touch input**: Absolute coordinates via `POST /mirror/touch`
-- **rgb565**: 16-bit color for higher fidelity (doubles bandwidth)
-- **Dirty rectangles**: Partial updates to reduce bandwidth
-- **WebSocket**: Push frames instead of polling
+- **Entrada táctil**: Coordenadas absolutas vía `POST /mirror/touch`
+- **rgb565**: Color 16 bits para mayor fidelidad (duplica ancho de banda)
+- **Rectángulos sucios**: Actualizaciones parciales para reducir ancho de banda
+- **WebSocket**: Push de frames en lugar de polling
 
-These are mentioned in issue #34 as later phases. This contract covers only
-what is implemented and verified today.
+Estas se mencionan en el issue #34 como fases posteriores. Este contrato cubre
+solo lo implementado y verificado hoy.
 
-## Component integration
+## Integración con el componente
 
-See the [nabla_display_mirror component](../../external_components/nabla_display_mirror/README.md)
-for ESPHome configuration. The component README covers YAML setup, memory usage
-and physical evidence. This document specifies the HTTP contract for consumers.
+Ver el [componente nabla_display_mirror](../../external_components/nabla_display_mirror/README.md)
+para configuración ESPHome. El README del componente cubre configuración YAML,
+uso de memoria y evidencia física. Este documento especifica el contrato HTTP
+para consumidores.

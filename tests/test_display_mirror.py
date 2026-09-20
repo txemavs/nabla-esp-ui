@@ -1,13 +1,13 @@
-# Fixture tests for Nabla Display mirror HTTP contract.
-# Validates byte decoding and capabilities schema without hardware.
-# Related: https://github.com/txemavs/nabla-esp-ui/issues/34 Phase 1.
+# Tests de fixture para el contrato HTTP del mirror de pantalla Nabla.
+# Valida decodificación de bytes y esquema de capabilities sin hardware.
+# Relacionado: https://github.com/txemavs/nabla-esp-ui/issues/34 Fase 1.
 
 import json
 import unittest
 
 
 def rgb332_to_rgb888(byte: int) -> tuple[int, int, int]:
-    """Convert RGB332 byte to RGB888 tuple."""
+    """Convierte byte RGB332 a tupla RGB888."""
     r = ((byte >> 5) & 0x07) * 255 // 7
     g = ((byte >> 2) & 0x07) * 255 // 7
     b = (byte & 0x03) * 255 // 3
@@ -15,7 +15,7 @@ def rgb332_to_rgb888(byte: int) -> tuple[int, int, int]:
 
 
 def mono1_to_pixels(data: bytes, width: int, height: int) -> list[int]:
-    """Convert mono1 MSB-first buffer to list of pixel values (0 or 255)."""
+    """Convierte buffer mono1 MSB-primero a lista de valores de píxel (0 o 255)."""
     pixels = []
     total = width * height
     for i in range(total):
@@ -26,7 +26,7 @@ def mono1_to_pixels(data: bytes, width: int, height: int) -> list[int]:
 
 
 def generate_rgb332_gradient(width: int, height: int) -> bytes:
-    """Generate a deterministic RGB332 gradient pattern for testing."""
+    """Genera un patrón de gradiente RGB332 determinista para pruebas."""
     data = bytearray(width * height)
     for y in range(height):
         for x in range(width):
@@ -38,7 +38,7 @@ def generate_rgb332_gradient(width: int, height: int) -> bytes:
 
 
 def generate_mono1_checkerboard(width: int, height: int) -> bytes:
-    """Generate a deterministic mono1 checkerboard pattern for testing."""
+    """Genera un patrón de tablero de ajedrez mono1 determinista para pruebas."""
     total_bits = width * height
     total_bytes = (total_bits + 7) // 8
     data = bytearray(total_bytes)
@@ -53,10 +53,10 @@ def generate_mono1_checkerboard(width: int, height: int) -> bytes:
 
 
 class DisplayMirrorTests(unittest.TestCase):
-    """Test RGB332 and mono1 decoding per DISPLAY-MIRROR-CONTRACT.md."""
+    """Tests de decodificación RGB332 y mono1 según DISPLAY-MIRROR-CONTRACT.md."""
 
     def test_rgb332_byte_layout(self):
-        """Verify RGB332 bit field extraction matches contract spec."""
+        """Verifica extracción de campos de bits RGB332 según spec del contrato."""
         self.assertEqual(rgb332_to_rgb888(0b11100000), (255, 0, 0))
         self.assertEqual(rgb332_to_rgb888(0b00011100), (0, 255, 0))
         self.assertEqual(rgb332_to_rgb888(0b00000011), (0, 0, 255))
@@ -66,7 +66,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertTrue(all(64 <= c <= 128 for c in mid_gray))
 
     def test_rgb332_kit1_frame_size(self):
-        """Kit1 profile: 160x128 = 20480 bytes."""
+        """Perfil Kit1: 160x128 = 20480 bytes."""
         width, height = 160, 128
         expected_size = width * height
         self.assertEqual(expected_size, 20480)
@@ -74,7 +74,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertEqual(len(frame), expected_size)
 
     def test_rgb332_gradient_decode(self):
-        """Decode generated 160x128 RGB332 gradient and verify corners."""
+        """Decodifica gradiente RGB332 160x128 generado y verifica esquinas."""
         width, height = 160, 128
         frame = generate_rgb332_gradient(width, height)
 
@@ -93,7 +93,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertEqual(br[1], 255)
 
     def test_mono1_byte_layout(self):
-        """Verify mono1 MSB-first bit order matches contract spec."""
+        """Verifica orden de bits mono1 MSB-primero según spec del contrato."""
         data = bytes([0b10000001])
         pixels = mono1_to_pixels(data, 8, 1)
         self.assertEqual(pixels[0], 255)
@@ -102,7 +102,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertEqual(pixels[6], 0)
 
     def test_mono1_tcall_frame_size(self):
-        """T-Call profile: 128x64 / 8 = 1024 bytes."""
+        """Perfil T-Call: 128x64 / 8 = 1024 bytes."""
         width, height = 128, 64
         expected_size = (width * height + 7) // 8
         self.assertEqual(expected_size, 1024)
@@ -110,7 +110,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertEqual(len(frame), expected_size)
 
     def test_mono1_checkerboard_decode(self):
-        """Decode generated 128x64 mono1 checkerboard and verify pattern."""
+        """Decodifica tablero mono1 128x64 generado y verifica patrón."""
         width, height = 128, 64
         frame = generate_mono1_checkerboard(width, height)
         pixels = mono1_to_pixels(frame, width, height)
@@ -122,7 +122,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertEqual(pixels[width + 1], 255)
 
     def test_capabilities_schema_rgb332(self):
-        """Validate Kit1-class capabilities JSON schema."""
+        """Valida esquema JSON de capabilities clase Kit1."""
         capabilities = {
             "width": 160,
             "height": 128,
@@ -134,7 +134,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertEqual(capabilities["width"] * capabilities["height"], 20480)
 
     def test_capabilities_schema_mono1(self):
-        """Validate T-Call-class capabilities JSON schema."""
+        """Valida esquema JSON de capabilities clase T-Call."""
         capabilities = {
             "width": 128,
             "height": 64,
@@ -147,7 +147,7 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertEqual(frame_size, 1024)
 
     def test_capabilities_schema_readonly(self):
-        """Validate read-only display capabilities."""
+        """Valida capabilities de pantalla solo lectura."""
         capabilities = {
             "width": 240,
             "height": 240,
@@ -158,14 +158,14 @@ class DisplayMirrorTests(unittest.TestCase):
         self.assertFalse(capabilities["input"])
 
     def test_capabilities_json_roundtrip(self):
-        """Capabilities JSON should survive serialization."""
+        """El JSON de capabilities debe sobrevivir serialización."""
         original = {"width": 160, "height": 128, "format": "rgb332", "input": True}
         serialized = json.dumps(original)
         restored = json.loads(serialized)
         self.assertEqual(original, restored)
 
     def test_frame_size_calculations(self):
-        """Verify frame size formulas for all documented profiles."""
+        """Verifica fórmulas de tamaño de frame para todos los perfiles documentados."""
         profiles = [
             (128, 64, "mono1", 1024),
             (160, 128, "rgb332", 20480),
@@ -180,7 +180,7 @@ class DisplayMirrorTests(unittest.TestCase):
             self.assertEqual(size, expected, f"{width}x{height} {fmt}")
 
     def _validate_capabilities(self, cap: dict):
-        """Check required capabilities fields per contract."""
+        """Verifica campos requeridos de capabilities según contrato."""
         self.assertIn("width", cap)
         self.assertIn("height", cap)
         self.assertIn("format", cap)
