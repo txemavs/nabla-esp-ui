@@ -15,7 +15,7 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_validation as cv, discovery
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .frame import decode_frame, image_to_png_bytes
+from .frame import decode_frame, image_to_png_bytes, infer_profile_from_size
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,12 +52,14 @@ class DeviceState:
         self.session = session
 
         self.capabilities: dict | None = None
+        self.capabilities_from_fallback = False
         self.token: str | None = None
         self.last_frame: bytes | None = None
         self.last_png: bytes | None = None
         self.last_update: float = 0
         self.available = False
         self.poll_task: asyncio.Task | None = None
+        self._caps_retry_counter = 0
 
     @property
     def device_id(self) -> str:
@@ -87,11 +89,53 @@ class DeviceState:
             async with self.session.get(url, timeout=aiohttp.ClientTimeout(total=5)) as resp:
                 if resp.status == 200:
                     self.capabilities = await resp.json()
+                    self.capabilities_from_fallback = False
                     _LOGGER.debug("Capabilities for %s: %s", self.name, self.capabilities)
                     return True
                 _LOGGER.warning("Capabilities fetch failed for %s: HTTP %d", self.name, resp.status)
         except Exception as e:
             _LOGGER.warning("Capabilities fetch failed for %s: %s", self.name, e)
+        return False
+
+    async def probe_frame_for_fallback(self) -> bool:
+        """Probe /mirror/frame to infer profile from size when capabilities unavailable.
+
+        When /mirror/capabilities fails (e.g. connection reset on some firmware),
+        we can still serve frames by inferring the profile from frame byte count.
+        Assumes input=false since we cannot safely probe actions without capabilities.
+        """
+        try:
+            url = f"http://{self.host}/mirror/frame"
+            async with self.session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status == 200:
+                    frame_data = await resp.read()
+                    profile = infer_profile_from_size(len(frame_data))
+                    if profile:
+                        self.capabilities = {
+                            "width": profile["width"],
+                            "height": profile["height"],
+                            "format": profile["format"],
+                            "input": False,
+                        }
+                        self.capabilities_from_fallback = True
+                        _LOGGER.info(
+                            "Inferred %s profile for %s from frame size %d: %dx%d %s (input disabled)",
+                            profile["name"], self.name, len(frame_data),
+                            profile["width"], profile["height"], profile["format"]
+                        )
+                        self.last_frame = frame_data
+                        return True
+                    else:
+                        _LOGGER.warning(
+                            "Unknown frame size %d for %s, cannot infer profile",
+                            len(frame_data), self.name
+                        )
+                elif resp.status == 409:
+                    _LOGGER.debug("Frame not ready for fallback probe on %s", self.name)
+                else:
+                    _LOGGER.warning("Frame probe failed for %s: HTTP %d", self.name, resp.status)
+        except Exception as e:
+            _LOGGER.warning("Frame probe failed for %s: %s", self.name, e)
         return False
 
     async def fetch_token(self) -> bool:
@@ -167,13 +211,29 @@ class DeviceState:
         return False
 
     async def poll_loop(self):
-        """Background polling loop for frame updates."""
+        """Background polling loop for frame updates.
+
+        Tries /mirror/capabilities first. If that fails, falls back to probing
+        /mirror/frame and inferring profile from size. Periodically retries
+        capabilities even when running on fallback, so firmware fixes upgrade.
+        """
         while True:
             if not self.capabilities:
-                if not await self.fetch_capabilities():
+                if await self.fetch_capabilities():
+                    await self.fetch_token()
+                elif await self.probe_frame_for_fallback():
+                    pass
+                else:
                     await asyncio.sleep(5)
                     continue
-                await self.fetch_token()
+
+            if self.capabilities_from_fallback:
+                self._caps_retry_counter += 1
+                if self._caps_retry_counter >= 10:
+                    self._caps_retry_counter = 0
+                    if await self.fetch_capabilities():
+                        _LOGGER.info("Upgraded %s from fallback to real capabilities", self.name)
+                        await self.fetch_token()
 
             await self.fetch_frame()
             await asyncio.sleep(self.poll_interval)

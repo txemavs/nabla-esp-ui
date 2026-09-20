@@ -7,6 +7,31 @@ from io import BytesIO
 from PIL import Image
 
 
+# Known frame size to profile mapping for fallback when capabilities unavailable.
+# Based on DISPLAY-MIRROR-CONTRACT.md reference profiles.
+KNOWN_PROFILES = {
+    1024: {"width": 128, "height": 64, "format": "mono1", "name": "T-Call"},
+    20480: {"width": 160, "height": 128, "format": "rgb332", "name": "Kit1"},
+    57600: {"width": 240, "height": 240, "format": "rgb332", "name": "T-Watch"},
+    153600: {"width": 480, "height": 320, "format": "rgb332", "name": "Large"},
+}
+
+
+def infer_profile_from_size(frame_size: int) -> dict | None:
+    """Infer display profile from frame byte count.
+
+    When /mirror/capabilities fails, we can still decode frames by matching
+    the byte count to known profiles from the contract specification.
+
+    Args:
+        frame_size: Number of bytes in the frame.
+
+    Returns:
+        Profile dict with width, height, format, name; or None if unknown.
+    """
+    return KNOWN_PROFILES.get(frame_size)
+
+
 def rgb332_to_rgb888(byte: int) -> tuple[int, int, int]:
     """Convert RGB332 byte to RGB888 tuple.
 

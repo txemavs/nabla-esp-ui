@@ -140,6 +140,24 @@ This keeps the Lovelace card simple and works with the mobile app (which can
 fetch the frame image directly). The card just displays the PNG and sends
 encoder actions via HA services.
 
+### Fallback profile inference
+
+When `/mirror/capabilities` fails (connection reset, timeout, or some firmware
+builds), the integration falls back to probing `/mirror/frame` and inferring
+the display profile from the frame byte count:
+
+| Frame size | Profile | Dimensions | Format |
+|------------|---------|------------|--------|
+| 1,024 | T-Call | 128×64 | mono1 |
+| 20,480 | Kit1 | 160×128 | rgb332 |
+| 57,600 | T-Watch | 240×240 | rgb332 |
+| 153,600 | Large | 480×320 | rgb332 |
+
+In fallback mode:
+- Input is disabled (no encoder buttons) since capabilities cannot confirm it
+- The integration periodically retries `/mirror/capabilities` in the background
+- When capabilities become available, input is automatically enabled
+
 ## Security notes
 
 - Uses the device's per-boot CSRF token for input actions

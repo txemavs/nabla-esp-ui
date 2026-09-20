@@ -176,5 +176,69 @@ class FrameSizeTests(unittest.TestCase):
         self.assertEqual((128 * 64 + 7) // 8, 1024)
 
 
+class ProfileInferenceTests(unittest.TestCase):
+    """Tests for fallback profile inference from frame size."""
+
+    def test_infer_tcall_from_1024_bytes(self):
+        """1024 bytes should infer T-Call 128x64 mono1."""
+        profile = frame.infer_profile_from_size(1024)
+        self.assertIsNotNone(profile)
+        self.assertEqual(profile["width"], 128)
+        self.assertEqual(profile["height"], 64)
+        self.assertEqual(profile["format"], "mono1")
+        self.assertEqual(profile["name"], "T-Call")
+
+    def test_infer_kit1_from_20480_bytes(self):
+        """20480 bytes should infer Kit1 160x128 rgb332."""
+        profile = frame.infer_profile_from_size(20480)
+        self.assertIsNotNone(profile)
+        self.assertEqual(profile["width"], 160)
+        self.assertEqual(profile["height"], 128)
+        self.assertEqual(profile["format"], "rgb332")
+        self.assertEqual(profile["name"], "Kit1")
+
+    def test_infer_twatch_from_57600_bytes(self):
+        """57600 bytes should infer T-Watch 240x240 rgb332."""
+        profile = frame.infer_profile_from_size(57600)
+        self.assertIsNotNone(profile)
+        self.assertEqual(profile["width"], 240)
+        self.assertEqual(profile["height"], 240)
+        self.assertEqual(profile["format"], "rgb332")
+
+    def test_infer_large_from_153600_bytes(self):
+        """153600 bytes should infer Large 480x320 rgb332."""
+        profile = frame.infer_profile_from_size(153600)
+        self.assertIsNotNone(profile)
+        self.assertEqual(profile["width"], 480)
+        self.assertEqual(profile["height"], 320)
+        self.assertEqual(profile["format"], "rgb332")
+
+    def test_infer_unknown_size_returns_none(self):
+        """Unknown frame size should return None."""
+        self.assertIsNone(frame.infer_profile_from_size(12345))
+        self.assertIsNone(frame.infer_profile_from_size(0))
+        self.assertIsNone(frame.infer_profile_from_size(999))
+
+    def test_inferred_profile_decodes_correctly(self):
+        """Inferred profile should decode matching frame data."""
+        profile = frame.infer_profile_from_size(1024)
+        data = bytes([0xAA] * 1024)
+        image = frame.decode_frame(
+            data, profile["width"], profile["height"], profile["format"]
+        )
+        self.assertEqual(image.size, (128, 64))
+        self.assertEqual(image.mode, "L")
+
+    def test_inferred_kit1_decodes_correctly(self):
+        """Inferred Kit1 profile should decode matching frame data."""
+        profile = frame.infer_profile_from_size(20480)
+        data = bytes(20480)
+        image = frame.decode_frame(
+            data, profile["width"], profile["height"], profile["format"]
+        )
+        self.assertEqual(image.size, (160, 128))
+        self.assertEqual(image.mode, "RGB")
+
+
 if __name__ == "__main__":
     unittest.main()
