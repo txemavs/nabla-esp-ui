@@ -181,3 +181,7 @@ Next steps:
 The remote Nabla Config menu can be prototyped with fixtures alongside M2;
 its real BLE/Pi operation layer belongs to M4-M6. Do not require Home Assistant
 or a ready Nabla Net router to operate the local settings interface.
+
+## Web delivery track
+
+Follow [W1–W5](WEB-SERVICE-AND-STUDIO.md#delivery-phases-and-acceptance-gates) for optional service consolidation, color mirrors, repository demos and the YAML menu editor. These gates complement the physical display milestones.

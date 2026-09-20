@@ -181,3 +181,7 @@ the optional captive portal retains ESPHome and webserver licensing.
 - [ESPHome Modular LVGL Buttons](https://github.com/agillis/esphome-modular-lvgl-buttons)
 
 External projects are references, not claims of API compatibility.
+
+## Browser interfaces and planned menu studio
+
+Experimental [web menus](external_components/nabla_web/README.md) and [128×64 display mirroring](external_components/nabla_display_mirror/README.md) are optional components. The [web service and studio plan](docs/platform/WEB-SERVICE-AND-STUDIO.md) covers unified YAML configuration, color mirrors and a future gallery/editor. The public studio is not yet implemented or hosted.
