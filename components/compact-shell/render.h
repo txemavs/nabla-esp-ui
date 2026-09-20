@@ -84,10 +84,10 @@ class CompactShell {
   bool uses_play_marker() const { return tiny_play_marker && menu.borders; }
   int selection_inset() const { return uses_play_marker() ? 10 : 4; }
   void draw_selection(esphome::display::Display &d,int x,int y,int w,int h,
-                      bool selected,esphome::Color fg) const {
+                      bool selected,esphome::Color fg,int marker_size=8) const {
     if(!selected)return;
     if(uses_play_marker()){
-      int marker_h=std::min(8,std::max(2,h-4));
+      int marker_h=std::min(marker_size,std::max(2,h-4));
       int my=y+(h-marker_h)/2;
       d.filled_triangle(x+2,my,x+2,my+marker_h,x+7,my+marker_h/2,fg);
     }else if(menu.borders)d.rectangle(x,y,w,h,fg);
@@ -276,7 +276,7 @@ class CompactShell {
     for(int i=0;i<n;++i)information_list=information_list && nodes[child(menu.current,i)].info!=0;
     if(information_list){
       g.rows=std::max(1,std::min(5,g.content_height()/std::max(1,small->get_height()+2)));
-      g.row_height=g.content_height()/g.rows;
+      g.row_height=std::min(g.content_height()/g.rows,small->get_height()+4);
     }
     if(root_tiles && icons && menu.current==0 && n && single_icon_mode && menu.readable) {
       int current=menu.focus<n?menu.focus:std::min(menu.root_content_focus,n-1);
@@ -407,7 +407,7 @@ class CompactShell {
       }
       if(uses_play_marker() && !header_focus){
         int row=std::clamp(menu.focus-list_top,0,g.rows-1);
-        draw_selection(d,0,g.header+row*g.row_height,g.width,g.row_height,true,fg);
+        draw_selection(d,0,g.header+row*g.row_height,g.width,g.row_height,true,fg,information_list && g.width>=160?9:8);
       }
     } else {
       if(detail_node!=menu.current){detail_node=menu.current;detail_scroll=0;}
