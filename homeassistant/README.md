@@ -3,18 +3,21 @@
 MVP Home Assistant integration for viewing Nabla ESP-UI display mirrors and
 sending encoder actions. Phase 2 of [issue #34](https://github.com/txemavs/nabla-esp-ui/issues/34).
 
+## Prerequisites
+
+Requires ESP devices running the `nabla_display_mirror` component (from
+[PR #33](https://github.com/txemavs/nabla-esp-ui/pull/33) or later).
+The HTTP contract is documented in `docs/platform/DISPLAY-MIRROR-CONTRACT.md`.
+
 ## Overview
 
-This integration polls ESP devices running the `nabla_display_mirror` component
-and converts their raw framebuffer data (RGB332 or mono1) into viewable images.
-For devices with encoder input, it exposes buttons and a Lovelace card remote.
+This integration polls ESP devices and converts their raw framebuffer data
+(RGB332 or mono1) into viewable images. For devices with encoder input, it
+exposes buttons and a Lovelace card remote.
 
 **Reference devices:**
 - Kit1-class (ST7735): 160×128 pixels, RGB332 (8-bit color)
 - T-Call-class (SSD1309): 128×64 pixels, mono1 (monochrome)
-
-See [DISPLAY-MIRROR-CONTRACT.md](../docs/platform/DISPLAY-MIRROR-CONTRACT.md)
-for the HTTP contract specification.
 
 ## Installation
 
