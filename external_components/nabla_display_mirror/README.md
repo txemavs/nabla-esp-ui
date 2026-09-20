@@ -1,6 +1,9 @@
 # Display mirror (experimental)
 
 An offline canvas receives logical pixels from the actual device drawing path.
+See [DISPLAY-MIRROR-CONTRACT.md](../../docs/platform/DISPLAY-MIRROR-CONTRACT.md)
+for the complete HTTP endpoint specification and byte-layout documentation.
+
 Compact Display API compositions use begin/end around their existing render
 call. LVGL compositions wrap the ESPHome flush callback and assemble partial
 rectangles, publishing when the last area is flushed. Neither draws the UI twice.
