@@ -10,3 +10,11 @@ substitutions:
   compact_large_size: "20"
   screen_width: "160"
   screen_height: "128"
+
+esphome:
+  on_boot:
+    priority: -90
+    then:
+      - lambda: |-
+          nabla::compact_shell.tiny_play_marker=true;
+          nabla::compact_shell.single_icon_mode=true;

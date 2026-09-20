@@ -68,7 +68,7 @@ class CompactShell {
   }
   void back() {if(custom_back && custom_back())return;if(in_wifi()) {if(wifi.back())menu.back();}else if(in_forms()){if(forms.back())menu.back();}else menu.back();}
   void home() {wifi.clear();forms.discard();menu.home();}
-  bool uses_play_marker() const { return tiny_play_marker && single_icon_mode && menu.borders; }
+  bool uses_play_marker() const { return tiny_play_marker && menu.borders; }
   int selection_inset() const { return uses_play_marker() ? 10 : 4; }
   void draw_selection(esphome::display::Display &d,int x,int y,int w,int h,
                       bool selected,esphome::Color fg) const {
@@ -121,16 +121,21 @@ class CompactShell {
     Color fg=menu.dark?Color::WHITE:Color::BLACK,bg=menu.dark?Color::BLACK:Color::WHITE;
     d.fill(bg);
     auto t=wifi.text;
+    const int width=d.get_width(), height=d.get_height();
     if(wifi.editing) {
+      const int key_height=std::max(20,body->get_height()+4);
+      const int key_top=height-key_height;
+      const int palette_y=std::max(bar_height+body->get_height()+2,key_top-small->get_height()-3);
+      const int center=width/2, step=std::max(20,width/5);
       draw_form_header(d,small,fg,wifi.secret?t[1]:"SSID",wifi.header_selected());
       std::string value=wifi.secret?std::string(wifi.draft.value.size(),'*'):wifi.draft.value;
       size_t pos=value.size()>18?value.size()-18:0;
       while(pos<value.size() && (static_cast<unsigned char>(value[pos])&0xC0)==0x80)++pos;
-      d.start_clipping(2,bar_height,125,29);
+      d.start_clipping(2,bar_height,width-3,palette_y-1);
       d.print(2,bar_height+1,body,fg,(value.substr(pos)+"_").c_str());d.end_clipping();
       static const char *palettes[]={"abc","ABC","123","!?#"};
-      d.print(2,30,small,fg,palettes[wifi.palette]);
-      d.printf(126,30,small,fg,display::TextAlign::TOP_RIGHT,"%d/%d",
+      d.print(2,palette_y,small,fg,palettes[wifi.palette]);
+      d.printf(width-2,palette_y,small,fg,display::TextAlign::TOP_RIGHT,"%d/%d",
         static_cast<int>(wifi.draft.value.size()),static_cast<int>(wifi.draft.limit));
       const auto &keys=wifi.glyphs();
       auto label=[&](int index)->std::string{
@@ -144,15 +149,14 @@ class CompactShell {
         int count=static_cast<int>(keys.size());
         for(int offset : {-2,-1,1,2}){
           int index=4+(selected-4+offset+count)%count;
-          d.print(64+offset*24,63,body,fg,display::TextAlign::BOTTOM_CENTER,label(index).c_str());
+          d.print(center+offset*step,height-1,body,fg,display::TextAlign::BOTTOM_CENTER,label(index).c_str());
         }
       }
-      int width=selected<4?80:22;
+      int selected_width=selected<4?std::min(100,width-4):22;
       if(!wifi.header_selected()){
-        if(menu.borders)d.rectangle(64-width/2,44,width,20,fg);
-        else d.filled_rectangle(64-width/2,44,width,20,fg);
+        draw_selection(d,center-selected_width/2,key_top,selected_width,key_height,true,fg);
       }
-      d.print(64,62,body,!wifi.header_selected()&&!menu.borders?bg:fg,
+      d.print(center,height-2,body,!wifi.header_selected()&&!menu.borders?bg:fg,
               display::TextAlign::BOTTOM_CENTER,label(selected).c_str());
       return;
     }
@@ -169,13 +173,15 @@ class CompactShell {
     draw_form_header(d,small,fg,t[title],wifi.header_selected());
     int total=wifi.total();
     wifi.focus=std::min(wifi.focus,total-(wifi.production_ui()?0:1));
-    if(wifi.focus<total)wifi.top=nabla::scroll_anchor(wifi.focus,wifi.top,3,total);
-    for(int r=0;r<3;r++){
+    const int row_height=std::max(17,body->get_height()+3);
+    const int rows=std::max(1,(height-bar_height)/row_height);
+    if(wifi.focus<total)wifi.top=nabla::scroll_anchor(wifi.focus,wifi.top,rows,total);
+    for(int r=0;r<rows;r++){
       int index=wifi.top+r;if(index>=total)break;
-      int y=bar_height+r*17;
-      draw_selection(d,0,y,128,17,index==wifi.focus,fg);
-      const int left=selection_inset(), available=128-left-4;
-      d.start_clipping(left-1,y+1,124,y+15);
+      int y=bar_height+r*row_height;
+      draw_selection(d,0,y,width,row_height,index==wifi.focus,fg);
+      const int left=selection_inset(), available=width-left-4;
+      d.start_clipping(left-1,y+1,width-2,y+row_height-2);
       auto label=wifi.row(index);int bx,by,bw,bh;
       d.get_text_bounds(0,0,label.c_str(),body,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
       int offset=index==wifi.focus && bw>available?std::min(bw-available,std::max(0,int(((millis()-wifi_since)/100)%(bw-available+20))-10)):0;
