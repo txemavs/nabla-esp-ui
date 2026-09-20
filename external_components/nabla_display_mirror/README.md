@@ -1,71 +1,81 @@
-# Monochrome display mirror (experimental)
+# Display mirror (experimental)
 
-An offline HTML canvas displays the same logical 128x64 monochrome pixels sent
-to the physical display. This is a draw-pass tee, not a second UI renderer or
-direct access to a driver's private framebuffer. No Home Assistant is required.
+An offline canvas receives logical pixels from the actual device drawing path.
+Compact Display API compositions use begin/end around their existing render
+call. LVGL compositions wrap the ESPHome flush callback and assemble partial
+rectangles, publishing when the last area is flushed. Neither draws the UI twice.
 
-Only ESPHome Display API monochrome 128x64 compositions are qualified here.
-LVGL/color displays are unsupported. A nonmatching display renders normally but
-does not publish frames. Hardware inversion, power and controller effects after
-the draw pass are not represented. The firmware must use the wrapper for every
-draw pass to mirror it.
+## Configuration
 
-Dependencies: ESP32, Wi-Fi, display and web_server_base. Standalone mode owns / and /mirror. With nabla_web_service it owns only /mirror
-and its API; the coordinator can combine both views. ESPHome web_server remains
-incompatible. Omit on_action for a read-only mirror.
+The original 128x64 monochrome defaults remain compatible. Color capture uses
+RGB332 (256 colors) to limit RAM and bandwidth; geometry is preserved but colors
+are quantized from the physical display. Width/height are logical dimensions.
 
-## Integration
+~~~yaml
+nabla_display_mirror:
+  id: screen_mirror
+  width: 160
+  height: 128
+  color: true
+~~~
 
-Enable the external component and forward only the allowed navigation actions:
-
-    nabla_display_mirror:
-      id: screen_mirror
-      on_action:
-        - lambda: |-
-            auto &shell=nabla::compact_shell;
-            if(action=="up")shell.move(-1);
-            else if(action=="down")shell.move(1);
-            else if(action=="enter")shell.activate();
-            else if(action=="back")shell.back();
-
-In the existing display lambda, pass the returned surface to the existing
-renderer instead of it. Keep the same fonts, configuration and real display:
+For compact displays, keep the existing render call but replace its display:
 
     auto &surface=id(screen_mirror).begin(it);
     // existing shell.render(surface, ...);
     id(screen_mirror).end();
 
-Do not draw twice. The underlying display still handles physical rotation.
-The logical capture remains upright. Existing encoder input is unchanged.
+For LVGL use lvgl_id instead of the display lambda wrapper:
 
-## Browser and transport
+~~~yaml
+nabla_display_mirror:
+  id: screen_mirror
+  width: 240
+  height: 240
+  color: true
+  lvgl_id: nabla_lvgl
+~~~
 
-Open /mirror. The canvas uses nearest-neighbor pixel scaling. Up/Down,
-Enter/Escape and four buttons forward navigation to the same controller as the
-encoder. There is no browser-local selection.
+Tested configuration sizes: OLED 128x64, ST7735 160x128, LVGL 240x240 and
+480x320. The LVGL hook is specific to ESPHome's RGB565 flush implementation.
+It forwards every flush to LvglComponent::static_flush_cb, retaining the
+original display user data. Runtime rotation changes are not qualified:
+configure dimensions/orientation to match the active LVGL screen at startup.
 
-GET /mirror/frame returns exactly 1024 bytes, row-major, MSB first, one bit per
-pixel. Two 1024-byte buffers separate rendering and network access. The page
-polls sequentially at up to 10 FPS and pauses while hidden. It never queues
-overlapping frame requests. Wi-Fi delay reduces the effective frame rate.
+No on_action means read-only. Optional on_action receives up/down/enter/back;
+map them to the existing controller. HTTP callbacks queue one pending action,
+executed by the main loop. No generic LVGL touch injection is implemented.
+Pixel geometry remains synchronized with physical input.
 
-GET /mirror/token returns a per-boot token. POST /mirror/action accepts only
-up/down/enter/back with X-Nabla-Token. A single bounded pending action is
-processed on the main loop; competing requests receive 409. Tokens prevent
-cross-origin form submissions, not access by other trusted LAN/AP clients.
-The initial HTTP viewer is not intended for unauthenticated Internet exposure.
-Do not share the endpoint publicly; screen contents can contain private data.
+## Memory and transport
 
-## Evidence and limits
+Two persistent frame buffers use RAMAllocator (PSRAM preferred, internal RAM
+fallback). An HTTP request allocates one temporary frame copy. Allocation
+failure returns an unavailable view rather than modifying the display.
+A monochrome 128x64 frame is 1024 bytes; RGB332 frames are 20,480 / 57,600 /
+153,600 bytes for the three color sizes. Measure heap and input latency before
+raising frame rates or adding viewers; no prolonged load qualification yet.
 
-ESPHome 2026.8.2, original ESP32 + SSD1309/ssd1306_spi 128x64, ESP-IDF:
-compiled, uploaded over OTA, received and inspected a real 1024-byte frame.
-A remote Down changed the pixels; Up was sent to restore selection. Invalid
-tokens received 401. No load-control action or credential edit was exercised.
-Physical/browser simultaneous operation and long-duration heap testing still
-need owner confirmation. Audio functionality remains unqualified.
+GET /mirror/capabilities describes dimensions, format and input availability.
+GET /mirror/frame returns row-major mono1 (MSB first) or RGB332 bytes.
+The browser polls sequentially at up to 10 FPS monochrome or about 2.8 FPS color,
+excluding network latency. Hidden pages pause and disconnected pages retry.
+Snapshots are shared across viewers; capture currently still runs without them.
 
-The tested composition's build reported 99,516 bytes static RAM and 1,526,255
-bytes application flash. These are build figures, not available runtime heap.
-A future menu editor should reuse navigation schema/profile selection; this
-mirror only displays and controls an existing device.
+Input uses a per-boot X-Nabla-Token, not user authentication. Use a trusted LAN
+or protected AP; do not expose private display contents on the public Internet.
+Standalone mode owns / and /mirror. nabla_web_service coordinates combined
+responsive/mirror roots. ESPHome web_server remains incompatible.
+
+## Evidence
+
+- OLED: physical capture inspected; remote Down changed the frame and Up restored
+  selection; invalid token returned 401.
+- Kit1: USB write verified; real 160x128 frame received and visually inspected.
+- Large LVGL panel: OTA successful; real 480x320 color frame received and inspected.
+- T-Watch: 240x240 firmware compiled; physical verification pending device power.
+- Browser profile switching is a live equipment gallery, not a menu simulator.
+
+Hardware inversion/backlight effects after drawing are not mirrored. RGB332
+quantization, runtime rotations, overlapping clients, audio coexistence and
+long-duration heap behavior remain explicit qualification limits.

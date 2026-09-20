@@ -17,8 +17,8 @@ button:focus-visible{outline:2px solid white}p{line-height:1.5;font-size:14px}
 <p>La ruleta y estos controles manejan la misma pantalla. Teclado: ↑, ↓, Enter y Escape.</p>
 </main><footer id="status">Conectando…</footer><script>
 const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),status=document.querySelector('#status');
-let token='',busy=false,allowInput=false;
-fetch("/mirror/capabilities").then(r=>r.json()).then(c=>{allowInput=c.input;document.querySelector(".controls").hidden=!allowInput;document.querySelector("main p").textContent=allowInput?"La ruleta y estos controles manejan la misma pantalla.":"Solo lectura: controla la pantalla desde el dispositivo."});
+let token='',busy=false,allowInput=false,width=128,height=64,format='mono1',capabilitiesReady=false;
+async function capabilities(){const r=await fetch("/mirror/capabilities",{cache:"no-store"});if(!r.ok)throw Error();const c=await r.json();allowInput=c.input;width=c.width||128;height=c.height||64;format=c.format||"mono1";canvas.width=width;canvas.height=height;canvas.style.aspectRatio=width+"/"+height;capabilitiesReady=true;document.querySelector(".controls").hidden=!allowInput;document.querySelector("main p").textContent=allowInput?"La ruleta y estos controles manejan la misma pantalla.":"Solo lectura: controla la pantalla desde el dispositivo.";}
 async function action(value){if(!allowInput||busy||!token)return;busy=true;try{
 const r=await fetch('/mirror/action',{method:'POST',headers:{'X-Nabla-Token':token},body:new URLSearchParams({action:value})});
 if(!r.ok)throw Error();}catch{status.textContent='No se pudo enviar el control'}finally{busy=false}}
@@ -26,12 +26,13 @@ document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dat
 document.addEventListener('keydown',e=>{const a={ArrowUp:'up',ArrowDown:'down',Enter:'enter',Escape:'back'}[e.key];if(a){e.preventDefault();action(a)}});
 async function tick(){
 if(!document.hidden)try{
+if(!capabilitiesReady)await capabilities();
 if(!token){const r=await fetch('/mirror/token',{cache:'no-store'});if(!r.ok)throw Error();token=await r.text()}
 const r=await fetch('/mirror/frame',{cache:'no-store'});if(!r.ok)throw Error();
-const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.length!==1024)throw Error();
-const image=ctx.createImageData(128,64);for(let i=0;i<8192;i++){const c=bytes[i>>3]&(128>>(i&7))?255:0;image.data.set([c,c,c,255],i*4)}ctx.putImageData(image,0,0);
-status.textContent='En directo · 128 × 64';}catch{token='';status.textContent='Sin conexión · reintentando…'}
-setTimeout(tick,100)}
+const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.length!==(format==="rgb332"?width*height:Math.ceil(width*height/8)))throw Error();
+const image=ctx.createImageData(width,height);for(let i=0;i<width*height;i++){const c=bytes[i>>3]&(128>>(i&7))?255:0;const v=bytes[i];image.data.set(format==="rgb332"?[Math.round((v>>5)*255/7),Math.round(((v>>2)&7)*255/7),Math.round((v&3)*255/3),255]:[c,c,c,255],i*4)}ctx.putImageData(image,0,0);
+status.textContent='En directo · '+width+' × '+height;}catch{token='';capabilitiesReady=false;status.textContent='Sin conexión · reintentando…'}
+setTimeout(tick,format==="rgb332"?350:100)}
 tick();
 </script></html>)MIRROR";
 }

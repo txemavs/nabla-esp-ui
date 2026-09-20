@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- Local-first equipment gallery; connects only to explicitly supplied device URLs. -->
+<html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nabla · Equipos</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#08090b;color:#f4f5f7;font:16px system-ui}header{padding:24px;border-bottom:1px solid #404040}h1{margin:0;font-size:24px}p{color:#a9b0bb;line-height:1.5}main{max-width:1300px;margin:auto;padding:24px}
+nav{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}button,input,a{font:inherit}button{color:inherit;background:#181c22;border:1px solid #555;border-radius:12px;padding:16px;cursor:pointer}button[aria-pressed=true]{border:2px solid white}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #48baff}
+form{display:flex;gap:12px;flex-wrap:wrap;align-items:end}label{display:grid;gap:8px;flex:1;min-width:220px}input{padding:14px;border-radius:10px;background:#16191d;color:inherit;border:1px solid #555}a{color:#6dcfff}iframe{display:block;width:100%;height:720px;border:1px solid #404040;border-radius:12px;background:#101216;margin-top:20px}.badge{color:#7ee1af}#empty{padding:48px 16px;border:1px dashed #555;margin-top:20px;text-align:center}[hidden]{display:none!important}
+</style>
+<header><h1>▽ Nabla · Equipos</h1><p>Elige una pantalla y abre su espejo real. Los controles actúan sobre ese equipo.</p></header>
+<main><nav id="profiles" aria-label="Elegir equipo"></nav><h2 id="title"></h2><p id="description"></p>
+<form id="connect"><label>Dirección del dispositivo<input id="address" type="url" placeholder="http://equipo.local" required></label><button>Ver pantalla</button><button type="button" id="forget">Olvidar dirección</button></form>
+<p id="notice" role="status"></p><a id="direct" target="_blank" rel="noopener" hidden>Abrir directamente</a>
+<div id="empty">Introduce la dirección del equipo para ver su pantalla.</div><iframe id="screen" title="Pantalla real del equipo" hidden></iframe>
+<p>Estas son pantallas reales, no simulaciones. Cambiar de equipo no cambia su configuración. El editor de árbol y la simulación del mismo menú en otros perfiles llegarán en una fase posterior.</p>
+</main><script>
+const profiles=[
+{id:'oled',name:'T-Call',size:'128 × 64',description:'OLED monocroma · ruleta'},
+{id:'kit1',name:'Kit1',size:'160 × 128',description:'ST7735 en color · ruleta'},
+{id:'watch',name:'T-Watch 2020',size:'240 × 240',description:'ST7789 en color · táctil'},
+{id:'large',name:'Panel grande',size:'480 × 320',description:'LVGL en color · táctil'}];
+let selected=profiles[0],addresses={};const $=s=>document.querySelector(s);
+try{addresses=JSON.parse(localStorage.getItem('nabla-equipment')||'{}')}catch{}
+try{const params=new URLSearchParams(location.hash.slice(1));const setup=params.get('setup');if(setup){addresses={...addresses,...JSON.parse(setup)};history.replaceState(null,'',location.pathname);save()}}catch{}
+function save(){try{localStorage.setItem('nabla-equipment',JSON.stringify(addresses))}catch{}}
+function url(value){const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('Usa una dirección HTTP o HTTPS sin credenciales.');u.pathname='/mirror';u.search='';u.hash='';return u.href}
+function show(){const value=addresses[selected.id];$('#screen').hidden=true;$('#screen').src='about:blank';$('#direct').hidden=true;$('#empty').hidden=false;$('#notice').textContent='';if(!value)return;
+try{const target=url(value);$('#direct').href=target;$('#direct').hidden=false;if(location.protocol==='https:'&&target.startsWith('http:')){$('#notice').textContent='Abre el equipo directamente: este navegador puede bloquear HTTP dentro de una página HTTPS.';return}
+$('#screen').src=target;$('#screen').hidden=false;$('#empty').hidden=true;$('#notice').textContent='Vista en directo · '+selected.size+' · si no responde, comprueba que el equipo esté encendido.';}catch(e){$('#notice').textContent=e.message}}
+function choose(p){selected=p;for(const b of $('#profiles').children)b.setAttribute('aria-pressed',String(b.dataset.id===p.id));$('#title').textContent=p.name+' · '+p.size;$('#description').textContent=p.description;$('#address').value=addresses[p.id]||'';show()}
+for(const p of profiles){const b=document.createElement('button');b.textContent=p.name+' · '+p.size;b.dataset.id=p.id;b.onclick=()=>choose(p);$('#profiles').append(b)}
+$('#connect').onsubmit=e=>{e.preventDefault();try{addresses[selected.id]=url($('#address').value);save();show()}catch(e){$('#notice').textContent=e.message}};
+$('#forget').onclick=()=>{delete addresses[selected.id];save();choose(selected)};choose(selected);
+</script></html>
