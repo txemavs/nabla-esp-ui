@@ -272,6 +272,12 @@ class CompactShell {
     d.print(16, 0, title_font, fg, nodes[menu.current].title);
     d.end_clipping();
     const int n = children(menu.current);
+    bool information_list=n>0;
+    for(int i=0;i<n;++i)information_list=information_list && nodes[child(menu.current,i)].info!=0;
+    if(information_list){
+      g.rows=std::max(1,std::min(5,g.content_height()/std::max(1,small->get_height()+2)));
+      g.row_height=g.content_height()/g.rows;
+    }
     if(root_tiles && icons && menu.current==0 && n && single_icon_mode && menu.readable) {
       int current=menu.focus<n?menu.focus:std::min(menu.root_content_focus,n-1);
       auto draw_item=[&](int index,int offset){
@@ -370,7 +376,7 @@ class CompactShell {
         bool use_play_marker = uses_play_marker();
         d.start_clipping(0,std::max(g.header,y),g.width-1,std::min(content_bottom,y+g.row_height-1));
         if(!use_play_marker)draw_selection(d,0,y,g.width,g.row_height,selected,fg);
-        auto *font = menu.readable ? large : body;
+        auto *font = information_list ? small : (menu.readable ? large : body);
         int row_node=child(menu.current,index);
         // With play marker, leave space for the marker on the left.
         int left = use_play_marker ? 10 : 4;
@@ -408,6 +414,7 @@ class CompactShell {
       std::string text=custom_detail?custom_detail(menu.current):"";
       if(text.empty())text=nabla::detail(menu.current);
       if(nodes[menu.current].action==3)text=pending;
+      auto *detail_font=nodes[menu.current].info?small:body;
       text=text.substr(0,900);
       std::vector<std::string> lines;
       std::string line;
@@ -418,17 +425,17 @@ class CompactShell {
         if(glyph=="\n"){lines.push_back(line);line.clear();continue;}
         int bx,by,bw,bh;
         auto candidate=line+glyph;
-        d.get_text_bounds(0,0,candidate.c_str(),body,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+        d.get_text_bounds(0,0,candidate.c_str(),detail_font,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
         if(bw>g.width-6 && !line.empty()){lines.push_back(line);line.clear();}
         line+=glyph;
       }
       lines.push_back(line);
-      int visible=std::max(1,(g.content_height()-g.header-4)/body->get_height());
+      int visible=std::max(1,(g.content_height()-g.header-4)/detail_font->get_height());
       detail_max=std::max(0,int(lines.size())-visible);
       detail_scroll=std::clamp(detail_scroll,0,detail_max);
       d.start_clipping(2,g.header+2,g.width-2,g.height-g.footer-g.header-2);
       for(int i=0;i<visible && detail_scroll+i<int(lines.size());i++)
-        d.print(2,g.header+2+i*body->get_height(),body,fg,lines[detail_scroll+i].c_str());
+        d.print(2,g.header+2+i*detail_font->get_height(),detail_font,fg,lines[detail_scroll+i].c_str());
       d.end_clipping();
       // Header is the semantic Back target; provide an obvious touch-sized row.
       draw_selection(d,0,g.height-g.footer-g.header,g.width,g.header,true,fg);
