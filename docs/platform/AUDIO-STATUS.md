@@ -33,36 +33,46 @@ Added comprehensive logging and missing HFP AT command handlers:
 **Result:** Physical retest still showed timeout then HFP drop — consistent
 with headset rejecting SCO.
 
-### Fix #3: Enable WBS for codec negotiation (current)
+### Fix #3: Enable WBS for codec negotiation (commit eb43515)
 
 Enabled CONFIG_BT_HFP_WBS_ENABLE=true in sdkconfig. Modern headsets like
 Galaxy Buds Pro support HFP 1.7+ codec negotiation and may require the AG to
-advertise mSBC capability even if CVSD fallback is acceptable. With WBS
-disabled, the AG's SDP record doesn't include codec negotiation, so the
-headset may reject the SCO setup.
+advertise mSBC capability even if CVSD fallback is acceptable.
+
+**Result:** Physical retest on Kit1 + Galaxy Buds (2026-09-20 ~19:21 CEST)
+showed faster rejection: "SCO rechazado" after only 3 seconds (vs 10s timeout
+before). This confirms diagnostics work and SCO is now actively rejected
+rather than timing out. WBS alone is not sufficient.
+
+### Fix #4: Simulate outgoing call before SCO (current)
+
+HFP headsets typically only accept SCO audio when there's an active or
+alerting call. The ESP-IDF HFP AG example uses esp_hf_ag_out_call() to
+simulate an outgoing call before connecting audio. Without this, headsets
+reject the SCO request because the AG reports "no calls" in CIND/CLCC.
 
 Changes:
-- CONFIG_BT_HFP_WBS_ENABLE=true (was false)
-- Added WBS event logging (ESP_HF_WBS_RESPONSE_EVT)
-- Kept all diagnostics from Fix #2
+- Call esp_hf_ag_out_call() before esp_hf_ag_audio_connect() to simulate
+  an alerting outgoing call
+- Call esp_hf_ag_end_call() when audio finishes or is rejected
+- CIND response now reports network available (signal=4, battery=3)
+- CLCC response reports the simulated call when tone_requested is active
+- CNUM response now provides a dummy subscriber number
 
-**Hypothesis:** Galaxy Buds Pro sees the AG doesn't support codec negotiation
-and rejects the SCO because it can't confirm CVSD compatibility without the
-negotiation exchange. Enabling WBS lets the AG participate in the BCS
-(Bluetooth Codec Selection) procedure where both sides agree on CVSD or mSBC.
+**Hypothesis:** Galaxy Buds Pro rejects SCO because the AG reports no active
+call. By simulating an outgoing alerting call, the headset should accept the
+audio connection for "in-band ringtone" or call audio.
 
 ## What to look for in next test logs
 
 Run with log level DEBUG to see all HFP events. Key things to check:
 
-1. **HFP conn state=3 peer_feat=0x???**: The peer_feat bitmap shows what the
-   headset supports. Bit 0x200 = Codec Negotiation (mSBC support).
+1. **Outgoing call simulated**: Log shows esp_hf_ag_out_call succeeded before
+   audio_connect.
 
-2. **WBS current codec: mode=?**: With WBS enabled, this event may fire during
-   connection setup showing the initial codec mode.
+2. **CLCC request**: Should now respond with the simulated alerting call.
 
 3. **Codec negotiated: mode=?**: BCS event shows agreed codec (1=CVSD, 2=mSBC).
-   If this appears, codec negotiation succeeded.
 
 4. **Audio state=1 (CONNECTING)**: Confirms esp_hf_ag_audio_connect initiated.
 
@@ -72,15 +82,18 @@ Run with log level DEBUG to see all HFP events. Key things to check:
 6. **Audio state=0 (DISCONNECTED) while opening**: Headset still rejecting.
    Status shows "SCO rechazado".
 
-## If WBS doesn't work: further steps
+## If simulated call doesn't work: further steps
 
-1. **Check eSCO parameters**: The default eSCO S3/S4 settings may not be
+1. **Try active call state**: Instead of OUTGOING_ALERTING, try
+   ESP_HF_CALL_STATUS_CALL_IN_PROGRESS with CALL_SETUP_STATUS_IDLE.
+
+2. **Check eSCO parameters**: The default eSCO S3/S4 settings may not be
    accepted. Some headsets need specific packet types or intervals.
 
-2. **Add HCI-level logging**: Enable CONFIG_BT_BLUEDROID_DEBUG=y to see actual
+3. **Add HCI-level logging**: Enable CONFIG_BT_BLUEDROID_DEBUG=y to see actual
    HCI commands and responses for Setup Synchronous Connection.
 
-3. **Try different headset**: Test with a simpler BT 4.x headset to rule out
+4. **Try different headset**: Test with a simpler BT 4.x headset to rule out
    Galaxy Buds-specific behavior.
 
 ## Earlier findings
@@ -95,7 +108,7 @@ Bluedroid stack, not proven causes of the timeout.
 
 1. **Physical retest required:** Owner will flash updated firmware on Kit1.
 2. Capture full DEBUG logs if audio still fails.
-3. If still rejected, enable HCI-level debug to see actual eSCO setup commands.
+3. If still rejected with simulated call, try active call state or HCI debug.
 4. Add timeout, cancellation, lost-link and tone-limit regression tests.
 5. Refactor shared Bluetooth ownership before combining HID keyboard and HFP.
 

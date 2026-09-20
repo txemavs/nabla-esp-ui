@@ -46,10 +46,28 @@ void Gateway::test_audio(){
   if(!connected() || tone_requested_)return;
   remaining_=0;tone_requested_=true;tone_started_=millis();status_="Abriendo audio";
   ESP_LOGI("bt_audio","Opening SCO for test tone (SLC state=%d)...",state_);
+
+  // Simulate an outgoing call before opening audio. Many HFP headsets (including
+  // Galaxy Buds) reject SCO when there's no active/alerting call. The AG must
+  // report call indicators before the headset will accept audio.
+  // Parameters: num_active=0, num_held=0, call_state=NO_CALLS, call_setup=OUTGOING_ALERTING
+  char number[]="000";
+  esp_err_t call_err=esp_hf_ag_out_call(peer_,0,0,
+    ESP_HF_CALL_STATUS_NO_CALLS,ESP_HF_CALL_SETUP_STATUS_OUTGOING_ALERTING,
+    number,ESP_HF_CALL_ADDR_TYPE_UNKNOWN);
+  if(call_err!=ESP_OK){
+    ESP_LOGW("bt_audio","esp_hf_ag_out_call failed: 0x%x (continuing anyway)",call_err);
+  }else{
+    ESP_LOGI("bt_audio","Outgoing call simulated, now opening audio...");
+  }
+
   esp_err_t err=esp_hf_ag_audio_connect(peer_);
   if(err!=ESP_OK){
     tone_requested_=false;status_="Fallo al abrir audio";
     ESP_LOGE("bt_audio","esp_hf_ag_audio_connect failed: 0x%x",err);
+    // End the fake call on failure
+    esp_hf_ag_end_call(peer_,0,0,ESP_HF_CALL_STATUS_NO_CALLS,
+      ESP_HF_CALL_SETUP_STATUS_IDLE,number,ESP_HF_CALL_ADDR_TYPE_UNKNOWN);
   }else{
     ESP_LOGI("bt_audio","Audio connect initiated, waiting for SCO...");
   }
@@ -151,26 +169,35 @@ void Gateway::callback(esp_hf_cb_event_t event,esp_hf_cb_param_t *p) {
     ESP_LOGI("bt_audio","Codec negotiated: mode=%d",p->bcs_rep.mode);
   }
   if(event==ESP_HF_CIND_RESPONSE_EVT && !memcmp(p->cind_rep.remote_addr,self->peer_,6)){
-    ESP_LOGD("bt_audio","CIND request, responding with idle state");
+    ESP_LOGD("bt_audio","CIND request, responding with network available");
+    // Report network available with good signal; some headsets reject SCO without service.
     esp_hf_ag_cind_response(self->peer_,ESP_HF_CALL_STATUS_NO_CALLS,
-      ESP_HF_CALL_SETUP_STATUS_IDLE,ESP_HF_NETWORK_STATE_NOT_AVAILABLE,0,
-      ESP_HF_ROAMING_STATUS_INACTIVE,0,ESP_HF_CALL_HELD_STATUS_NONE);
+      ESP_HF_CALL_SETUP_STATUS_IDLE,ESP_HF_NETWORK_STATE_AVAILABLE,4,
+      ESP_HF_ROAMING_STATUS_INACTIVE,3,ESP_HF_CALL_HELD_STATUS_NONE);
   }
   if(event==ESP_HF_COPS_RESPONSE_EVT && !memcmp(p->cops_rep.remote_addr,self->peer_,6)){
     ESP_LOGD("bt_audio","COPS request");
     char name[]="Nabla";esp_hf_ag_cops_response(self->peer_,name);
   }
   if(event==ESP_HF_CLCC_RESPONSE_EVT && !memcmp(p->clcc_rep.remote_addr,self->peer_,6)){
-    ESP_LOGD("bt_audio","CLCC request (call list)");
-    // Respond with no active calls (index=0 means OK/end of list)
-    esp_hf_ag_clcc_response(self->peer_,0,ESP_HF_CURRENT_CALL_DIRECTION_INCOMING,
-      ESP_HF_CURRENT_CALL_STATUS_ACTIVE,ESP_HF_CURRENT_CALL_MODE_VOICE,
+    ESP_LOGD("bt_audio","CLCC request (call list), tone_requested=%d",self->tone_requested_);
+    if(self->tone_requested_){
+      // When we have a simulated call, report it as alerting outgoing call
+      char number[]="000";
+      esp_hf_ag_clcc_response(self->peer_,1,ESP_HF_CURRENT_CALL_DIRECTION_OUTGOING,
+        ESP_HF_CURRENT_CALL_STATUS_ALERTING,ESP_HF_CURRENT_CALL_MODE_VOICE,
+        ESP_HF_CURRENT_CALL_MPTY_TYPE_SINGLE,number,ESP_HF_CALL_ADDR_TYPE_UNKNOWN);
+    }
+    // Always send index=0 to indicate OK/end of call list
+    esp_hf_ag_clcc_response(self->peer_,0,ESP_HF_CURRENT_CALL_DIRECTION_OUTGOING,
+      ESP_HF_CURRENT_CALL_STATUS_ALERTING,ESP_HF_CURRENT_CALL_MODE_VOICE,
       ESP_HF_CURRENT_CALL_MPTY_TYPE_SINGLE,nullptr,ESP_HF_CALL_ADDR_TYPE_UNKNOWN);
   }
   if(event==ESP_HF_CNUM_RESPONSE_EVT && !memcmp(p->cnum_rep.remote_addr,self->peer_,6)){
     ESP_LOGD("bt_audio","CNUM request (subscriber number)");
-    // Respond with no subscriber number
-    esp_hf_ag_cnum_response(self->peer_,nullptr,0,ESP_HF_SUBSCRIBER_SERVICE_TYPE_UNKNOWN);
+    // Respond with a dummy subscriber number (voice service)
+    char number[]="0000000000";
+    esp_hf_ag_cnum_response(self->peer_,number,129,ESP_HF_SUBSCRIBER_SERVICE_TYPE_VOICE);
   }
 }
 void Gateway::loop() {
@@ -192,6 +219,10 @@ void Gateway::loop() {
     const bool opened=tone_running_;
     esp_timer_stop(timer_);remaining_=0;tone_requested_=tone_running_=false;
     esp_hf_ag_audio_disconnect(peer_);
+    // End the simulated call
+    char number[]="000";
+    esp_hf_ag_end_call(peer_,0,0,ESP_HF_CALL_STATUS_NO_CALLS,
+      ESP_HF_CALL_SETUP_STATUS_IDLE,number,ESP_HF_CALL_ADDR_TYPE_UNKNOWN);
     status_=sent?"Tono enviado":(opened?"Audio interrumpido":"Tiempo de apertura agotado");
     ESP_LOGI("bt_audio","Tone result: opened=%d samples_consumed=%d",opened,sent);
   }
@@ -199,6 +230,10 @@ void Gateway::loop() {
     bool was_opening=tone_requested_ && !tone_running_;
     bool was_playing=tone_running_;
     esp_timer_stop(timer_);remaining_=0;tone_requested_=tone_running_=false;
+    // End any simulated call
+    char number[]="000";
+    esp_hf_ag_end_call(peer_,0,0,ESP_HF_CALL_STATUS_NO_CALLS,
+      ESP_HF_CALL_SETUP_STATUS_IDLE,number,ESP_HF_CALL_ADDR_TYPE_UNKNOWN);
     if(was_opening){
       status_="SCO rechazado";
       ESP_LOGW("bt_audio","Audio disconnected while opening (SCO rejected by headset?)");
