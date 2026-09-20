@@ -34,7 +34,8 @@ async def to_code(config):
         "CONFIG_BTDM_CTRL_BR_EDR_SCO_DATA_PATH_HCI": True,
         "CONFIG_BTDM_CTRL_BR_EDR_SCO_DATA_PATH_PCM": False,
         "CONFIG_BT_HFP_AUDIO_DATA_PATH_HCI": True,
-        "CONFIG_BT_HFP_WBS_ENABLE": False,
+        # Enable WBS for codec negotiation; headset selects CVSD or mSBC.
+        "CONFIG_BT_HFP_WBS_ENABLE": True,
         "CONFIG_BTDM_CTRL_MODE_BR_EDR_ONLY": True,
     }.items():
         esp32.add_idf_sdkconfig_option(name, value)

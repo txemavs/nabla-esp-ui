@@ -142,6 +142,10 @@ void Gateway::callback(esp_hf_cb_event_t event,esp_hf_cb_param_t *p) {
     ESP_LOGI("bt_audio","HFP conn state=%d peer_feat=0x%lx chld_feat=0x%lx",
              p->conn_stat.state,(unsigned long)p->conn_stat.peer_feat,(unsigned long)p->conn_stat.chld_feat);
   }
+  if(event==ESP_HF_WBS_RESPONSE_EVT){
+    // Current codec mode: 1=CVSD, 2=mSBC
+    ESP_LOGI("bt_audio","WBS current codec: mode=%d",p->wbs_rep.codec);
+  }
   if(event==ESP_HF_BCS_RESPONSE_EVT){
     // Codec negotiation result: 1=CVSD, 2=mSBC
     ESP_LOGI("bt_audio","Codec negotiated: mode=%d",p->bcs_rep.mode);
