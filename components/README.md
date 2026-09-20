@@ -135,3 +135,7 @@ preserves ESPHome's fallback-AP behavior. ESPHome 2026.8.2 is the tested baselin
 ## T-Watch diagnostics
 
 [twatch-diag](twatch-diag/README.md) binds the square example to bounded motor/IR tests, battery voltage and identified BMA423 presence. The PEK adapter decodes PMU key events. ESPHome 2026.8.2 compilation passed; physical validation and revision confirmation are pending. See the module README for dependencies, refresh rates, input behavior and limitations.
+
+## Headless web preview
+
+[External web renderer](../external_components/nabla_web/README.md): device-owned menus, existing MJPEG camera, information and shared real Wi-Fi flow in an offline HTML page. ESP32-S3 build and live HTTP/scan verified; full browser/AP qualification pending.
