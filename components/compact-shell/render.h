@@ -23,6 +23,15 @@ class CompactShell {
   float triangle_angle=0;  // Current angle in degrees (0=down, 180=up).
   float parent_angle=0, parent_from=0, parent_target=0;
   uint32_t parent_since=0;
+  int list_direction=1, list_node=-1, list_target=0;
+  float list_from=0;
+  uint32_t list_since=0;
+  bool list_wrap=false, list_was_readable=false;
+  float list_position(uint32_t now) const {
+    float t=std::min(1.0f,float(now-list_since)/220.0f);
+    t=t*t*(3.0f-2.0f*t);
+    return list_from+(list_target-list_from)*t;
+  }
   int slide_from=-1, slide_to=-1, slide_direction=1;
   uint32_t slide_since=0;
   int triangle_spins=0;    // Number of complete depth turns.
@@ -36,7 +45,7 @@ class CompactShell {
   }
 
   void init_tiny_callbacks() {
-    menu.on_view_toggle = [this]() { start_triangle_spin(1); };
+    menu.on_view_toggle = [this]() { list_node=-1; start_triangle_spin(1); };
   }
   std::function<int(int)> icon_color;
   std::function<bool(int)> custom_move;
@@ -54,10 +63,14 @@ class CompactShell {
   bool in_wifi() const {return nodes[menu.current].action==3;}
   void move(int delta) {if(custom_move && custom_move(delta))return;if(!children(menu.current) && !in_wifi() && !in_forms()){detail_scroll=std::clamp(detail_scroll+delta,0,detail_max);return;}if(in_wifi())wifi.move(delta);else if(in_forms())forms.move(delta);else {
       int previous=menu.focus;
+      int previous_content=previous<children(menu.current)?previous:menu.root_content_focus;
+      list_direction=delta<0?-1:1;
       menu.move(delta);
+      list_wrap=menu.current==0 && ((delta>0 && previous==children(0)-1 && menu.focus==children(0)) ||
+                                   (delta<0 && previous==children(0) && menu.focus==children(0)-1));
       if(single_icon_mode && menu.readable && menu.current==0 &&
-         previous<children(0) && menu.focus<children(0) && previous!=menu.focus){
-        slide_from=previous;slide_to=menu.focus;slide_direction=delta>0?1:-1;slide_since=millis();
+         previous_content!=menu.root_content_focus){
+        slide_from=previous_content;slide_to=menu.root_content_focus;slide_direction=delta>0?1:-1;slide_since=millis();
       }else slide_from=-1;
     }}
   void activate() {
@@ -68,13 +81,13 @@ class CompactShell {
   }
   void back() {if(custom_back && custom_back())return;if(in_wifi()) {if(wifi.back())menu.back();}else if(in_forms()){if(forms.back())menu.back();}else menu.back();}
   void home() {wifi.clear();forms.discard();menu.home();}
-  bool uses_play_marker() const { return tiny_play_marker && single_icon_mode && menu.borders; }
+  bool uses_play_marker() const { return tiny_play_marker && menu.borders; }
   int selection_inset() const { return uses_play_marker() ? 10 : 4; }
   void draw_selection(esphome::display::Display &d,int x,int y,int w,int h,
-                      bool selected,esphome::Color fg) const {
+                      bool selected,esphome::Color fg,int marker_size=8) const {
     if(!selected)return;
     if(uses_play_marker()){
-      int marker_h=std::min(8,std::max(2,h-4));
+      int marker_h=std::min(marker_size,std::max(2,h-4));
       int my=y+(h-marker_h)/2;
       d.filled_triangle(x+2,my,x+2,my+marker_h,x+7,my+marker_h/2,fg);
     }else if(menu.borders)d.rectangle(x,y,w,h,fg);
@@ -121,16 +134,21 @@ class CompactShell {
     Color fg=menu.dark?Color::WHITE:Color::BLACK,bg=menu.dark?Color::BLACK:Color::WHITE;
     d.fill(bg);
     auto t=wifi.text;
+    const int width=d.get_width(), height=d.get_height();
     if(wifi.editing) {
+      const int key_height=std::max(20,body->get_height()+4);
+      const int key_top=height-key_height;
+      const int palette_y=std::max(bar_height+body->get_height()+2,key_top-small->get_height()-3);
+      const int center=width/2, step=std::max(20,width/5);
       draw_form_header(d,small,fg,wifi.secret?t[1]:"SSID",wifi.header_selected());
       std::string value=wifi.secret?std::string(wifi.draft.value.size(),'*'):wifi.draft.value;
       size_t pos=value.size()>18?value.size()-18:0;
       while(pos<value.size() && (static_cast<unsigned char>(value[pos])&0xC0)==0x80)++pos;
-      d.start_clipping(2,bar_height,125,29);
+      d.start_clipping(2,bar_height,width-3,palette_y-1);
       d.print(2,bar_height+1,body,fg,(value.substr(pos)+"_").c_str());d.end_clipping();
       static const char *palettes[]={"abc","ABC","123","!?#"};
-      d.print(2,30,small,fg,palettes[wifi.palette]);
-      d.printf(126,30,small,fg,display::TextAlign::TOP_RIGHT,"%d/%d",
+      d.print(2,palette_y,small,fg,palettes[wifi.palette]);
+      d.printf(width-2,palette_y,small,fg,display::TextAlign::TOP_RIGHT,"%d/%d",
         static_cast<int>(wifi.draft.value.size()),static_cast<int>(wifi.draft.limit));
       const auto &keys=wifi.glyphs();
       auto label=[&](int index)->std::string{
@@ -144,15 +162,14 @@ class CompactShell {
         int count=static_cast<int>(keys.size());
         for(int offset : {-2,-1,1,2}){
           int index=4+(selected-4+offset+count)%count;
-          d.print(64+offset*24,63,body,fg,display::TextAlign::BOTTOM_CENTER,label(index).c_str());
+          d.print(center+offset*step,height-1,body,fg,display::TextAlign::BOTTOM_CENTER,label(index).c_str());
         }
       }
-      int width=selected<4?80:22;
+      int selected_width=selected<4?std::min(100,width-4):22;
       if(!wifi.header_selected()){
-        if(menu.borders)d.rectangle(64-width/2,44,width,20,fg);
-        else d.filled_rectangle(64-width/2,44,width,20,fg);
+        draw_selection(d,center-selected_width/2,key_top,selected_width,key_height,true,fg);
       }
-      d.print(64,62,body,!wifi.header_selected()&&!menu.borders?bg:fg,
+      d.print(center,height-2,body,!wifi.header_selected()&&!menu.borders?bg:fg,
               display::TextAlign::BOTTOM_CENTER,label(selected).c_str());
       return;
     }
@@ -169,13 +186,15 @@ class CompactShell {
     draw_form_header(d,small,fg,t[title],wifi.header_selected());
     int total=wifi.total();
     wifi.focus=std::min(wifi.focus,total-(wifi.production_ui()?0:1));
-    if(wifi.focus<total)wifi.top=nabla::scroll_anchor(wifi.focus,wifi.top,3,total);
-    for(int r=0;r<3;r++){
+    const int row_height=std::max(17,body->get_height()+3);
+    const int rows=std::max(1,(height-bar_height)/row_height);
+    if(wifi.focus<total)wifi.top=nabla::scroll_anchor(wifi.focus,wifi.top,rows,total);
+    for(int r=0;r<rows;r++){
       int index=wifi.top+r;if(index>=total)break;
-      int y=bar_height+r*17;
-      draw_selection(d,0,y,128,17,index==wifi.focus,fg);
-      const int left=selection_inset(), available=128-left-4;
-      d.start_clipping(left-1,y+1,124,y+15);
+      int y=bar_height+r*row_height;
+      draw_selection(d,0,y,width,row_height,index==wifi.focus,fg);
+      const int left=selection_inset(), available=width-left-4;
+      d.start_clipping(left-1,y+1,width-2,y+row_height-2);
       auto label=wifi.row(index);int bx,by,bw,bh;
       d.get_text_bounds(0,0,label.c_str(),body,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
       int offset=index==wifi.focus && bw>available?std::min(bw-available,std::max(0,int(((millis()-wifi_since)/100)%(bw-available+20))-10)):0;
@@ -253,6 +272,12 @@ class CompactShell {
     d.print(16, 0, title_font, fg, nodes[menu.current].title);
     d.end_clipping();
     const int n = children(menu.current);
+    bool information_list=n>0;
+    for(int i=0;i<n;++i)information_list=information_list && nodes[child(menu.current,i)].info!=0;
+    if(information_list){
+      g.rows=std::max(1,std::min(5,g.content_height()/std::max(1,small->get_height()+2)));
+      g.row_height=std::min(g.content_height()/g.rows,small->get_height()+4);
+    }
     if(root_tiles && icons && menu.current==0 && n && single_icon_mode && menu.readable) {
       int current=menu.focus<n?menu.focus:std::min(menu.root_content_focus,n-1);
       auto draw_item=[&](int index,int offset){
@@ -321,16 +346,37 @@ class CompactShell {
       }
     } else if (n) {
       // Use middle-scroll if enabled (selection stays in middle row when possible).
-      int list_top = middle_scroll ? scroll_anchor_middle(header_focus ? (menu.current==0 ? menu.root_content_focus : std::min(menu.top+g.rows/2,n-1)) : menu.focus, g.rows, n) : menu.top;
-      for (int r = 0; r < g.rows; ++r) {
-        int index = list_top + r;
-        if (index >= n) break;
-        int y = g.header + r * g.row_height;
+      int selected=header_focus ? (menu.current==0?menu.root_content_focus:std::min(menu.top+g.rows/2,n-1)) : menu.focus;
+      int list_top=middle_scroll?encoder_anchor(selected,g.rows,n,list_direction):menu.top;
+      uint32_t now=millis();
+      if(list_node!=menu.current || list_was_readable!=menu.readable){
+        list_node=menu.current;list_target=list_top;list_from=list_top;list_since=now;
+      }else if(list_wrap || list_target!=list_top){
+        float current=list_position(now);
+        // Normalize the completed circular turn before choosing the next target.
+        if(now-list_since>=220){current=float(wrap_focus(list_target,0,n));}
+        if(list_wrap){
+          if(list_direction>0 && list_top<=current)current-=n;
+          if(list_direction<0 && list_top>=current)current+=n;
+        }
+        list_from=current;list_target=list_top;list_since=now;
+      }
+      list_was_readable=menu.readable;list_wrap=false;
+      float position=middle_scroll?list_position(now):float(list_top);
+      int first=int(std::floor(position));
+      const int content_bottom=g.height-g.footer-1;
+      for (int r = 0; r <= g.rows; ++r) {
+        int virtual_index=first+r;
+        if(n<=g.rows && (virtual_index<0 || virtual_index>=n) && now-list_since>=220)continue;
+        int index=wrap_focus(virtual_index,0,n);
+        int y=g.header+int(std::round((virtual_index-position)*g.row_height));
+        if(y>content_bottom || y+g.row_height<=g.header)continue;
         bool selected = menu.focus == index;
         // Tiny profile: Normal mode uses play marker, Alto contraste uses inverted bar.
         bool use_play_marker = uses_play_marker();
-        draw_selection(d,0,y,g.width,g.row_height,selected,fg);
-        auto *font = menu.readable ? large : body;
+        d.start_clipping(0,std::max(g.header,y),g.width-1,std::min(content_bottom,y+g.row_height-1));
+        if(!use_play_marker)draw_selection(d,0,y,g.width,g.row_height,selected,fg);
+        auto *font = information_list ? small : (menu.readable ? large : body);
         int row_node=child(menu.current,index);
         // With play marker, leave space for the marker on the left.
         int left = use_play_marker ? 10 : 4;
@@ -352,16 +398,23 @@ class CompactShell {
           offset = std::min(range, std::max(0, phase-10));
           if (phase > range+10) offset = std::max(0, 2*range+10-phase);
         }
-        d.start_clipping(left-1, y+1, g.width-4, y+g.row_height-2);
+        d.end_clipping();
+        if(std::max(g.header,y+1)>std::min(content_bottom,y+g.row_height-2))continue;
+        d.start_clipping(left-1, std::max(g.header,y+1), g.width-4, std::min(content_bottom,y+g.row_height-2));
         // In play marker mode, text uses normal foreground (no inversion).
         d.print(left-offset, y+(g.row_height-bh)/2, font, (selected && !menu.borders && !use_play_marker) ? bg : fg, title);
         d.end_clipping();
+      }
+      if(uses_play_marker() && !header_focus){
+        int row=std::clamp(menu.focus-list_top,0,g.rows-1);
+        draw_selection(d,0,g.header+row*g.row_height,g.width,g.row_height,true,fg,information_list && g.width>=160?9:8);
       }
     } else {
       if(detail_node!=menu.current){detail_node=menu.current;detail_scroll=0;}
       std::string text=custom_detail?custom_detail(menu.current):"";
       if(text.empty())text=nabla::detail(menu.current);
       if(nodes[menu.current].action==3)text=pending;
+      auto *detail_font=nodes[menu.current].info?small:body;
       text=text.substr(0,900);
       std::vector<std::string> lines;
       std::string line;
@@ -372,17 +425,17 @@ class CompactShell {
         if(glyph=="\n"){lines.push_back(line);line.clear();continue;}
         int bx,by,bw,bh;
         auto candidate=line+glyph;
-        d.get_text_bounds(0,0,candidate.c_str(),body,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
+        d.get_text_bounds(0,0,candidate.c_str(),detail_font,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
         if(bw>g.width-6 && !line.empty()){lines.push_back(line);line.clear();}
         line+=glyph;
       }
       lines.push_back(line);
-      int visible=std::max(1,(g.content_height()-g.header-4)/body->get_height());
+      int visible=std::max(1,(g.content_height()-g.header-4)/detail_font->get_height());
       detail_max=std::max(0,int(lines.size())-visible);
       detail_scroll=std::clamp(detail_scroll,0,detail_max);
       d.start_clipping(2,g.header+2,g.width-2,g.height-g.footer-g.header-2);
       for(int i=0;i<visible && detail_scroll+i<int(lines.size());i++)
-        d.print(2,g.header+2+i*body->get_height(),body,fg,lines[detail_scroll+i].c_str());
+        d.print(2,g.header+2+i*detail_font->get_height(),detail_font,fg,lines[detail_scroll+i].c_str());
       d.end_clipping();
       // Header is the semantic Back target; provide an obvious touch-sized row.
       draw_selection(d,0,g.height-g.footer-g.header,g.width,g.header,true,fg);

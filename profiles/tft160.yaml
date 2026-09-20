@@ -5,8 +5,18 @@ substitutions:
   compact_app_footer: "true"
   compact_rows: "4"
   compact_bar_height: "16"
-  compact_small_size: "12"
+  compact_small_size: "13"
   compact_body_size: "16"
   compact_large_size: "20"
   screen_width: "160"
   screen_height: "128"
+
+esphome:
+  on_boot:
+    priority: -90
+    then:
+      - lambda: |-
+          nabla::compact_shell.tiny_play_marker=true;
+          nabla::compact_shell.single_icon_mode=true;
+          nabla::compact_shell.middle_scroll=true;
+          nabla::compact_shell.init_tiny_callbacks();

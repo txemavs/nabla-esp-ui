@@ -1,0 +1,71 @@
+# Standalone color encoder UI with real Wi-Fi; provide secrets before deployment.
+substitutions:
+  nabla_resource_root: ".."
+  ui_language: es
+  compact_profile: tft160
+  compact_wifi_clean_ui: "true"
+  tcall_site_title: "Site A"
+esphome:
+  name: nabla-nodemcu-tft
+packages:
+  hardware: !include ../hardware/nodemcu-32s-st7735.yaml
+  profile: !include ../profiles/tft160.yaml
+  locale: !include ../locales/es.yaml
+  icons: !include ../theme/icons.yaml
+  shell: !include ../components/compact-shell/package.yaml
+  colors: !include ../components/compact-shell/color.yaml
+  info: !include ../components/device-info/package.yaml
+external_components:
+  - source:
+      type: local
+      path: ${nabla_resource_root}/external_components
+    components: [nabla_navigation, nabla_runtime, nabla_wifi_compact]
+wifi:
+  networks:
+    - ssid: !secret wifi_ssid
+      password: !secret wifi_password
+nabla_wifi_compact:
+display:
+  - id: !extend compact_display
+    lambda: |-
+      auto &shell=nabla::compact_shell;
+      shell.render(it,
+        shell.menu.font_family==0?id(compact_ubuntu_small):id(compact_small),
+        shell.menu.font_family==0?id(compact_ubuntu_body):id(compact_body),
+        shell.menu.font_family==0?id(compact_ubuntu_large):id(compact_large),
+        "${tr_compact_back}", "${tr_compact_editor_pending}");
+nabla_navigation:
+  tree:
+    key: home
+    title: "${tr_main_menu}"
+    children:
+      - key: information
+        title: "${tr_information}"
+        icon: "\uf05a"
+        children:
+          - key: model
+            title: "${tr_info_model}"
+            info: model
+          - key: network
+            title: Wi-Fi
+            info: wifi
+          - key: ip
+            title: IP
+            info: ip
+      - key: wifi
+        title: Wi-Fi
+        icon: "\uf1eb"
+        action: wifi
+      - key: appearance
+        title: "${tr_appearance}"
+        icon: "${icon_settings}"
+        children:
+          - key: dark
+            title: "${tr_dark_mode}"
+            action: toggle_dark
+          - key: font
+            title: "${tr_font_family}"
+            action: toggle_font
+          - key: borders
+            title: "${tr_normal_mode}"
+            action: toggle_borders

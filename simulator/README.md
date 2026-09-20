@@ -272,3 +272,7 @@ local light toggles, Wi-Fi, appearance and device information. All light actions
 and Wi-Fi operations are simulated. See [the fixture notes](../examples/tcall/README.md).
 Normal-mode selection uses the same pointer in menu rows, Wi-Fi and forms;
 inverse mode remains available. The preview raises the body font from 11 to 12 px; the header is 13 px high with an 11 px title; icon size stays unchanged.
+
+## Encoder scrolling preview
+
+Run `./simulator/run.sh encoder-list` for eight inert entries on the 160x128 color layout. Up/Down moves, Enter opens or toggles the focused root logo, Escape returns. Four-row lists use the lower middle row going down and upper middle row going up, with 220 ms eased scrolling. Three-row lists use the same middle row in both directions. Demo entries are simulator-only.

@@ -57,3 +57,31 @@ panel, with an explicit brightness confirmation and no direct HA dependency.
 Still required: physical legibility/usability checks and encoder direction confirmation, on-device brightness/Cancel checks, captive-AP recovery after the
 source migration, power-cycle/reconnect coverage and a 24-hour soak.
 The source migration alone does not retest captive provisioning or complete M3.
+
+
+## Real Wi-Fi and encoder password entry (2026-09-20)
+
+The [public device composition](../devices/nodemcu-32s-st7735.yaml) connects
+the compact Wi-Fi form to nabla_wifi_compact. The Wi-Fi menu must declare
+action: wifi; a descriptive leaf alone cannot scan or edit credentials.
+Declare fallback networks and retain their existing priorities. The adapter
+stores a successfully connected primary network and rolls back on cancellation
+or failure. Never replace installation networks with example credentials.
+
+Rotate the encoder to move, press to select, and use K0 to return. The shared
+compact password editor keeps the password masked and supplies character entry;
+this is an on-screen encoder keyboard, not Bluetooth keyboard support.
+The same compact renderer owns the logo, Back behavior and animations.
+
+The public hardware package now selects nodemcu-32s and ili9xxx/ST7735, matching
+the deployed kit. Native dimensions are 128x160; driver rotation 270 yields
+160x128 landscape. A 33 ms display interval allows the shared animations to
+refresh more frequently; smoothness still requires owner verification.
+
+The public composition and a private composition compiled with ESPHome 2026.8.2.
+USB flash verification succeeded on an original ESP32 and the device reported
+Wi-Fi connected after restart. Password entry, successful primary-network
+replacement, cancellation, power-cycle persistence and appearance are pending
+physical acceptance. No private networks, MQTT bindings or secrets are included.
+Provide wifi_ssid and wifi_password in a private secrets file before compiling
+the public root. It has no API/OTA setup; preserve those in deployed roots.

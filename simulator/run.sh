@@ -11,6 +11,7 @@ export SDL_VIDEODRIVER="${SDL_VIDEODRIVER:-x11}"
 case "${1:-regular}" in
   regular) config=simulator/hello-world.yaml ;;
   portrait) config=simulator/portrait.yaml ;;
+  encoder-list) config=simulator/encoder-list.yaml ;;
   tft160) config=simulator/tft160.yaml ;;
   tft240) config=simulator/tft240.yaml ;;
   tcall) config=simulator/tcall.yaml ;;

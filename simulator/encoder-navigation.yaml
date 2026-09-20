@@ -1,0 +1,20 @@
+# Eight inert entries for encoder motion testing; never imported by device packages.
+substitutions:
+  nabla_resource_root: ".."
+external_components:
+  - source:
+      type: local
+      path: ${nabla_resource_root}/external_components
+nabla_navigation:
+  tree:
+    key: home
+    title: Menu
+    children:
+      - {key: info, title: Informacion, icon: "\uf05a", detail: "Preview"}
+      - {key: settings, title: Ajustes, icon: "\uf013", detail: "Preview"}
+      - {key: control, title: Control, icon: "\uf11b", detail: "Preview"}
+      - {key: lights, title: Luces, icon: "\uf0eb", detail: "Preview"}
+      - {key: demo_clock, title: Reloj demo, icon: "\uf185", detail: "Preview only"}
+      - {key: demo_radio, title: Radio demo, icon: "\uf001", detail: "Preview only"}
+      - {key: demo_weather, title: Tiempo demo, icon: "\uf185", detail: "Preview only"}
+      - {key: demo_tools, title: Herramientas demo, icon: "\uf013", detail: "Preview only"}
