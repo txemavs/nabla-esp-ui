@@ -13,7 +13,7 @@ Do not also install web_server: it competes for the root URL.
 The initial Spanish browser view provides camera fullscreen, navigation,
 information details, a browser-local light/dark switch, network scanning,
 masked password entry, explicit save confirmation and cancel.
-Keyboard Tab/Enter works through native HTML buttons and inputs.
+At the root, the shared triangle switches tiles/list and remembers the view in browser local storage. Inside a section it returns to the parent. Nested menus use compact rows. The logo has a one-second depth turn with reduced-motion support. Tab/Enter, Up/Down, Home/End and Escape provide keyboard navigation; returning restores the launching item. Text fields retain native editing keys.
 Only open, information and wifi nodes are supported; other actions are rejected.
 This is a new renderer, not a bitmap mirror of the physical framebuffer.
 
@@ -37,3 +37,15 @@ qualification remain to be tested. Existing camera image quality is independent.
 No new camera sensor settings are introduced.
 
 page.html is the source; run python3 tools/embed_web_page.py after editing it.
+
+## Next phase (not implemented)
+
+A display mirror should expose the physical display pixels and forward input to
+its existing controller, while this responsive renderer retains independent
+browser navigation. First qualify the small monochrome framebuffer; do not
+claim universal display capture before checking each driver.
+
+A later visual menu editor could reuse the validated navigation schema and
+preview a single tree in several device profiles. Export device-owned YAML;
+keep credentials and installation data out of shared examples. Browser preview,
+pixel mirroring and YAML editing are separate capabilities.

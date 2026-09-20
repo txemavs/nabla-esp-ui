@@ -9,21 +9,47 @@ body.light{color-scheme:light;--bg:#fafafa;--fg:#17191d;--border:#bfbfbf;--tile:
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:18px ui-monospace,monospace}
 header,footer{display:flex;align-items:center;gap:16px;padding:14px 18px;background:var(--tile)}
 header{position:sticky;top:0}h1{font-size:20px;margin:0;flex:1}button,input{font:inherit;color:inherit;background:var(--tile);border:1px solid var(--border);border-radius:12px;padding:14px}button{cursor:pointer}button:focus-visible,input:focus{outline:2px solid var(--fg)}button:hover{border-color:var(--fg)}
-#back{border:0;padding:4px;font-size:32px;line-height:1}main{max-width:850px;margin:auto;padding:20px;min-height:75vh}
+#back{border:0;padding:4px;line-height:1;background:transparent}#back:focus-visible{outline:0}
+#back svg{width:32px;height:32px;display:block;transition:transform 180ms}
+#back.parent svg{transform:rotate(60deg)}#back polygon{fill:transparent;stroke:currentColor;stroke-width:2}
+#back:focus-visible polygon,#back.spinning polygon{fill:currentColor}
+#back.spinning svg{animation:spin 1s ease-in-out}
+@keyframes spin{0%,100%{transform:scaleX(1)}50%{transform:scaleX(-1)}}
+.grid.list{grid-template-columns:1fr;gap:8px}.list .tile{min-height:60px;display:flex;align-items:center;justify-content:flex-start;padding:12px 16px;gap:16px;text-align:left}.list .symbol{font-size:26px;min-width:32px}
+@media(prefers-reduced-motion:reduce){#back svg{transition:none}#back.spinning svg{animation:none}}
+main{max-width:850px;margin:auto;padding:20px;min-height:75vh}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}.tile{min-height:140px;display:grid;place-content:center;gap:14px;text-align:center}.symbol{font-size:40px;color:#48baff}
 footer{font-size:13px;justify-content:space-between}form{display:grid;gap:14px;max-width:520px}input{width:100%}label{display:grid;gap:7px}label.check{display:flex;align-items:center}input[type=checkbox]{width:auto}img{width:100%;object-fit:contain;background:#000;max-height:72vh;cursor:zoom-in}img:fullscreen{max-height:none;width:100vw;height:100vh}
 pre{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}#networks{display:grid;gap:8px;margin:16px 0}.hint{color:#a9adb7;font-size:14px;line-height:1.5}
 </style>
-<header><button id="back" aria-label="Volver">▽</button><h1 id="title">Nabla</h1><button id="theme" aria-label="Cambiar tema">◐</button></header>
+<header><button id="back" aria-label="Cambiar a lista"><svg viewBox="0 0 32 32" aria-hidden="true"><polygon points="3.876,9 28.124,9 16,30"/></svg></button><h1 id="title">Nabla</h1><button id="theme" aria-label="Cambiar tema">◐</button></header>
 <main id="view"></main><footer><span>NABLA</span><span id="status">Conectando…</span></footer>
 <script>
-let state,node=0,lastStage=-1;const view=document.querySelector('#view');
+let state,node=0,lastStage=-1,listMode=false;const rememberedFocus=new Map();
+try{listMode=localStorage.getItem("nabla-list")==="true"}catch{}
+const view=document.querySelector('#view');
 const el=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e};
 document.querySelector('#theme').onclick=()=>document.body.classList.toggle('light');
-document.querySelector('#back').onclick=()=>{node=state.nodes[node]?.parent??0;if(node<0)node=0;render()};
+const back=document.querySelector('#back');
+back.onclick=()=>{
+ if(!state)return;
+ if(node===0){listMode=!listMode;try{localStorage.setItem('nabla-list',String(listMode))}catch{}
+ back.classList.remove('spinning');void back.offsetWidth;back.classList.add('spinning');render();back.focus();
+ }else{node=Math.max(0,state.nodes[node].parent);render();view.querySelector('[data-node="'+rememberedFocus.get(node)+'"]')?.focus()}
+};
+back.addEventListener('animationend',()=>back.classList.remove('spinning'));
+document.addEventListener('keydown',e=>{
+ if(e.target.matches('input,textarea,select'))return;
+ if(e.key==='Escape' && node!==0){e.preventDefault();back.click();return}
+ if(!['ArrowDown','ArrowUp','Home','End'].includes(e.key))return;
+ const buttons=[...view.querySelectorAll('.tile')];if(!buttons.length)return;
+ const i=buttons.indexOf(document.activeElement);
+ const next=e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowDown'?1:-1)+buttons.length)%buttons.length;
+ e.preventDefault();buttons[next].focus();
+});
 async function command(action,fields={}){try{const r=await fetch('/nabla/wifi',{method:'POST',headers:{'X-Nabla-Token':state.token},body:new URLSearchParams({action,...fields})});if(!r.ok)throw Error('No se pudo iniciar ('+r.status+')');await poll()}catch(e){document.querySelector('#status').textContent=e.message}}
 function render(){
- view.replaceChildren();document.querySelector('#title').textContent=state.nodes[node].title;
+ view.replaceChildren();back.classList.toggle('parent',node!==0);back.setAttribute('aria-label',node?'Volver':listMode?'Cambiar a iconos':'Cambiar a lista');back.title=back.getAttribute('aria-label');document.querySelector('#title').textContent=state.nodes[node].title;
  if(node===state.camera_node){
   const img=el('img');img.alt='Cámara en directo';const url=new URL(location.href);url.port=state.camera_port;url.pathname='/';url.search='';url.hash='';img.src=url;
   img.onclick=()=>document.fullscreenElement?document.exitFullscreen():img.requestFullscreen?.();
@@ -39,7 +65,7 @@ function render(){
   view.append(scan,networks,f,cancel,el('p','Si cambia la red o la IP, vuelve a abrir el dispositivo desde su nueva dirección.'));updateNetworks();return;
  }
  const children=state.nodes.filter(n=>n.parent===node);
- if(children.length){const grid=el('div');grid.className='grid';children.forEach(n=>{const b=el('button');b.className='tile';const icon=el('span',n.id===state.camera_node?'▣':n.action===3?'◉':'ⓘ');icon.className='symbol';b.append(icon,el('span',n.title));b.onclick=()=>{node=n.id;render()};grid.append(b)});view.append(grid)}
+ if(children.length){const grid=el('div');grid.className='grid'+(listMode||node!==0?' list':'');children.forEach(n=>{const b=el('button');b.className='tile';b.dataset.node=n.id;const icon=el('span',n.id===state.camera_node?'▣':n.action===3?'◉':'ⓘ');icon.className='symbol';b.append(icon,el('span',n.title));b.onclick=()=>{rememberedFocus.set(node,n.id);node=n.id;render();(view.querySelector('button,input')||back).focus()};grid.append(b)});view.append(grid)}
  else view.append(el('pre',state.nodes[node].detail||'Sin información disponible.'));
 }
 function updateNetworks(){const box=document.querySelector('#networks');if(!box)return;box.replaceChildren();for(const n of state.networks){const b=el('button',n.ssid+' · '+n.rssi+' dBm'+(n.open?' · abierta':''));b.onclick=()=>{const f=view.querySelector('form');f.ssid.value=n.ssid;f.open.checked=n.open};box.append(b)}}
