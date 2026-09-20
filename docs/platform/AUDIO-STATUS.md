@@ -1,116 +1,87 @@
 # Bluetooth audio handoff — 2026-09-20
 
-Status: paused experiment, not production audio. Keep off main pending review.
+**Status: PAUSED** — experimental HFP AG bring-up, not production audio.
+Keep off main pending review. HFP SLC works; SCO audio not achieved.
 
-## Verified evidence
+## What works
 
-Original ESP32 T-Call with compact OLED and encoder detected a Galaxy Buds Pro
-headset. Authentication succeeded and HFP state 3 (SLC_CONNECTED) was logged.
-The owner confirmed the connected display. This does not establish audio.
+- Device discovery with bounded candidate list
+- Pairing and authentication (SSP numeric comparison)
+- HFP SLC (Service Level Connection) reaches state 3 (SLC_CONNECTED)
+- HA integration: Scan/Select/Confirm/Connect/Disconnect/Test Tone buttons
+- Status strings: "HFP conectado (sin audio)", "SCO rechazado", etc.
+- Diagnostic logging: HFP events, peer_feat, BCS codec negotiation, audio states
 
-## Investigation history
+## What fails
 
-### Fix #1: CONFIG_BTDM_CTRL_BR_EDR_MAX_SYNC_CONN (commit 1422bbf)
+- SCO/eSCO audio connection: never reaches CONNECTED (state 2) or CONNECTED_MSBC (state 3)
+- No audible test tone played
+- After SCO rejection, SLC sometimes drops within seconds
 
-CONFIG_BTDM_CTRL_BR_EDR_MAX_SYNC_CONN was unset (default 0), disabling
-SCO/eSCO at the controller level. Fixed by setting to 1.
+## Hardware under test
 
-**Result:** Physical retest on Kit1 + Galaxy Buds (2026-09-20 ~18:58 CEST)
-still showed 10-second timeout. Audio state went to CONNECTING (1) but never
-reached CONNECTED (2). SLC then disconnected. MAX_SYNC_CONN=1 necessary but
-not sufficient.
+- **Kit1:** NodeMCU-32S (original ESP32, not S3) + Galaxy Buds Pro
+- **Earlier:** T-Call + external OLED showed same SLC-ok / audio-fail pattern
 
-### Fix #2: Enhanced diagnostics and missing AT handlers (commit 99a7c0a)
+## Investigation history (2026-09-20)
 
-Added comprehensive logging and missing HFP AT command handlers:
-- All HFP callback events logged with names
-- Connection state logs peer_feat and chld_feat (shows headset capabilities)
-- BCS codec negotiation event logged
-- CLCC (call list) and CNUM (subscriber number) responses added
-- Audio state transitions logged with state names
-- Distinct "SCO rechazado" status when audio disconnects while opening
+| Fix | Commit | Change | Result |
+|-----|--------|--------|--------|
+| #1 | 1422bbf | MAX_SYNC_CONN=1 (was 0) | 10s timeout, no audio |
+| #2 | 99a7c0a | DEBUG diagnostics, CLCC/CNUM handlers | Timeout then HFP drop |
+| #3 | eb43515 | WBS_ENABLE=true for codec negotiation | "SCO rechazado" ~3s (faster rejection) |
+| #4 | 2899d28 | Simulate outgoing call before audio_connect | **Still "SCO rechazado" at 19:32 CEST** |
 
-**Result:** Physical retest still showed timeout then HFP drop — consistent
-with headset rejecting SCO.
+All four fixes attempted on Kit1 + Galaxy Buds. None achieved SCO CONNECTED.
+The progression from 10s timeout → 3s active rejection confirms diagnostics
+are working and the headset is actively refusing the SCO link.
 
-### Fix #3: Enable WBS for codec negotiation (commit eb43515)
+## Not in scope / known limits
 
-Enabled CONFIG_BT_HFP_WBS_ENABLE=true in sdkconfig. Modern headsets like
-Galaxy Buds Pro support HFP 1.7+ codec negotiation and may require the AG to
-advertise mSBC capability even if CVSD fallback is acceptable.
+- **ESP32-S3:** Has no classic Bluetooth (BR/EDR), only BLE. HFP requires classic.
+- **ESPHome:** Has no stock HFP AG component; this is custom external_component.
+- **A2DP:** Separate profile for streaming audio; not attempted here.
+- **Assist/satellite:** Requires working SCO bidirectional audio first.
 
-**Result:** Physical retest on Kit1 + Galaxy Buds (2026-09-20 ~19:21 CEST)
-showed faster rejection: "SCO rechazado" after only 3 seconds (vs 10s timeout
-before). This confirms diagnostics work and SCO is now actively rejected
-rather than timing out. WBS alone is not sufficient.
+## Current state
 
-### Fix #4: Simulate outgoing call before SCO (current)
-
-HFP headsets typically only accept SCO audio when there's an active or
-alerting call. The ESP-IDF HFP AG example uses esp_hf_ag_out_call() to
-simulate an outgoing call before connecting audio. Without this, headsets
-reject the SCO request because the AG reports "no calls" in CIND/CLCC.
-
-Changes:
-- Call esp_hf_ag_out_call() before esp_hf_ag_audio_connect() to simulate
-  an alerting outgoing call
-- Call esp_hf_ag_end_call() when audio finishes or is rejected
-- CIND response now reports network available (signal=4, battery=3)
-- CLCC response reports the simulated call when tone_requested is active
-- CNUM response now provides a dummy subscriber number
-
-**Hypothesis:** Galaxy Buds Pro rejects SCO because the AG reports no active
-call. By simulating an outgoing alerting call, the headset should accept the
-audio connection for "in-band ringtone" or call audio.
-
-## What to look for in next test logs
-
-Run with log level DEBUG to see all HFP events. Key things to check:
-
-1. **Outgoing call simulated**: Log shows esp_hf_ag_out_call succeeded before
-   audio_connect.
-
-2. **CLCC request**: Should now respond with the simulated alerting call.
-
-3. **Codec negotiated: mode=?**: BCS event shows agreed codec (1=CVSD, 2=mSBC).
-
-4. **Audio state=1 (CONNECTING)**: Confirms esp_hf_ag_audio_connect initiated.
-
-5. **Audio state=2 (CONNECTED) or =3 (CONNECTED_MSBC)**: Success! Tone should
-   play. State 2 means CVSD, state 3 means mSBC.
-
-6. **Audio state=0 (DISCONNECTED) while opening**: Headset still rejecting.
-   Status shows "SCO rechazado".
-
-## If simulated call doesn't work: further steps
-
-1. **Try active call state**: Instead of OUTGOING_ALERTING, try
-   ESP_HF_CALL_STATUS_CALL_IN_PROGRESS with CALL_SETUP_STATUS_IDLE.
-
-2. **Check eSCO parameters**: The default eSCO S3/S4 settings may not be
-   accepted. Some headsets need specific packet types or intervals.
-
-3. **Add HCI-level logging**: Enable CONFIG_BT_BLUEDROID_DEBUG=y to see actual
-   HCI commands and responses for Setup Synchronous Connection.
-
-4. **Try different headset**: Test with a simpler BT 4.x headset to rule out
-   Galaxy Buds-specific behavior.
-
-## Earlier findings
-
-Disabling compiled HFP client support caused "Out of Service Records (3)";
-restoring it recovered AG service connection. Only AG is initialized.
-Host/controller HCI selection is in place.
-Unknown-codec and 3-EDR eSCO capability warnings are observations from the
-Bluedroid stack, not proven causes of the timeout.
+- Bringup firmware `kit1-hfp-bringup` may still be on Kit1
+- Production UI YAML in repo is untouched (no HFP integration)
+- Branch `codex/bluetooth-audio-bringup` / PR #28 contains all experimental code
 
 ## Resume checklist
 
-1. **Physical retest required:** Owner will flash updated firmware on Kit1.
-2. Capture full DEBUG logs if audio still fails.
-3. If still rejected with simulated call, try active call state or HCI debug.
-4. Add timeout, cancellation, lost-link and tone-limit regression tests.
-5. Refactor shared Bluetooth ownership before combining HID keyboard and HFP.
+When work resumes:
+
+1. **Capture DEBUG logs** with peer_feat bitmap, BCS events, and audio state
+   transitions (1 CONNECTING → 0 DISCONNECTED sequence).
+
+2. **Try different headset** — a simpler BT 4.x headset may help isolate
+   whether this is Galaxy Buds-specific behavior.
+
+3. **Run ESP-IDF HFP AG example side-by-side** on same hardware to verify
+   ESP32 can do SCO at all with this headset.
+
+4. **Check eSCO parameters** — default S3/S4 settings may not be accepted;
+   some headsets need specific packet types.
+
+5. **Enable HCI-level logging** (CONFIG_BT_BLUEDROID_DEBUG=y) to see actual
+   Setup Synchronous Connection HCI commands and error codes.
+
+6. **Try active call state** — instead of OUTGOING_ALERTING, try
+   CALL_IN_PROGRESS with CALL_SETUP_IDLE.
+
+Do not keep flashing blind sdkconfig toggles. Each test should add diagnostic
+evidence about why SCO fails.
+
+## Earlier findings
+
+- Disabling compiled HFP client support caused "Out of Service Records (3)";
+  restoring it recovered AG service connection. Only AG is initialized.
+- Unknown-codec and 3-EDR eSCO capability warnings are observations from the
+  Bluedroid stack, not proven root causes.
+
+## Notes
 
 The host session-helper tests validate bounded buffering and cancellation, not
 radio interoperability. Preserve each installation's private configuration and

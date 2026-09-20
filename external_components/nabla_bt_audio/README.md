@@ -1,6 +1,8 @@
-# Bluetooth audio — experimental, incomplete
+# Bluetooth audio — experimental, PAUSED
 
 Optional HFP Audio Gateway for original ESP32 with ESP-IDF.
+**Status (2026-09-20): paused.** HFP SLC works; SCO audio not achieved.
+
 Discovery, explicit candidate selection, SSP confirmation and HFP service
 connection are implemented. A bounded, manually triggered tone attempt exists.
 No successful audible playback, microphone capture or Assist session is verified.
@@ -23,13 +25,13 @@ Status distinguishes timeout, SCO rejection, and completion.
 
 The controller is configured with one synchronous connection slot
 (CONFIG_BTDM_CTRL_BR_EDR_MAX_SYNC_CONN=1), required for SCO/eSCO.
-Host and controller select HCI for the SCO data path. Wideband is disabled
-for a CVSD diagnostic baseline (CONFIG_BT_HFP_WBS_ENABLE=false). HFP client
+Host and controller select HCI for the SCO data path. Wideband speech is
+enabled (CONFIG_BT_HFP_WBS_ENABLE=true) for codec negotiation. HFP client
 support remains compiled as a service-record-capacity workaround.
 
-Current status: SCO connection opening times out on test hardware. The code
-logs all HFP events, peer features, and codec negotiation for diagnosis.
-See the handoff document for investigation history and next steps.
+Current status: SCO connection is actively rejected by Galaxy Buds Pro after
+~3 seconds ("SCO rechazado"). Four fix attempts on 2026-09-20 did not achieve
+audio. See handoff document for investigation history and resume steps.
 
 See [handoff](../../docs/platform/AUDIO-STATUS.md) and the
 [compile fixture](../../examples/bluetooth-audio/bringup.yaml).
