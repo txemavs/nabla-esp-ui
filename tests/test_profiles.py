@@ -27,6 +27,10 @@ const int count = sizeof(nodes)/sizeof(nodes[0]);
 }
 int main() {
  using namespace nabla;
+ for(int i=2;i<7;++i)assert(i-encoder_anchor(i,4,8,1)==2);
+ for(int i=1;i<6;++i)assert(i-encoder_anchor(i,4,8,-1)==1);
+ assert(encoder_anchor(7,4,8,1)==4);
+ assert(encoder_anchor(1,4,2,1)==0);
  // Detailed multiline content must never leak into compact menu summaries.
  nabla_info::values[2] = "Example - 192.0.2.42";
  nabla_info::details[2] = "Example\nIP: 192.0.2.42\nGateway: 192.0.2.1";

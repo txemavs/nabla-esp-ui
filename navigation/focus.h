@@ -30,4 +30,11 @@ inline int scroll_anchor_middle(int selected, int rows, int total) {
   // Middle of list: keep selection on middle row.
   return selected - mid;
 }
+// Encoder lists use the lower middle slot going down, upper middle going up.
+inline int encoder_anchor(int selected, int rows, int total, int direction) {
+  rows=std::max(1,rows);
+  const int middle=direction<0?(rows-1)/2:rows/2;
+  return std::clamp(selected-middle,0,std::max(0,total-rows));
+}
+
 }

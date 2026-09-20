@@ -18,3 +18,5 @@ esphome:
       - lambda: |-
           nabla::compact_shell.tiny_play_marker=true;
           nabla::compact_shell.single_icon_mode=true;
+          nabla::compact_shell.middle_scroll=true;
+          nabla::compact_shell.init_tiny_callbacks();
