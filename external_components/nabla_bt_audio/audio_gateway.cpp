@@ -45,12 +45,13 @@ uint32_t Gateway::outgoing(uint8_t *data,uint32_t length) {
 void Gateway::test_audio(){
   if(!connected() || tone_requested_)return;
   remaining_=0;tone_requested_=true;tone_started_=millis();status_="Abriendo audio";
-  ESP_LOGI("bt_audio","Opening SCO for test tone...");
-  esp_hf_ag_volume_control(peer_,ESP_HF_VOLUME_CONTROL_TARGET_SPK,3);
+  ESP_LOGI("bt_audio","Opening SCO for test tone (SLC state=%d)...",state_);
   esp_err_t err=esp_hf_ag_audio_connect(peer_);
   if(err!=ESP_OK){
     tone_requested_=false;status_="Fallo al abrir audio";
     ESP_LOGE("bt_audio","esp_hf_ag_audio_connect failed: 0x%x",err);
+  }else{
+    ESP_LOGI("bt_audio","Audio connect initiated, waiting for SCO...");
   }
 }
 void Gateway::scan() {
@@ -121,26 +122,59 @@ void Gateway::disconnect() {
 }
 void Gateway::callback(esp_hf_cb_event_t event,esp_hf_cb_param_t *p) {
   auto *self=instance_;if(!self)return;
+  // Log all HFP events for diagnostics
+  static const char *evt_names[]={"CONN","AUDIO","BVRA","VOL","UNAT","IND_UPD",
+    "CIND","COPS","CLCC","CNUM","VTS","NREC","ATA","CHUP","DIAL","WBS","BCS","PKT","PROF"};
+  if(event<=ESP_HF_PROF_STATE_EVT)
+    ESP_LOGD("bt_audio","HFP evt %d (%s)",event,evt_names[event]);
+  else
+    ESP_LOGW("bt_audio","HFP unknown evt %d",event);
+
   if(event==ESP_HF_AUDIO_STATE_EVT && !memcmp(p->audio_stat.remote_addr,self->peer_,6)){
     self->audio_event_=p->audio_stat.state;
-    ESP_LOGI("bt_audio","Audio event: state=%d handle=0x%04x frame_size=%u",
+    // State: 0=disconnected, 1=connecting, 2=connected(CVSD), 3=connected(mSBC)
+    ESP_LOGI("bt_audio","Audio state=%d handle=0x%04x frame=%u",
              p->audio_stat.state,p->audio_stat.sync_conn_handle,p->audio_stat.preferred_frame_size);
   }
+  if(event==ESP_HF_CONNECTION_STATE_EVT && !memcmp(p->conn_stat.remote_bda,self->peer_,6)){
+    self->pending_.store(p->conn_stat.state);
+    // Log peer features to understand codec/SCO support
+    ESP_LOGI("bt_audio","HFP conn state=%d peer_feat=0x%lx chld_feat=0x%lx",
+             p->conn_stat.state,(unsigned long)p->conn_stat.peer_feat,(unsigned long)p->conn_stat.chld_feat);
+  }
+  if(event==ESP_HF_BCS_RESPONSE_EVT){
+    // Codec negotiation result: 1=CVSD, 2=mSBC
+    ESP_LOGI("bt_audio","Codec negotiated: mode=%d",p->bcs_rep.mode);
+  }
   if(event==ESP_HF_CIND_RESPONSE_EVT && !memcmp(p->cind_rep.remote_addr,self->peer_,6)){
+    ESP_LOGD("bt_audio","CIND request, responding with idle state");
     esp_hf_ag_cind_response(self->peer_,ESP_HF_CALL_STATUS_NO_CALLS,
       ESP_HF_CALL_SETUP_STATUS_IDLE,ESP_HF_NETWORK_STATE_NOT_AVAILABLE,0,
       ESP_HF_ROAMING_STATUS_INACTIVE,0,ESP_HF_CALL_HELD_STATUS_NONE);
   }
   if(event==ESP_HF_COPS_RESPONSE_EVT && !memcmp(p->cops_rep.remote_addr,self->peer_,6)){
+    ESP_LOGD("bt_audio","COPS request");
     char name[]="Nabla";esp_hf_ag_cops_response(self->peer_,name);
   }
-  if(event==ESP_HF_CONNECTION_STATE_EVT &&
-     !memcmp(p->conn_stat.remote_bda,self->peer_,6))
-    self->pending_.store(p->conn_stat.state);
+  if(event==ESP_HF_CLCC_RESPONSE_EVT && !memcmp(p->clcc_rep.remote_addr,self->peer_,6)){
+    ESP_LOGD("bt_audio","CLCC request (call list)");
+    // Respond with no active calls (index=0 means OK/end of list)
+    esp_hf_ag_clcc_response(self->peer_,0,ESP_HF_CURRENT_CALL_DIRECTION_INCOMING,
+      ESP_HF_CURRENT_CALL_STATUS_ACTIVE,ESP_HF_CURRENT_CALL_MODE_VOICE,
+      ESP_HF_CURRENT_CALL_MPTY_TYPE_SINGLE,nullptr,ESP_HF_CALL_ADDR_TYPE_UNKNOWN);
+  }
+  if(event==ESP_HF_CNUM_RESPONSE_EVT && !memcmp(p->cnum_rep.remote_addr,self->peer_,6)){
+    ESP_LOGD("bt_audio","CNUM request (subscriber number)");
+    // Respond with no subscriber number
+    esp_hf_ag_cnum_response(self->peer_,nullptr,0,ESP_HF_SUBSCRIBER_SERVICE_TYPE_UNKNOWN);
+  }
 }
 void Gateway::loop() {
   int audio=audio_event_.exchange(-1);
-  if(audio>=0)ESP_LOGI("bt_audio","Audio state=%d",audio);
+  if(audio>=0){
+    static const char *audio_states[]={"DISCONNECTED","CONNECTING","CONNECTED","CONNECTED_MSBC"};
+    ESP_LOGI("bt_audio","Audio state change: %d (%s)",audio,audio<4?audio_states[audio]:"?");
+  }
   if(audio==ESP_HF_AUDIO_STATE_CONNECTED || audio==ESP_HF_AUDIO_STATE_CONNECTED_MSBC){
     if(tone_requested_){
       rate_=audio==ESP_HF_AUDIO_STATE_CONNECTED_MSBC?16000:8000;
@@ -158,9 +192,18 @@ void Gateway::loop() {
     ESP_LOGI("bt_audio","Tone result: opened=%d samples_consumed=%d",opened,sent);
   }
   if(audio==ESP_HF_AUDIO_STATE_DISCONNECTED){
-    bool failed=tone_requested_ && !tone_running_;
+    bool was_opening=tone_requested_ && !tone_running_;
+    bool was_playing=tone_running_;
     esp_timer_stop(timer_);remaining_=0;tone_requested_=tone_running_=false;
-    status_=failed?"No se pudo abrir audio":"Audio cerrado";
+    if(was_opening){
+      status_="SCO rechazado";
+      ESP_LOGW("bt_audio","Audio disconnected while opening (SCO rejected by headset?)");
+    }else if(was_playing){
+      status_="Audio interrumpido";
+      ESP_LOGI("bt_audio","Audio disconnected while playing");
+    }else{
+      status_="Audio cerrado";
+    }
   }
   Discovery item{};
   if(discoveries_) for(int n=0;n<12 && xQueueReceive(discoveries_,&item,0)==pdTRUE;n++){
