@@ -9,9 +9,10 @@ spi:
   mosi_pin: GPIO23
 
 display:
-  - platform: st7735
+  - platform: ili9xxx
     id: compact_display
-    model: INITR_BLACKTAB
+    model: ST7735
+    invert_colors: false
     cs_pin: GPIO5
     dc_pin: GPIO16
     reset_pin: GPIO17
@@ -19,6 +20,4 @@ display:
     dimensions:
       width: 128
       height: 160
-      offset_width: 0
-      offset_height: 0
-    update_interval: 100ms
+    update_interval: 33ms

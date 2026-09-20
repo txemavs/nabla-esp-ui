@@ -105,3 +105,10 @@ See [JC3248W535CN notes](../hardware/jc3248w535cn.md) for flashing instructions.
 the 128×64 external OLED assembly. Its controls are synthetic; use the
 [hardware notes](../hardware/tcall-ssd1309.md) for wiring, private deployment
 boundaries and the owner-confirmed physical evidence.
+
+
+## NodeMCU-32S color encoder kit
+
+[nodemcu-32s-st7735.yaml](nodemcu-32s-st7735.yaml) provides a 160x128 ST7735
+composition with information, appearance and real Wi-Fi/password entry through
+the encoder. See [wiring and verification](../hardware/nodemcu-32s-st7735.md).

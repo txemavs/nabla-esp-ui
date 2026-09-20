@@ -10,7 +10,7 @@ substitutions:
   nabla_display_monochrome: "false"
 
 esp32:
-  board: nodemcuv2
+  board: nodemcu-32s
   framework:
     type: arduino
 
