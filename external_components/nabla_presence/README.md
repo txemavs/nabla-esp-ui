@@ -7,7 +7,11 @@ responsive web renderers. It does not carry frames, audio or remote input.
 ```yaml
 # Keep the existing Wi-Fi, MQTT credentials and renderer configuration.
 external_components:
-  - source: github://txemavs/nabla-esp-ui@main
+  - source:
+      type: git
+      url: https://github.com/txemavs/nabla-esp-ui
+      ref: main
+      path: external_components
     components: [nabla_presence]
 nabla_presence:
   topic_prefix: nabla/discovery
