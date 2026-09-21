@@ -7,6 +7,8 @@
 #include "esphome/components/web_server_base/web_server_base.h"
 #include "mirror_page.h"
 #include <cstring>
+#include <cstdlib>
+#include "remote_tap.h"
 #ifdef NABLA_MIRROR_LVGL
 #include "esphome/components/lvgl/lvgl_esphome.h"
 #endif
@@ -60,6 +62,7 @@ class Mirror : public Component,public AsyncWebHandler {
   }
 #endif
   void set_serve_root(bool value){serve_root_=value;}
+  void set_allow_touch(bool value){allow_touch_=value;}
   void set_allow_input(bool value){allow_input_=value;}
   Trigger<std::string> *get_action_trigger(){return &trigger_;}
   float get_setup_priority() const override {return setup_priority::WIFI+2;}
@@ -72,6 +75,23 @@ class Mirror : public Component,public AsyncWebHandler {
     if(lvgl_){
       auto *display=lvgl_->get_disp();
       if(lv_display_get_horizontal_resolution(display)!=width_ || lv_display_get_vertical_resolution(display)!=height_){mark_failed();return;}
+      if(allow_touch_){
+        touch_indev_=lv_indev_create();
+        lv_indev_set_type(touch_indev_,LV_INDEV_TYPE_POINTER);
+        lv_indev_set_disp(touch_indev_,display);
+        lv_indev_set_user_data(touch_indev_,this);
+        lv_indev_set_read_cb(touch_indev_,[](lv_indev_t *input,lv_indev_data_t *data){
+          auto *m=static_cast<Mirror *>(lv_indev_get_user_data(input));
+          bool physical=false;
+          for(auto *other=lv_indev_get_next(nullptr);other;other=lv_indev_get_next(other))
+            if(other!=input && lv_indev_get_type(other)==LV_INDEV_TYPE_POINTER && lv_indev_get_state(other)==LV_INDEV_STATE_PRESSED)physical=true;
+          std::lock_guard<std::mutex> lock(m->mutex_);
+          if(physical || m->lvgl_->is_paused())m->tap_.cancel();
+          const bool pressed=m->tap_.read(millis());
+          data->point.x=m->tap_.x;data->point.y=m->tap_.y;
+          data->state=pressed?LV_INDEV_STATE_PRESSED:LV_INDEV_STATE_RELEASED;
+        });
+      }
       active_=this;lv_display_set_flush_cb(display,flush);lv_obj_invalidate(lvgl_->get_screen_active());
     }
 #endif
@@ -91,12 +111,12 @@ class Mirror : public Component,public AsyncWebHandler {
   bool canHandle(AsyncWebServerRequest *r) const override {
     char url_buf[AsyncWebServerRequest::URL_BUF_SIZE];
     auto url=r->url_to(url_buf);
-    return (serve_root_ && url=="/") || url=="/mirror" || url=="/mirror/frame" || url=="/mirror/token" || (allow_input_ && url=="/mirror/action") || url=="/mirror/capabilities";
+    return (serve_root_ && url=="/") || url=="/mirror" || url=="/mirror/frame" || url=="/mirror/token" || (allow_input_ && url=="/mirror/action") || (allow_touch_ && url=="/mirror/touch") || url=="/mirror/capabilities";
   }
   void handleRequest(AsyncWebServerRequest *r) override {
     char url_buf[AsyncWebServerRequest::URL_BUF_SIZE];
     const auto url=r->url_to(url_buf);
-    if(url=="/mirror/capabilities"){auto json=str_sprintf("{\"input\":%s,\"width\":%d,\"height\":%d,\"format\":\"%s\"}",allow_input_?"true":"false",width_,height_,color_?"rgb332":"mono1");r->send(200,"application/json",json.c_str());return;}
+    if(url=="/mirror/capabilities"){auto json=str_sprintf("{\"input\":%s,\"touch\":%s,\"width\":%d,\"height\":%d,\"format\":\"%s\"}",allow_input_?"true":"false",allow_touch_?"true":"false",width_,height_,color_?"rgb332":"mono1");r->send(200,"application/json",json.c_str());return;}
     if(url=="/mirror/action" && !allow_input_){r->send(404);return;}
     if(r->method()==HTTP_GET && (url=="/" || url=="/mirror")){r->send(200,"text/html; charset=utf-8",MIRROR_PAGE);return;}
     if(r->method()==HTTP_GET && url=="/mirror/token"){
@@ -108,6 +128,13 @@ class Mirror : public Component,public AsyncWebHandler {
       auto *response=r->beginResponse(200,"application/octet-stream",frame,surface_.length);
       response->addHeader("Cache-Control","no-store");r->send(response);allocator_.deallocate(frame,surface_.length);return;
     }
+    if(r->method()==HTTP_POST && url=="/mirror/touch" && allow_touch_){
+      auto token=r->get_header("X-Nabla-Token");if(!token || *token!=token_){r->send(401);return;}
+      auto *px=r->getParam("x"),*py=r->getParam("y");
+      int x,y;if(!px || !py || !parse_coordinate(px->value().c_str(),width_,x) || !parse_coordinate(py->value().c_str(),height_,y)){r->send(400);return;}
+      {std::lock_guard<std::mutex> lock(mutex_);if(!touch_ready_ || !tap_.enqueue(x,y,millis())){r->send(409);return;}}
+      r->send(200,"text/plain","OK");return;
+    }
     if(r->method()!=HTTP_POST || url!="/mirror/action"){r->send(400);return;}
     auto token=r->get_header("X-Nabla-Token");if(!token || *token!=token_){r->send(401);return;}
     auto *p=r->getParam("action");if(!p){r->send(400);return;}auto action=p->value();
@@ -116,6 +143,14 @@ class Mirror : public Component,public AsyncWebHandler {
     r->send(200,"text/plain","OK");
   }
   void loop() override {
+#ifdef NABLA_MIRROR_LVGL
+    if(lvgl_ && allow_touch_){
+      auto *display=lvgl_->get_disp();
+      std::lock_guard<std::mutex> lock(mutex_);
+      touch_ready_=!lvgl_->is_paused() && lv_display_get_horizontal_resolution(display)==width_ && lv_display_get_vertical_resolution(display)==height_;
+      if(!touch_ready_)tap_.cancel();
+    }
+#endif
     std::string action;{std::lock_guard<std::mutex> lock(mutex_);action.swap(pending_);}
     if(!action.empty())trigger_.trigger(action);
   }
@@ -124,8 +159,11 @@ class Mirror : public Component,public AsyncWebHandler {
   int width_=128,height_=64;bool color_=false;
 #ifdef NABLA_MIRROR_LVGL
   lvgl::LvglComponent *lvgl_=nullptr;
+  lv_indev_t *touch_indev_=nullptr;
 #endif
   std::mutex mutex_;bool ready_=false,compatible_=false,serve_root_=true,allow_input_=false;std::string token_,pending_;
+  bool allow_touch_=false,touch_ready_=false;
+  RemoteTap tap_;
   Trigger<std::string> trigger_;
 };
 }

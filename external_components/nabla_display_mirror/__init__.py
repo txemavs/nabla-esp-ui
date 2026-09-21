@@ -15,9 +15,12 @@ CONFIG_SCHEMA=cv.Schema({
     cv.Optional("height", default=64):cv.int_range(min=1,max=480),
     cv.Optional("color", default=False):cv.boolean,
     cv.Optional("lvgl_id"):cv.use_id(cg.esphome_ns.namespace("lvgl").class_("LvglComponent",cg.Component)),
+    cv.Optional("touch", default=False):cv.boolean,
     cv.Optional("on_action"):automation.validate_automation(single=True),
 }).extend(cv.COMPONENT_SCHEMA)
 async def to_code(config):
+    if config["touch"] and "lvgl_id" not in config:
+        raise cv.Invalid("touch requires lvgl_id")
     var=cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var,config)
     cg.add(var.configure(config["width"],config["height"],config["color"]))
@@ -27,6 +30,7 @@ async def to_code(config):
         cg.add_define("NABLA_MIRROR_LVGL")
         cg.add(var.set_lvgl(await cg.get_variable(config["lvgl_id"])))
     cg.add(var.set_serve_root("nabla_web_service" not in CORE.config))
+    cg.add(var.set_allow_touch(config["touch"]))
     cg.add(var.set_allow_input("on_action" in config))
     if "on_action" not in config:
         return
