@@ -60,6 +60,11 @@ The [128×64 monochrome assembly](tcall-ssd1309.md) now has a
 Physical operation was confirmed by the owner after OTA on 2026-09-19;
 network recovery and long-duration qualification remain separate checks.
 
+A [mirror-enabled hardware variant](tcall-ssd1309-mirror.yaml) integrates with
+the `nabla_display_mirror` component to expose `/mirror/*` HTTP endpoints for
+remote display viewing and input forwarding. Use this variant when the device
+YAML includes the display mirror configuration.
+
 ## LilyGO T-Watch 2020
 
 The [device composition](../devices/lilygo-twatch-2020.yaml) imports the

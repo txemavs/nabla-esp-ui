@@ -18,7 +18,7 @@ esphome:
   friendly_name: "Nabla T-Call OLED"
 
 packages:
-  hardware: !include ../hardware/tcall-ssd1309.yaml
+  hardware: !include ../hardware/tcall-ssd1309-mirror.yaml
   profile: !include ../profiles/${compact_profile}.yaml
   locale: !include ../locales/${ui_language}.yaml
   catalog: !include ../examples/tcall/navigation.yaml
@@ -36,3 +36,20 @@ external_components:
   - source:
       type: local
       path: ../external_components
+
+wifi:
+  ap:
+    ssid: "Nabla T-Call Setup"
+
+nabla_display_mirror:
+  id: screen_mirror
+  width: 128
+  height: 64
+  color: false
+  on_action:
+    - lambda: |-
+        auto &shell = nabla::compact_shell;
+        if (action == "up") shell.move(-1);
+        else if (action == "down") shell.move(1);
+        else if (action == "enter") shell.activate();
+        else if (action == "back") shell.back();
