@@ -166,3 +166,14 @@ Applies to the entire nabla-esp-ui repository.
 - Distinguish owner-confirmed appearance/operation from unperformed recovery,
   individual load-control and soak tests. Do not turn approval into a blanket
   hardware qualification claim.
+
+## Web and Home Assistant ownership
+
+- Firmware web/mirror components live here; Nabla Control lives in
+  https://github.com/txemavs/nabla-hacs. Do not copy its predecessor integration
+  back into this repository. Keep the HTTP contract compatible across projects.
+- Read docs/platform/DISPLAY-MIRROR-CONTRACT.md before changing transport.
+- studio/ is a live equipment selector, not a cross-profile simulator/editor.
+- Preserve mono1 and RGB332 consumers, optional input and root coordination.
+- Read-only tokens are not authentication; document trusted-LAN scope.
+- Record compiled, captured and owner-confirmed hardware evidence separately.

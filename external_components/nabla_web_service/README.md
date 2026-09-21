@@ -33,9 +33,9 @@ Do not enable it on a command-rich installation until those actions have a
 supported adapter. Read-only mirroring can display any already-rendered content.
 
 The four studio examples are OLED 128x64, ST7735 160x128, T-Watch 2020 240x240
-and the large touch panel 480x320. Only OLED mirroring is implemented today.
+and the large touch panel 480x320. Monochrome and RGB332 capture are implemented; see the mirror component for evidence.
 The watch is a first-class gallery target, not a scaled OLED preview.
 
-Auth integration, AP recovery, resource/latency benchmarks and color mirrors
-remain open W1/W2 gates. Per-boot tokens only protect against cross-origin form
+Auth integration, AP recovery, resource/latency benchmarks and extended color
+mirror qualification remain open W1/W2 gates. Per-boot tokens only protect against cross-origin form
 submissions; use trusted LAN or protected AP access. No Internet access claim.

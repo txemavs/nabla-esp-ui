@@ -1,7 +1,9 @@
 # Optional web service and menu studio
 
-Status: delivery plan, 2026-09-20. Proposed YAML below is illustrative and
-NOT accepted firmware syntax. The gallery/editor is not implemented or hosted.
+Status: reconciled 2026-09-21. Optional web routing, monochrome/color mirrors
+and a local live-equipment gallery are implemented. Cross-profile simulation,
+the visual editor and public hosting remain planned. The YAML proposal below
+is illustrative, NOT accepted firmware syntax.
 
 ## Goal and current evidence
 
@@ -12,11 +14,15 @@ profiles, edited and exported as ESPHome YAML.
 Existing previews:
 - nabla_web: offline responsive menu, tile/list toggle, camera via its existing
   MJPEG server, information and shared real Wi-Fi scanning.
-- nabla_display_mirror: 128x64 monochrome draw-pass tee, canvas viewer and
-  allowlisted input to the same controller as the physical encoder.
-- Both have physical build/OTA/HTTP evidence. They currently conflict because
-  each owns the root route. No color mirror or browser profile simulator exists.
-- Omitting either component omits it. There is no unified enabled/mirror switch.
+- nabla_display_mirror: mono1 and RGB332 draw-pass capture, plus an LVGL flush
+  hook, canvas viewer and optional input to the physical controller.
+- OLED, ST7735 and the large LVGL panel have physical capture evidence. T-Watch
+  240x240 has build evidence; physical mirror verification is still pending.
+- nabla_web_service coordinates root routing with mode: responsive, mirror or
+  both. Omit unused components for compile-time exclusion; enabled is not a key.
+- studio/ selects live devices. It does not simulate another screen resolution.
+- Nabla Control in https://github.com/txemavs/nabla-hacs consumes the mirror
+  contract and owns HA panels/cards. Do not maintain a second HA integration here.
 - Password migration, AP recovery and prolonged/multi-client operation remain
   unqualified. Do not convert initial tests into blanket support claims.
 
@@ -81,9 +87,10 @@ promise unrestricted access to HTTP LAN endpoints due to browser restrictions.
 
 ## Physical mirror implementation
 
-Keep the existing monochrome tee. Generalize to bounded RGB565 capture for
-ST7735. For LVGL, capture at the display flush boundary and assemble partial
-updates into a coherent frame; do not expose half-drawn frames or render twice.
+The implementation keeps the monochrome tee and uses bounded RGB332 capture
+for ST7735. LVGL capture assembles RGB565 flush areas into an RGB332 frame and
+publishes on the last flush. Higher-fidelity RGB565 transport remains an option
+for future measurement, not the current wire format.
 
 Raw RGB565 is 40,960 bytes per 160x128 frame and 307,200 bytes per 480x320
 frame. At 10 FPS this is about 0.41 and 3.07 MB/s payload before HTTP overhead.
@@ -166,8 +173,10 @@ and hosting workflow. Publish support status and limitations. Confirm Back,
 focus restoration and tile/list transitions across profiles.
 
 Each phase is a reviewable PR with recorded evidence, not a large rewrite.
-The immediate next step is W1, followed by ST7735 color capture. Editor work
-must not block physical-device progress or require remote infrastructure.
+W1 routing and the first W2 color captures are delivered. Next qualify the
+T-Watch mirror, rotation, reconnects and multi-viewer resource usage, then
+continue the W3 renderer feasibility work. Nabla Control supplies the HA live
+viewer; the independent studio remains the future menu authoring tool.
 
 ## Key scenarios
 

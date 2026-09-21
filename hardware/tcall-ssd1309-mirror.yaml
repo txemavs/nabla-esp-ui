@@ -1,61 +1,10 @@
-# T-Call hardware with display mirror enabled; captures pixels for remote viewing.
-# Requires nabla_display_mirror component configured in the device YAML.
-
-esp32:
-  board: esp32dev
-  framework:
-    type: arduino
-
-logger:
-  level: INFO
-
-spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO23
-
-sensor:
-  - platform: rotary_encoder
-    id: enc
-    pin_a:
-      number: GPIO14
-      mode: {input: true, pullup: true}
-    pin_b:
-      number: GPIO13
-      mode: {input: true, pullup: true}
-    on_clockwise:
-      - lambda: nabla::compact_shell.move(-1);
-    on_anticlockwise:
-      - lambda: nabla::compact_shell.move(1);
-
-binary_sensor:
-  - platform: gpio
-    id: enc_sw
-    pin:
-      number: GPIO19
-      mode: {input: true, pullup: true}
-      inverted: true
-    filters:
-      - delayed_on: 20ms
-      - delayed_off: 20ms
-    on_click:
-      - min_length: 30ms
-        max_length: 700ms
-        then:
-          - lambda: nabla::compact_shell.activate();
-      - min_length: 800ms
-        max_length: 5s
-        then:
-          - lambda: nabla::compact_shell.back();
+# Optional mirror overlay; reuse the base T-Call wiring and replace only drawing.
+# The device composition supplies screen_mirror and its input mapping.
+packages:
+  base_hardware: !include tcall-ssd1309.yaml
 
 display:
-  - platform: ssd1306_spi
-    model: SSD1306_128X64
-    id: disp
-    cs_pin: GPIO33
-    dc_pin: GPIO32
-    reset_pin: GPIO25
-    rotation: 180
-    update_interval: 33ms
+  - id: !extend disp
     lambda: |-
       auto &shell=nabla::compact_shell;
       auto &surface=id(screen_mirror).begin(it);

@@ -48,8 +48,9 @@ correctness. Record test dates, exact library revision and tested behavior when
 adding evidence; retain detailed private YAML links in the installation's own
 test register. See [private installations](PRIVATE-INSTALLATIONS.md).
 
-T-Watch changes are being developed in [PR #23](https://github.com/txemavs/nabla-esp-ui/pull/23); add their verified public YAML
-and physical results when that work is merged. T-Wristband is a different target:
+T-Watch 2020 has a [public device composition](../devices/lilygo-twatch-2020.yaml)
+and a 240x240 profile. Its mirror firmware has compiled; physical mirror
+verification remains pending. T-Wristband is a different target:
 confirm its exact revision before assigning drivers or pins. Other reference
 rows are not verified Nabla targets merely because their resolution matches.
 
@@ -75,3 +76,16 @@ Add physical diagonal/visible area, controller and bus, profile coverage,
 supported size choices, or measured resource/refresh limits when they help
 select hardware. Keep examples last and split rows for materially different
 input variants. See the [shared UI contract](UI-CONSISTENCY.md).
+
+## Optional mirror evidence (2026-09-20)
+
+| Target | Mirror evidence | Remaining qualification |
+| --- | --- | --- |
+| T-Call 128×64 | Physical mono1 frame and remote encoder actions checked | Recovery and soak |
+| Kit1 160×128 | USB write verified; real RGB332 frame inspected | Multi-client heap and latency |
+| Large panel 480×320 | OTA succeeded; real RGB332 frame inspected | Runtime rotation and sustained load |
+| T-Watch 240×240 | Firmware compiled | Physical capture not yet verified |
+
+See the [mirror component](../external_components/nabla_display_mirror/README.md)
+for memory costs, color quantization and explicit limits. This table does not
+claim that every device currently runs the latest repository revision.

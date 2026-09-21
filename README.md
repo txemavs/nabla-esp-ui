@@ -73,8 +73,9 @@ fonts and assets. Nothing needs to be downloaded by the device at startup.
 
 The bundled desktop is an example catalog, not a complete application suite.
 Its Wi-Fi forms and some status indicators are simulations unless an actual
-adapter is configured. Compact Wi-Fi/form prototypes still target 128×64;
-the ST7735 deployment uses the captive portal for network provisioning.
+adapter is configured. Compact Wi-Fi is also available on the 160×128 ST7735 through the shared
+real Wi-Fi adapter and encoder password editor. The captive portal remains an
+optional recovery/provisioning path.
 
 ## Current status
 
@@ -184,4 +185,15 @@ External projects are references, not claims of API compatibility.
 
 ## Browser interfaces and planned menu studio
 
-Experimental [web menus](external_components/nabla_web/README.md) and [128×64 display mirroring](external_components/nabla_display_mirror/README.md) are optional components. The [web service and studio plan](docs/platform/WEB-SERVICE-AND-STUDIO.md) covers unified YAML configuration, color mirrors and a future gallery/editor. The public studio is not yet implemented or hosted.
+Optional [web menus](external_components/nabla_web/README.md) serve headless
+camera devices. [Display mirroring](external_components/nabla_display_mirror/README.md)
+serves monochrome and RGB332 frames from compact displays and LVGL. The
+[web coordinator](external_components/nabla_web_service/README.md) selects
+responsive, mirror or both views; omit these components to build without them.
+
+[Nabla Control](https://github.com/txemavs/nabla-hacs) owns the Home Assistant
+integration and consumes the [HTTP contract](docs/platform/DISPLAY-MIRROR-CONTRACT.md).
+Device menus, rendering and firmware stay here. The [local equipment gallery](studio/README.md)
+selects live devices; cross-profile simulation and a visual YAML editor remain
+planned in the [studio roadmap](docs/platform/WEB-SERVICE-AND-STUDIO.md).
+No hosted studio URL is advertised.
