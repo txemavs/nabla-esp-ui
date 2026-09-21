@@ -14,10 +14,25 @@ that each load was actuated. Private bindings are not distributed.*
 
 ## Public composition
 
-- [Complete bring-up YAML](../devices/tcall-ssd1309.yaml).
-- [Hardware package](tcall-ssd1309.yaml).
+- [Complete bring-up YAML](../devices/tcall-ssd1309.yaml): with display mirror enabled.
+- [Hardware package](tcall-ssd1309.yaml): base hardware without display mirror.
+- [Mirror hardware package](tcall-ssd1309-mirror.yaml): includes display mirror integration.
 - [Profile](../profiles/tcall128.yaml).
 - [Host preview](../simulator/tcall.yaml) and [menu notes](../examples/tcall/README.md).
+
+## Display mirror
+
+The public device YAML includes the `nabla_display_mirror` component, which
+exposes HTTP endpoints for remote viewing and encoder input forwarding:
+- `GET /mirror/capabilities`: JSON with width/height/format/input flags
+- `GET /mirror/frame`: 1024-byte mono1 framebuffer
+- `GET /mirror/token`: Per-boot CSRF token
+- `POST /mirror/action`: Send up/down/enter/back to the device
+
+See [DISPLAY-MIRROR-CONTRACT.md](../docs/platform/DISPLAY-MIRROR-CONTRACT.md)
+for the full HTTP specification. The viewer page at `/` or `/mirror` shows a
+canvas with controls. For T-Call with `on_action` configured, `input: true`
+is returned in capabilities, enabling remote encoder control.
 
 The public firmware uses synthetic light actions and mock Wi-Fi. It needs no
 installation secrets. The private deployed composition instead supplies real

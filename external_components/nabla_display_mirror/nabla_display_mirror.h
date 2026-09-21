@@ -75,7 +75,7 @@ class Mirror : public Component,public AsyncWebHandler {
       active_=this;lv_display_set_flush_cb(display,flush);lv_obj_invalidate(lvgl_->get_screen_active());
     }
 #endif
-    token_=str_sprintf("%08x%08x",random_uint32(),random_uint32());
+    token_=str_sprintf("%08lx%08lx",static_cast<unsigned long>(random_uint32()),static_cast<unsigned long>(random_uint32()));
     auto *base=web_server_base::global_web_server_base;base->init();base->add_handler(this);
   }
   display::Display &begin(display::Display &target){
@@ -89,10 +89,13 @@ class Mirror : public Component,public AsyncWebHandler {
   }
   void publish(){std::lock_guard<std::mutex> lock(mutex_);memcpy(snapshot_,surface_.pixels,surface_.length);ready_=true;}
   bool canHandle(AsyncWebServerRequest *r) const override {
-    auto url=r->url();return (serve_root_ && url=="/") || url=="/mirror" || url=="/mirror/frame" || url=="/mirror/token" || (allow_input_ && url=="/mirror/action") || url=="/mirror/capabilities";
+    char url_buf[AsyncWebServerRequest::URL_BUF_SIZE];
+    auto url=r->url_to(url_buf);
+    return (serve_root_ && url=="/") || url=="/mirror" || url=="/mirror/frame" || url=="/mirror/token" || (allow_input_ && url=="/mirror/action") || url=="/mirror/capabilities";
   }
   void handleRequest(AsyncWebServerRequest *r) override {
-    const auto url=r->url();
+    char url_buf[AsyncWebServerRequest::URL_BUF_SIZE];
+    const auto url=r->url_to(url_buf);
     if(url=="/mirror/capabilities"){auto json=str_sprintf("{\"input\":%s,\"width\":%d,\"height\":%d,\"format\":\"%s\"}",allow_input_?"true":"false",width_,height_,color_?"rgb332":"mono1");r->send(200,"application/json",json.c_str());return;}
     if(url=="/mirror/action" && !allow_input_){r->send(404);return;}
     if(r->method()==HTTP_GET && (url=="/" || url=="/mirror")){r->send(200,"text/html; charset=utf-8",MIRROR_PAGE);return;}
