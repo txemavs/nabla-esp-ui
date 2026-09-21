@@ -42,6 +42,8 @@ nabla_navigation:
       - key: information
         title: "${tr_information}"
         icon: "\uf05a"
+        icon_dark: 0x499EFF
+        icon_light: 0x0055BB
         children:
           - key: model
             title: "${tr_info_model}"
@@ -55,10 +57,14 @@ nabla_navigation:
       - key: wifi
         title: Wi-Fi
         icon: "\uf1eb"
+        icon_dark: 0x46D6A0
+        icon_light: 0x007653
         action: wifi
       - key: appearance
         title: "${tr_appearance}"
         icon: "${icon_settings}"
+        icon_dark: 0x65D8E8
+        icon_light: 0x006A7C
         children:
           - key: dark
             title: "${tr_dark_mode}"

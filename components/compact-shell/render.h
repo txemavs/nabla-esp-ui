@@ -290,7 +290,10 @@ class CompactShell {
         d.get_text_bounds(0,0,nodes[node].title,large,display::TextAlign::TOP_LEFT,&bx,&by,&bw,&bh);
         int icon_h=icons->get_height()-tiny_icon_reduce;
         int base_y=y+(ch-(icon_h+4+bh))/2-2;
-        d.print(g.width/2,base_y+icon_h/2+2,icons,ink,display::TextAlign::CENTER,nodes[node].icon);
+        auto packed=menu.dark?nodes[node].icon_dark:nodes[node].icon_light;
+        auto icon_ink=color_icons?Color((packed>>16)&255,(packed>>8)&255,packed&255):ink;
+        if(selected&&!menu.borders)icon_ink=ink;
+        d.print(g.width/2,base_y+icon_h/2+2,icons,icon_ink,display::TextAlign::CENTER,nodes[node].icon);
         d.print(g.width/2,base_y+icon_h+4,large,ink,display::TextAlign::TOP_CENTER,nodes[node].title);
         d.end_clipping();
       };
