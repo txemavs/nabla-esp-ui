@@ -42,8 +42,9 @@ Returns JSON describing the display and input configuration.
 | `format` | string | Pixel format: `"mono1"` or `"rgb332"` |
 | `input` | boolean | Whether encoder input is accepted |
 
-Future extensions may add `touch`, `encoder`, `token_required` or other
-capability flags. Consumers should ignore unknown fields.
+`touch` is an optional boolean (absent means false), independent of `input`.
+It advertises short LVGL taps, enabled explicitly with `touch: true`. Consumers
+must not infer touch support from screen size. Ignore unknown fields.
 
 ### `GET /mirror/frame`
 
@@ -112,6 +113,28 @@ Sends an encoder/button action to the device controller.
 
 Only one action can be pending at a time. The main loop processes it and clears
 the queue before another can be accepted.
+
+### `POST /mirror/touch`
+
+Optional LVGL short tap. Requires `touch: true` and `lvgl_id` in YAML.
+Send form fields `x` and `y` (non-negative decimal integers) with the same
+`X-Nabla-Token` header. Coordinates are logical framebuffer pixels:
+`0 <= x < width`, `0 <= y < height`. Do not apply physical touchscreen
+rotation/transforms again. Viewers must remove image borders/letterboxing
+and account for CSS scaling before converting to integer coordinates.
+
+Responses: 200 queued, 400 invalid coordinates, 401 invalid token, 409 busy
+or display not ready. Unsupported firmware does not advertise the capability.
+A queued tap can be cancelled by local physical touch or paused LVGL.
+
+Only one remote tap can be pending/pressed. LVGL emits a press for 80ms then
+releases it locally, even if the client disconnects. A tap waiting over 500ms
+before its first read expires. HTTP callbacks never call LVGL. Runtime changes
+that alter mirror dimensions disable admission until geometry matches again;
+the existing mirror runtime-rotation qualification limits still apply.
+
+No drag/held-input protocol is exposed yet. Do not retry a timeout: an action
+may already have executed. A 401 may be retried after fetching a fresh token.
 
 ### `GET /` and `GET /mirror`
 

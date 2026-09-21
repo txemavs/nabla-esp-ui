@@ -17,11 +17,17 @@ button:focus-visible{outline:2px solid white}p{line-height:1.5;font-size:14px}
 <p>La ruleta y estos controles manejan la misma pantalla. Teclado: ↑, ↓, Enter y Escape.</p>
 </main><footer id="status">Conectando…</footer><script>
 const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),status=document.querySelector('#status');
-let token='',busy=false,allowInput=false,width=128,height=64,format='mono1',capabilitiesReady=false;
-async function capabilities(){const r=await fetch("/mirror/capabilities",{cache:"no-store"});if(!r.ok)throw Error();const c=await r.json();allowInput=c.input;width=c.width||128;height=c.height||64;format=c.format||"mono1";canvas.width=width;canvas.height=height;canvas.style.aspectRatio=width+"/"+height;capabilitiesReady=true;document.querySelector(".controls").hidden=!allowInput;document.querySelector("main p").textContent=allowInput?"La ruleta y estos controles manejan la misma pantalla.":"Solo lectura: controla la pantalla desde el dispositivo.";}
+let token='',busy=false,allowInput=false,allowTouch=false,width=128,height=64,format='mono1',capabilitiesReady=false;
+async function capabilities(){const r=await fetch("/mirror/capabilities",{cache:"no-store"});if(!r.ok)throw Error();const c=await r.json();allowInput=c.input;allowTouch=c.touch===true;canvas.style.cursor=allowTouch?"pointer":"default";width=c.width||128;height=c.height||64;format=c.format||"mono1";canvas.width=width;canvas.height=height;canvas.style.aspectRatio=width+"/"+height;capabilitiesReady=true;document.querySelector(".controls").hidden=!allowInput;document.querySelector("main p").textContent=allowInput?"La ruleta y estos controles manejan la misma pantalla.":allowTouch?"Pulsa la imagen para tocar la pantalla. Arrastres no disponibles.":"Solo lectura: controla la pantalla desde el dispositivo.";}
 async function action(value){if(!allowInput||busy||!token)return;busy=true;try{
 const r=await fetch('/mirror/action',{method:'POST',headers:{'X-Nabla-Token':token},body:new URLSearchParams({action:value})});
 if(!r.ok)throw Error();}catch{status.textContent='No se pudo enviar el control'}finally{busy=false}}
+canvas.addEventListener('click',async e=>{
+if(!allowTouch||busy||!token)return;
+const box=canvas.getBoundingClientRect(),x=Math.floor((e.clientX-box.left)*width/box.width),y=Math.floor((e.clientY-box.top)*height/box.height);
+if(x<0||y<0||x>=width||y>=height)return;
+busy=true;try{const r=await fetch('/mirror/touch',{method:'POST',headers:{'X-Nabla-Token':token},body:new URLSearchParams({x,y})});if(!r.ok){if(r.status===401)token='';throw Error();}}catch{status.textContent='No se pudo enviar el toque'}finally{busy=false}
+});
 document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dataset.action));
 document.addEventListener('keydown',e=>{const a={ArrowUp:'up',ArrowDown:'down',Enter:'enter',Escape:'back'}[e.key];if(a){e.preventDefault();action(a)}});
 async function tick(){

@@ -37,6 +37,7 @@ nabla_display_mirror:
   height: 240
   color: true
   lvgl_id: nabla_lvgl
+  touch: true  # Optional short remote taps; defaults to false.
 ~~~
 
 Tested configuration sizes: OLED 128x64, ST7735 160x128, LVGL 240x240 and
@@ -45,9 +46,12 @@ It forwards every flush to LvglComponent::static_flush_cb, retaining the
 original display user data. Runtime rotation changes are not qualified:
 configure dimensions/orientation to match the active LVGL screen at startup.
 
-No on_action means read-only. Optional on_action receives up/down/enter/back;
+Without `on_action` and `touch`, the mirror is read-only. Optional on_action receives up/down/enter/back;
 map them to the existing controller. HTTP callbacks queue one pending action,
-executed by the main loop. No generic LVGL touch injection is implemented.
+executed by the main loop. Optional `touch: true` requires `lvgl_id` and registers
+a separate LVGL pointer. HTTP only queues coordinates; the LVGL input callback
+produces an 80ms press/release. Physical touch takes priority. Drags and long
+presses are not supported in this phase.
 Pixel geometry remains synchronized with physical input.
 
 ## Memory and transport
@@ -78,7 +82,9 @@ responsive/mirror roots. ESPHome web_server remains incompatible.
 - Large LVGL panel: OTA successful; real 480x320 color frame received and inspected.
 - T-Watch: OTA succeeded on 2026-09-21 using mirror revision 0429cdf; real
   240x240 RGB332 frame (57,600 bytes) received and visually inspected.
-  Capabilities report input=false; remote touch input is not implemented.
+  The original build reported input=false. On 2026-09-21 the touch build was
+  compiled and uploaded; touch=true and a remote tap opened Settings, with
+  a second tap on the triangle returning to the menu. Encoder input remains false.
 - Browser profile switching is a live equipment gallery, not a menu simulator.
 
 Hardware inversion/backlight effects after drawing are not mirrored. RGB332
