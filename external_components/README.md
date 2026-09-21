@@ -31,7 +31,10 @@ Do not use `main` or short SHAs for deployed installations.
 |-----------|------|--------|
 | `captive_portal` | Branded/forked ESPHome captive portal with network list and OTA | [README](captive_portal/README.md) |
 | `nabla_camera_fetch` | Background HTTPS JPEG fetcher for HA camera snapshots | [README](nabla_camera_fetch/README.md) |
+| `nabla_display_mirror` | HTTP endpoints for remote display viewing and input forwarding | [README](nabla_display_mirror/README.md) |
 | `nabla_ha` | Optional Home Assistant REST API client for light/switch control | [README](nabla_ha/README.md) |
+| `nabla_web` | Offline responsive menus for headless camera devices | [README](nabla_web/README.md) |
+| `nabla_web_service` | Optional responsive/mirror root coordination | [README](nabla_web_service/README.md) |
 | `nabla_navigation` | Declarative navigation tree and form metadata codegen | [README](nabla_navigation/README.md) |
 | `nabla_runtime` | Build-time C++ header exporter for reusable modules | [README](nabla_runtime/README.md) |
 | `nabla_wifi` | Optional primary Wi-Fi provisioning adapter | [README](nabla_wifi/README.md) |

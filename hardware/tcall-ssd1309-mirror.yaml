@@ -1,0 +1,15 @@
+# Optional mirror overlay; reuse the base T-Call wiring and replace only drawing.
+# The device composition supplies screen_mirror and its input mapping.
+packages:
+  base_hardware: !include tcall-ssd1309.yaml
+
+display:
+  - id: !extend disp
+    lambda: |-
+      auto &shell=nabla::compact_shell;
+      auto &surface=id(screen_mirror).begin(it);
+      shell.render(surface, shell.menu.font_family==0?id(compact_ubuntu_small):id(compact_small),
+        shell.menu.font_family==0?id(compact_ubuntu_body):id(compact_body),
+        shell.menu.font_family==0?id(compact_ubuntu_large):id(compact_large),
+        "${tr_compact_back}", "${tr_compact_editor_pending}");
+      id(screen_mirror).end();

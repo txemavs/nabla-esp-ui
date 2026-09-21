@@ -95,3 +95,7 @@ remain disabled until the required service/route is verified. See [vehicle topol
 See [BLE startup and peer-control implementation plan](BLE-STARTUP-PLAN.md) for startup messages, discovery/session
 boundaries, NablaNet handover and phased acceptance gates. It is a proposal,
 not an implemented BLE service or supported firmware configuration.
+
+## Web service and menu studio
+
+[Delivery plan](WEB-SERVICE-AND-STUDIO.md): optional YAML web capabilities, physical mirrors, a public multi-profile gallery and a validated menu-tree editor. Unified configuration, color capture and the editor remain planned.

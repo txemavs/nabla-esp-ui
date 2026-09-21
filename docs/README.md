@@ -28,6 +28,14 @@ the same specification into several guides.
 - [Component catalog](../components/README.md): reusable modules and dependencies.
 - [Brand](BRAND.md): triangle geometry and motion.
 
+## Browser views and Home Assistant
+
+- [Web service](../external_components/nabla_web_service/README.md): optional YAML modes.
+- [Mirror HTTP contract](platform/DISPLAY-MIRROR-CONTRACT.md): firmware/consumer boundary.
+- [Local gallery](../studio/README.md): select real connected displays.
+- [Nabla Control](https://github.com/txemavs/nabla-hacs): HA integration, panel and card.
+- [Studio plan](platform/WEB-SERVICE-AND-STUDIO.md): remaining simulator/editor work.
+
 ## Installation and future work
 
 - [Private installations](PRIVATE-INSTALLATIONS.md) and
