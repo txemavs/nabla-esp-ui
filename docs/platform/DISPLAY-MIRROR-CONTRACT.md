@@ -199,3 +199,11 @@ what is implemented and verified today.
 See the [nabla_display_mirror component](../../external_components/nabla_display_mirror/README.md)
 for ESPHome configuration. The component README covers YAML setup, memory usage
 and physical evidence. This document specifies the HTTP contract for consumers.
+
+## Optional MQTT address discovery
+
+[`nabla_presence`](../../external_components/nabla_presence/README.md) adds an
+independent `/nabla/identity` endpoint and MQTT identity/address hints. It does not
+change mirror frames, capabilities, tokens or input actions. Consumers retain the
+existing device identity while updating only a verified address. It is opt-in on
+both firmware and Nabla Control; availability still comes from HTTP polling.

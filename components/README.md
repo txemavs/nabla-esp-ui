@@ -143,3 +143,10 @@ preserves ESPHome's fallback-AP behavior. ESPHome 2026.8.2 is the tested baselin
 ## Physical display mirror
 
 [Monochrome mirror](../external_components/nabla_display_mirror/README.md): experimental 128x64 logical-pixel capture, canvas viewer and bounded shared-controller input. Qualified build and live frame/control checks on the OLED encoder assembly; no LVGL/color support yet.
+
+### MQTT presence (optional adapter)
+
+[`nabla_presence`](../external_components/nabla_presence/README.md) publishes
+bounded identity/IP hints and exposes a matching HTTP identity endpoint for Nabla
+Control. Requires the existing ESP32 Wi-Fi/MQTT transport; no UI or input mapping.
+The module README defines configuration, cadence, limits and validation status.
