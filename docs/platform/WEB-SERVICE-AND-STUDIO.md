@@ -16,8 +16,8 @@ Existing previews:
   MJPEG server, information and shared real Wi-Fi scanning.
 - nabla_display_mirror: mono1 and RGB332 draw-pass capture, plus an LVGL flush
   hook, canvas viewer and optional input to the physical controller.
-- OLED, ST7735 and the large LVGL panel have physical capture evidence. T-Watch
-  240x240 has build evidence; physical mirror verification is still pending.
+- OLED, ST7735, the large LVGL panel and T-Watch 240x240 have physical
+  capture evidence; the watch was verified after OTA on 2026-09-21.
 - nabla_web_service coordinates root routing with mode: responsive, mirror or
   both. Omit unused components for compile-time exclusion; enabled is not a key.
 - studio/ selects live devices. It does not simulate another screen resolution.
@@ -173,8 +173,8 @@ and hosting workflow. Publish support status and limitations. Confirm Back,
 focus restoration and tile/list transitions across profiles.
 
 Each phase is a reviewable PR with recorded evidence, not a large rewrite.
-W1 routing and the first W2 color captures are delivered. Next qualify the
-T-Watch mirror, rotation, reconnects and multi-viewer resource usage, then
+W1 routing and the first W2 color captures are delivered. Next qualify runtime
+rotation, reconnects and multi-viewer resource usage, then
 continue the W3 renderer feasibility work. Nabla Control supplies the HA live
 viewer; the independent studio remains the future menu authoring tool.
 

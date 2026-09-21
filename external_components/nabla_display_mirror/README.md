@@ -76,7 +76,9 @@ responsive/mirror roots. ESPHome web_server remains incompatible.
   selection; invalid token returned 401.
 - Kit1: USB write verified; real 160x128 frame received and visually inspected.
 - Large LVGL panel: OTA successful; real 480x320 color frame received and inspected.
-- T-Watch: 240x240 firmware compiled; physical verification pending device power.
+- T-Watch: OTA succeeded on 2026-09-21 using mirror revision 0429cdf; real
+  240x240 RGB332 frame (57,600 bytes) received and visually inspected.
+  Capabilities report input=false; remote touch input is not implemented.
 - Browser profile switching is a live equipment gallery, not a menu simulator.
 
 Hardware inversion/backlight effects after drawing are not mirrored. RGB332
