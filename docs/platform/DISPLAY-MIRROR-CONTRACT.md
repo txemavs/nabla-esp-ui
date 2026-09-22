@@ -54,12 +54,13 @@ Returns the raw framebuffer contents.
 **Headers**: `Cache-Control: no-store`
 
 **Error responses**:
-- `409 Conflict`: Frame not yet ready or allocation failed
-- `503 Service Unavailable`: Another frame request is already in progress
+- `409 Conflict`: Frame not yet ready
+- `503 Service Unavailable`: Rate-limited (minimum 500ms between requests) or
+  another frame transfer is in progress
 
-The frame endpoint uses chunked HTTP transfer with periodic task yields to
-prevent large frames from blocking concurrent connections. Only one frame
-request can be in flight at a time to limit memory and CPU contention.
+Frame requests are rate-limited and serialized to protect HTTP stack stability
+under concurrent ESPHome native API connections and mirror polling. Clients
+should implement backoff on 503 responses rather than tight retry loops.
 
 #### Byte layout
 

@@ -1,5 +1,5 @@
 // Capture logical pixels through the compact draw pass or the ESPHome LVGL flush callback.
-// Serves /mirror/frame with chunked TCP sends and yield to prevent HTTP starvation under concurrent load.
+// Rate-limits /mirror/frame to prevent HTTP starvation under concurrent API + polling load.
 #pragma once
 #include "esphome/core/component.h"
 #include "esphome/core/automation.h"
@@ -15,9 +15,6 @@
 #include "esphome/components/lvgl/lvgl_esphome.h"
 #endif
 #include <mutex>
-#include <esp_http_server.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
 namespace esphome::nabla_display_mirror {
 class Surface : public display::DisplayBuffer {
  public:
@@ -129,27 +126,24 @@ class Mirror : public Component,public AsyncWebHandler {
       auto *response=r->beginResponse(200,"text/plain",token_);response->addHeader("Cache-Control","no-store");r->send(response);return;
     }
     if(r->method()==HTTP_GET && url=="/mirror/frame"){
-      if(frame_inflight_.load(std::memory_order_acquire)){r->send(503);return;}
-      frame_inflight_.store(true,std::memory_order_release);
-      uint8_t *frame=nullptr;size_t len=0;
+      const uint32_t now=millis();
+      const uint32_t last=last_frame_send_ms_.load(std::memory_order_relaxed);
+      if(frame_send_active_.load(std::memory_order_acquire)){
+        if(now-last<frame_send_timeout_ms_){r->send(503);return;}
+        ESP_LOGW("mirror","Frame send timeout, resetting guard");
+        frame_send_active_.store(false,std::memory_order_release);
+      }
+      if(now-last<min_frame_interval_ms_){r->send(503);return;}
+      frame_send_active_.store(true,std::memory_order_release);
+      last_frame_send_ms_.store(now,std::memory_order_relaxed);
       {std::lock_guard<std::mutex> lock(mutex_);
-        if(!ready_){frame_inflight_.store(false,std::memory_order_release);r->send(409);return;}
-        frame=send_buffer_;len=surface_.length;memcpy(frame,snapshot_,len);
+        if(!ready_){frame_send_active_.store(false,std::memory_order_release);r->send(409);return;}
+        memcpy(send_buffer_,snapshot_,surface_.length);
       }
-      httpd_req_t *req=*r;
-      httpd_resp_set_status(req,"200 OK");
-      httpd_resp_set_type(req,"application/octet-stream");
-      httpd_resp_set_hdr(req,"Cache-Control","no-store");
-      static constexpr size_t CHUNK=4096;
-      const char *data=reinterpret_cast<const char*>(frame);
-      for(size_t sent=0;sent<len;){
-        size_t todo=std::min(CHUNK,len-sent);
-        if(httpd_resp_send_chunk(req,data+sent,todo)!=ESP_OK){frame_inflight_.store(false,std::memory_order_release);return;}
-        sent+=todo;
-        taskYIELD();
-      }
-      httpd_resp_send_chunk(req,nullptr,0);
-      frame_inflight_.store(false,std::memory_order_release);
+      auto *response=r->beginResponse(200,"application/octet-stream",send_buffer_,surface_.length);
+      response->addHeader("Cache-Control","no-store");
+      r->send(response);
+      frame_send_active_.store(false,std::memory_order_release);
       return;
     }
     if(r->method()==HTTP_POST && url=="/mirror/touch" && allow_touch_){
@@ -180,7 +174,10 @@ class Mirror : public Component,public AsyncWebHandler {
   }
  protected:
   Surface surface_;RAMAllocator<uint8_t> allocator_;uint8_t *snapshot_=nullptr;uint8_t *send_buffer_=nullptr;
-  std::atomic<bool> frame_inflight_{false};
+  std::atomic<bool> frame_send_active_{false};
+  std::atomic<uint32_t> last_frame_send_ms_{0};
+  static constexpr uint32_t min_frame_interval_ms_=500;
+  static constexpr uint32_t frame_send_timeout_ms_=5000;
   int width_=128,height_=64;bool color_=false;
 #ifdef NABLA_MIRROR_LVGL
   lvgl::LvglComponent *lvgl_=nullptr;

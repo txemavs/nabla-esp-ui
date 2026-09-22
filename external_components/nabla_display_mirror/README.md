@@ -60,17 +60,18 @@ Three persistent frame buffers use RAMAllocator (PSRAM preferred, internal RAM
 fallback): the drawing surface, the published snapshot, and a send buffer.
 A monochrome 128x64 frame is 1024 bytes; RGB332 frames are 20,480 / 57,600 /
 153,600 bytes for the three color sizes. Measure heap and input latency before
-raising frame rates or adding viewers; no prolonged load qualification yet.
+raising frame rates or adding viewers.
 
 GET /mirror/capabilities describes dimensions, format and input availability.
-GET /mirror/frame returns row-major mono1 (MSB first) or RGB332 bytes using
-chunked HTTP transfer with periodic task yields. This prevents large frames
-(e.g. 150KB for 480x320) from blocking the HTTP task and starving concurrent
-connections (ESPHome native API, other HTTP endpoints). Only one frame request
-can be in flight at a time; additional requests receive 503 Service Unavailable.
-The browser polls sequentially at up to 10 FPS monochrome or about 2.8 FPS color,
-excluding network latency. Hidden pages pause and disconnected pages retry.
-Snapshots are shared across viewers; capture currently still runs without them.
+GET /mirror/frame returns row-major mono1 (MSB first) or RGB332 bytes. Frame
+requests are rate-limited to 500ms minimum interval and serialized (one at a
+time) to protect HTTP stack stability under concurrent ESPHome native API and
+mirror polling. Additional requests within the interval or while another frame
+send is active receive 503 Service Unavailable. A 5-second timeout resets the
+send guard if a frame transfer appears stuck.
+
+The browser polls sequentially at up to ~2 FPS for large panels; hidden pages
+pause and disconnected pages retry. Snapshots are shared across viewers.
 
 Input uses a per-boot X-Nabla-Token, not user authentication. Use a trusted LAN
 or protected AP; do not expose private display contents on the public Internet.
