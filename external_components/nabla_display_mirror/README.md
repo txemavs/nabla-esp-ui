@@ -8,6 +8,44 @@ Compact Display API compositions use begin/end around their existing render
 call. LVGL compositions wrap the ESPHome flush callback and assemble partial
 rectangles, publishing when the last area is flushed. Neither draws the UI twice.
 
+## ESPHome native API incompatibility (large panels)
+
+**On large-panel devices (e.g. JC3248W535CN 480×320), HTTP frame serving and
+ESPHome native API (`api:`) are mutually exclusive.** Enabling both causes HTTP
+stack failure within seconds, regardless of frame size or polling rate.
+
+Field-tested failure modes (2026-09-22):
+- Chunked HTTP transfer with task yields — failed
+- Rate-limited sends (500ms interval) — failed  
+- Downscaled preview (9.6KB instead of 153KB) — failed
+
+Root cause: The ESP-IDF HTTP server and native API share TCP resources. Any
+HTTP frame transfer — even small previews — starves the stack when API is active.
+
+### Supported configurations
+
+| Mode | `api:` | Mirror | Use case |
+|------|--------|--------|----------|
+| **Mirror + MQTT** | disabled/omitted | frame polling OK | HA screen preview via Nabla Control |
+| **API + presence** | enabled | presence-only (no frame) | HA entity control, no screen preview |
+
+### Panel YAML guidance
+
+For HA screen preview on large panels, omit `api:` and use MQTT:
+
+```yaml
+# No api: section — use MQTT for entity state
+mqtt:
+  broker: !secret mqtt_broker
+  topic_prefix: nabla/control/panel
+
+nabla_display_mirror:
+  # ... frame serving works without api:
+```
+
+For HA entity control without screen preview, use `api:` and configure Nabla
+Control for presence-only mode (no `/mirror/frame` polling).
+
 ## Configuration
 
 The original 128x64 monochrome defaults remain compatible. Color capture uses

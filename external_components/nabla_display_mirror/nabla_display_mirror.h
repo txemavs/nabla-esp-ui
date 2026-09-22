@@ -1,5 +1,10 @@
 // Capture logical pixels through the compact draw pass or the ESPHome LVGL flush callback.
-// Large panels (>64KB) serve downscaled preview by default for HTTP stability with native API.
+//
+// IMPORTANT: On large panels (e.g. 480x320), HTTP frame serving and ESPHome native API (api:)
+// are mutually exclusive. Enabling both causes HTTP stack failure within seconds. Use one of:
+//   - Mirror polling + MQTT (no api:) — for HA screen preview
+//   - Native API + presence-only (no /mirror/frame polling) — for HA entity control
+// See README.md for details. Preview mode reduces bandwidth but does NOT fix API coexistence.
 #pragma once
 #include "esphome/core/component.h"
 #include "esphome/core/automation.h"
@@ -140,6 +145,10 @@ class Mirror : public Component,public AsyncWebHandler {
       auto *response=r->beginResponse(200,"text/plain",token_);response->addHeader("Cache-Control","no-store");r->send(response);return;
     }
     if(r->method()==HTTP_GET && url=="/mirror/frame"){
+      if(surface_.length>max_safe_frame_bytes_ && !frame_warning_logged_){
+        frame_warning_logged_=true;
+        ESP_LOGW("mirror","Large panel frame serving active. If ESPHome native API (api:) is also enabled, HTTP will fail. Use MQTT instead of api: for mirror polling, or disable mirror frame polling.");
+      }
       const uint32_t now=millis();
       const uint32_t last=last_frame_send_ms_.load(std::memory_order_relaxed);
       if(frame_send_active_.load(std::memory_order_acquire)){
@@ -213,7 +222,7 @@ class Mirror : public Component,public AsyncWebHandler {
   lv_indev_t *touch_indev_=nullptr;
 #endif
   std::mutex mutex_;bool ready_=false,compatible_=false,serve_root_=true,allow_input_=false;std::string token_,pending_;
-  bool allow_touch_=false,touch_ready_=false;
+  bool allow_touch_=false,touch_ready_=false,frame_warning_logged_=false;
   RemoteTap tap_;
   Trigger<std::string> trigger_;
 };

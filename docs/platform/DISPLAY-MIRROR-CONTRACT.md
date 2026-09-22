@@ -1,10 +1,26 @@
 # Display mirror HTTP contract
 
-Version: Phase 1 (2026-09-20). Related: [issue #34](https://github.com/txemavs/nabla-esp-ui/issues/34).
+Version: Phase 1 (2026-09-22). Related: [issue #34](https://github.com/txemavs/nabla-esp-ui/issues/34).
 
 The display mirror exposes logical framebuffer contents over HTTP for remote
 viewing and optional encoder input. Home Assistant or other consumers convert
 frames off-device; the ESP serves raw bytes without JPEG encoding.
+
+## ESPHome native API incompatibility
+
+**On large-panel devices (e.g. JC3248W535CN 480×320), HTTP frame serving and
+ESPHome native API (`api:`) are mutually exclusive.** Concurrent operation
+causes HTTP stack failure within seconds.
+
+| Configuration | Result |
+|--------------|--------|
+| Mirror frame polling + MQTT (no `api:`) | Works |
+| Native API + presence-only (no frame polling) | Works |
+| Native API + frame polling | **HTTP fails ~8s** |
+
+This is a fundamental resource conflict in the ESP32 TCP stack, not fixable by
+rate limiting, chunked transfer, or payload reduction. Panel YAMLs that need HA
+screen preview should omit `api:` and use MQTT for entity state.
 
 ## Reference profiles
 
