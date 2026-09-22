@@ -56,22 +56,36 @@ Pixel geometry remains synchronized with physical input.
 
 ## Memory and transport
 
-Three persistent frame buffers use RAMAllocator (PSRAM preferred, internal RAM
-fallback): the drawing surface, the published snapshot, and a send buffer.
-A monochrome 128x64 frame is 1024 bytes; RGB332 frames are 20,480 / 57,600 /
-153,600 bytes for the three color sizes. Measure heap and input latency before
-raising frame rates or adding viewers.
+Four persistent frame buffers use RAMAllocator (PSRAM preferred, internal RAM
+fallback): drawing surface, published snapshot, send buffer, and optional
+preview buffer. A monochrome 128x64 frame is 1024 bytes; RGB332 frames are
+20,480 / 57,600 / 153,600 bytes for the three color sizes.
 
-GET /mirror/capabilities describes dimensions, format and input availability.
-GET /mirror/frame returns row-major mono1 (MSB first) or RGB332 bytes. Frame
-requests are rate-limited to 500ms minimum interval and serialized (one at a
-time) to protect HTTP stack stability under concurrent ESPHome native API and
-mirror polling. Additional requests within the interval or while another frame
-send is active receive 503 Service Unavailable. A 5-second timeout resets the
-send guard if a frame transfer appears stuck.
+### Downscaled preview for large panels
 
-The browser polls sequentially at up to ~2 FPS for large panels; hidden pages
-pause and disconnected pages retry. Snapshots are shared across viewers.
+Panels with frames >32KB (e.g. 480×320 = 153KB) automatically serve a
+downscaled preview by default. This is critical for HTTP stability when
+ESPHome native API is active concurrently.
+
+| Panel | Full frame | Preview | Scale |
+|-------|------------|---------|-------|
+| 480×320 | 153,600 bytes | 120×80 = 9,600 bytes | 4× |
+| 240×240 | 57,600 bytes | 120×120 = 14,400 bytes | 2× |
+| 160×128 | 20,480 bytes | (no preview needed) | 1× |
+| 128×64 mono | 1,024 bytes | (no preview needed) | 1× |
+
+### Endpoints
+
+GET /mirror/capabilities returns width/height/format plus preview_width,
+preview_height, preview_scale when a preview is available.
+
+GET /mirror/frame returns the preview by default for large panels.
+Add `?full=1` to request full resolution (may cause HTTP issues under API load).
+Response header `X-Nabla-Preview: WxH` indicates preview dimensions.
+
+Frame requests are rate-limited to 100ms minimum interval and serialized.
+Additional requests receive 503 Service Unavailable. Clients should implement
+backoff rather than tight retry loops.
 
 Input uses a per-boot X-Nabla-Token, not user authentication. Use a trusted LAN
 or protected AP; do not expose private display contents on the public Internet.

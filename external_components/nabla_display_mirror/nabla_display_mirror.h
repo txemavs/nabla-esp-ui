@@ -1,5 +1,5 @@
 // Capture logical pixels through the compact draw pass or the ESPHome LVGL flush callback.
-// Rate-limits /mirror/frame to prevent HTTP starvation under concurrent API + polling load.
+// Large panels (>64KB) serve downscaled preview by default for HTTP stability with native API.
 #pragma once
 #include "esphome/core/component.h"
 #include "esphome/core/automation.h"
@@ -15,6 +15,7 @@
 #include "esphome/components/lvgl/lvgl_esphome.h"
 #endif
 #include <mutex>
+#include <algorithm>
 namespace esphome::nabla_display_mirror {
 class Surface : public display::DisplayBuffer {
  public:
@@ -74,6 +75,14 @@ class Mirror : public Component,public AsyncWebHandler {
     send_buffer_=allocator_.allocate(surface_.length);
     if(!surface_.pixels || !snapshot_ || !send_buffer_){ESP_LOGE("mirror","Frame buffer allocation failed");mark_failed();return;}
     memset(surface_.pixels,0,surface_.length);
+    if(surface_.length>max_safe_frame_bytes_ && color_){
+      preview_scale_=2;while((width_/preview_scale_)*(height_/preview_scale_)>max_safe_frame_bytes_)preview_scale_*=2;
+      preview_w_=width_/preview_scale_;preview_h_=height_/preview_scale_;
+      preview_len_=preview_w_*preview_h_;
+      preview_buffer_=allocator_.allocate(preview_len_);
+      if(!preview_buffer_){ESP_LOGW("mirror","Preview buffer allocation failed, full-res only");preview_scale_=0;}
+      else ESP_LOGI("mirror","Preview %dx%d (%zu bytes) for HTTP stability",preview_w_,preview_h_,preview_len_);
+    }
 #ifdef NABLA_MIRROR_LVGL
     if(lvgl_){
       auto *display=lvgl_->get_disp();
@@ -119,7 +128,12 @@ class Mirror : public Component,public AsyncWebHandler {
   void handleRequest(AsyncWebServerRequest *r) override {
     char url_buf[AsyncWebServerRequest::URL_BUF_SIZE];
     const auto url=r->url_to(url_buf);
-    if(url=="/mirror/capabilities"){auto json=str_sprintf("{\"input\":%s,\"touch\":%s,\"width\":%d,\"height\":%d,\"format\":\"%s\"}",allow_input_?"true":"false",allow_touch_?"true":"false",width_,height_,color_?"rgb332":"mono1");r->send(200,"application/json",json.c_str());return;}
+    if(url=="/mirror/capabilities"){
+      std::string json;
+      if(preview_scale_>0)json=str_sprintf("{\"input\":%s,\"touch\":%s,\"width\":%d,\"height\":%d,\"format\":\"%s\",\"preview_width\":%d,\"preview_height\":%d,\"preview_scale\":%d}",allow_input_?"true":"false",allow_touch_?"true":"false",width_,height_,color_?"rgb332":"mono1",preview_w_,preview_h_,preview_scale_);
+      else json=str_sprintf("{\"input\":%s,\"touch\":%s,\"width\":%d,\"height\":%d,\"format\":\"%s\"}",allow_input_?"true":"false",allow_touch_?"true":"false",width_,height_,color_?"rgb332":"mono1");
+      r->send(200,"application/json",json.c_str());return;
+    }
     if(url=="/mirror/action" && !allow_input_){r->send(404);return;}
     if(r->method()==HTTP_GET && (url=="/" || url=="/mirror")){r->send(200,"text/html; charset=utf-8",MIRROR_PAGE);return;}
     if(r->method()==HTTP_GET && url=="/mirror/token"){
@@ -134,14 +148,27 @@ class Mirror : public Component,public AsyncWebHandler {
         frame_send_active_.store(false,std::memory_order_release);
       }
       if(now-last<min_frame_interval_ms_){r->send(503);return;}
+      bool want_full=r->hasParam("full");
+      bool use_preview=preview_scale_>0 && !want_full;
       frame_send_active_.store(true,std::memory_order_release);
       last_frame_send_ms_.store(now,std::memory_order_relaxed);
+      uint8_t *out_buf;size_t out_len;
       {std::lock_guard<std::mutex> lock(mutex_);
         if(!ready_){frame_send_active_.store(false,std::memory_order_release);r->send(409);return;}
-        memcpy(send_buffer_,snapshot_,surface_.length);
+        if(use_preview){
+          for(int py=0;py<preview_h_;++py)for(int px=0;px<preview_w_;++px){
+            int sx=px*preview_scale_,sy=py*preview_scale_;
+            preview_buffer_[py*preview_w_+px]=snapshot_[sy*width_+sx];
+          }
+          out_buf=preview_buffer_;out_len=preview_len_;
+        }else{
+          memcpy(send_buffer_,snapshot_,surface_.length);
+          out_buf=send_buffer_;out_len=surface_.length;
+        }
       }
-      auto *response=r->beginResponse(200,"application/octet-stream",send_buffer_,surface_.length);
+      auto *response=r->beginResponse(200,"application/octet-stream",out_buf,out_len);
       response->addHeader("Cache-Control","no-store");
+      if(use_preview)response->addHeader("X-Nabla-Preview",str_sprintf("%dx%d",preview_w_,preview_h_).c_str());
       r->send(response);
       frame_send_active_.store(false,std::memory_order_release);
       return;
@@ -174,10 +201,12 @@ class Mirror : public Component,public AsyncWebHandler {
   }
  protected:
   Surface surface_;RAMAllocator<uint8_t> allocator_;uint8_t *snapshot_=nullptr;uint8_t *send_buffer_=nullptr;
+  uint8_t *preview_buffer_=nullptr;int preview_w_=0,preview_h_=0,preview_scale_=0;size_t preview_len_=0;
   std::atomic<bool> frame_send_active_{false};
   std::atomic<uint32_t> last_frame_send_ms_{0};
-  static constexpr uint32_t min_frame_interval_ms_=500;
+  static constexpr uint32_t min_frame_interval_ms_=100;
   static constexpr uint32_t frame_send_timeout_ms_=5000;
+  static constexpr size_t max_safe_frame_bytes_=32768;
   int width_=128,height_=64;bool color_=false;
 #ifdef NABLA_MIRROR_LVGL
   lvgl::LvglComponent *lvgl_=nullptr;
