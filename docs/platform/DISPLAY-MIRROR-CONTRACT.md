@@ -14,13 +14,22 @@ causes HTTP stack failure within seconds.
 
 | Configuration | Result |
 |--------------|--------|
-| Mirror frame polling + MQTT (no `api:`) | Works |
+| Mirror preview + MQTT (API off) | **Supported** — validated on Panel 480 |
 | Native API + presence-only (no frame polling) | Works |
-| Native API + frame polling | **HTTP fails ~8s** |
+| Native API + frame polling (any size) | **Unsupported — HTTP fails ~8s** |
 
 This is a fundamental resource conflict in the ESP32 TCP stack, not fixable by
-rate limiting, chunked transfer, or payload reduction. Panel YAMLs that need HA
-screen preview should omit `api:` and use MQTT for entity state.
+rate limiting, chunked transfer, or payload reduction.
+
+### Supported HA path for large panels
+
+Validated configuration (Panel 480 / JC3248W535CN):
+- **ESPHome native API: OFF** — HA config entry disabled (not deleted)
+- **Entity control: MQTT only** — lights via `nabla/control` topics
+- **Nabla Control: HTTP mirror ON** — preview mode (120×80), no `?full=1`
+
+Panel YAML omits `api:` section and uses MQTT for entity state. Nabla Control
+polls `/mirror/frame` (preview) and `/mirror/capabilities` without issues.
 
 ## Reference profiles
 

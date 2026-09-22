@@ -29,22 +29,36 @@ HTTP frame transfer — even small previews — starves the stack when API is ac
 | **Mirror + MQTT** | disabled/omitted | frame polling OK | HA screen preview via Nabla Control |
 | **API + presence** | enabled | presence-only (no frame) | HA entity control, no screen preview |
 
-### Panel YAML guidance
+### Supported HA path for large panels
 
-For HA screen preview on large panels, omit `api:` and use MQTT:
+The validated configuration for Panel 480 (JC3248W535CN @ 10.10.10.40):
+
+1. **ESPHome native API: OFF** — disable or omit the HA config entry
+2. **Entity control: MQTT only** — lights via `nabla/control` topics
+3. **Nabla Control: HTTP mirror ON** — preview mode (120×80), no `?full=1`
 
 ```yaml
-# No api: section — use MQTT for entity state
+# Panel YAML — no api: section
 mqtt:
   broker: !secret mqtt_broker
   topic_prefix: nabla/control/panel
 
 nabla_display_mirror:
-  # ... frame serving works without api:
+  id: screen_mirror
+  width: 480
+  height: 320
+  color: true
+  lvgl_id: nabla_lvgl
 ```
 
-For HA entity control without screen preview, use `api:` and configure Nabla
-Control for presence-only mode (no `/mirror/frame` polling).
+In Home Assistant, keep the ESPHome config entry for this device **disabled**
+(not deleted — disabled). Use Nabla Control custom component for mirror preview
+and MQTT for entity state/commands.
+
+### Alternative: API without screen preview
+
+If native API is required, configure Nabla Control for **presence-only** mode
+(disable `/mirror/frame` polling). Screen preview is unavailable in this mode.
 
 ## Configuration
 
