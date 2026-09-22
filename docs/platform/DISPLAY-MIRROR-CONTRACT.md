@@ -55,6 +55,11 @@ Returns the raw framebuffer contents.
 
 **Error responses**:
 - `409 Conflict`: Frame not yet ready or allocation failed
+- `503 Service Unavailable`: Another frame request is already in progress
+
+The frame endpoint uses chunked HTTP transfer with periodic task yields to
+prevent large frames from blocking concurrent connections. Only one frame
+request can be in flight at a time to limit memory and CPU contention.
 
 #### Byte layout
 

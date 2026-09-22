@@ -1,4 +1,5 @@
 // Capture logical pixels through the compact draw pass or the ESPHome LVGL flush callback.
+// Serves /mirror/frame with chunked TCP sends and yield to prevent HTTP starvation under concurrent load.
 #pragma once
 #include "esphome/core/component.h"
 #include "esphome/core/automation.h"
@@ -8,11 +9,15 @@
 #include "mirror_page.h"
 #include <cstring>
 #include <cstdlib>
+#include <atomic>
 #include "remote_tap.h"
 #ifdef NABLA_MIRROR_LVGL
 #include "esphome/components/lvgl/lvgl_esphome.h"
 #endif
 #include <mutex>
+#include <esp_http_server.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 namespace esphome::nabla_display_mirror {
 class Surface : public display::DisplayBuffer {
  public:
@@ -69,7 +74,8 @@ class Mirror : public Component,public AsyncWebHandler {
   void setup() override {
     surface_.configure(width_,height_,color_);
     snapshot_=allocator_.allocate(surface_.length);
-    if(!surface_.pixels || !snapshot_){ESP_LOGE("mirror","Frame buffer allocation failed");mark_failed();return;}
+    send_buffer_=allocator_.allocate(surface_.length);
+    if(!surface_.pixels || !snapshot_ || !send_buffer_){ESP_LOGE("mirror","Frame buffer allocation failed");mark_failed();return;}
     memset(surface_.pixels,0,surface_.length);
 #ifdef NABLA_MIRROR_LVGL
     if(lvgl_){
@@ -123,10 +129,28 @@ class Mirror : public Component,public AsyncWebHandler {
       auto *response=r->beginResponse(200,"text/plain",token_);response->addHeader("Cache-Control","no-store");r->send(response);return;
     }
     if(r->method()==HTTP_GET && url=="/mirror/frame"){
-      auto *frame=allocator_.allocate(surface_.length);if(!frame){r->send(409);return;}
-      {std::lock_guard<std::mutex> lock(mutex_);if(!ready_){allocator_.deallocate(frame,surface_.length);r->send(409);return;}memcpy(frame,snapshot_,surface_.length);}
-      auto *response=r->beginResponse(200,"application/octet-stream",frame,surface_.length);
-      response->addHeader("Cache-Control","no-store");r->send(response);allocator_.deallocate(frame,surface_.length);return;
+      if(frame_inflight_.load(std::memory_order_acquire)){r->send(503);return;}
+      frame_inflight_.store(true,std::memory_order_release);
+      uint8_t *frame=nullptr;size_t len=0;
+      {std::lock_guard<std::mutex> lock(mutex_);
+        if(!ready_){frame_inflight_.store(false,std::memory_order_release);r->send(409);return;}
+        frame=send_buffer_;len=surface_.length;memcpy(frame,snapshot_,len);
+      }
+      httpd_req_t *req=*r;
+      httpd_resp_set_status(req,"200 OK");
+      httpd_resp_set_type(req,"application/octet-stream");
+      httpd_resp_set_hdr(req,"Cache-Control","no-store");
+      static constexpr size_t CHUNK=4096;
+      const char *data=reinterpret_cast<const char*>(frame);
+      for(size_t sent=0;sent<len;){
+        size_t todo=std::min(CHUNK,len-sent);
+        if(httpd_resp_send_chunk(req,data+sent,todo)!=ESP_OK){frame_inflight_.store(false,std::memory_order_release);return;}
+        sent+=todo;
+        taskYIELD();
+      }
+      httpd_resp_send_chunk(req,nullptr,0);
+      frame_inflight_.store(false,std::memory_order_release);
+      return;
     }
     if(r->method()==HTTP_POST && url=="/mirror/touch" && allow_touch_){
       auto token=r->get_header("X-Nabla-Token");if(!token || *token!=token_){r->send(401);return;}
@@ -155,7 +179,8 @@ class Mirror : public Component,public AsyncWebHandler {
     if(!action.empty())trigger_.trigger(action);
   }
  protected:
-  Surface surface_;RAMAllocator<uint8_t> allocator_;uint8_t *snapshot_=nullptr;
+  Surface surface_;RAMAllocator<uint8_t> allocator_;uint8_t *snapshot_=nullptr;uint8_t *send_buffer_=nullptr;
+  std::atomic<bool> frame_inflight_{false};
   int width_=128,height_=64;bool color_=false;
 #ifdef NABLA_MIRROR_LVGL
   lvgl::LvglComponent *lvgl_=nullptr;
