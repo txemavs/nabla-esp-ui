@@ -135,3 +135,19 @@ preserves ESPHome's fallback-AP behavior. ESPHome 2026.8.2 is the tested baselin
 ## T-Watch diagnostics
 
 [twatch-diag](twatch-diag/README.md) binds the square example to bounded motor/IR tests, battery voltage and identified BMA423 presence. The PEK adapter decodes PMU key events. ESPHome 2026.8.2 compilation passed; physical validation and revision confirmation are pending. See the module README for dependencies, refresh rates, input behavior and limitations.
+
+
+## Audio preparation
+
+[Audio implementation contract](../docs/platform/AUDIO.md) defines the optional
+shared Bluetooth lifecycle, HFP roles and local audio adapters for T-Watch and
+T-Call. The [voice-session helper](voice-session/README.md) provides host-tested session
+states and bounded PCM buffering. HFP and Linux transport are still planned,
+not an available ESPHome voice service or verified audio capability.
+
+
+### Experimental Bluetooth audio
+
+[nabla_bt_audio](../external_components/nabla_bt_audio/README.md) provides HFP
+discovery, pairing and service connection. Audible playback and Assist are not
+verified. See [handoff](../docs/platform/AUDIO-STATUS.md) before resuming.

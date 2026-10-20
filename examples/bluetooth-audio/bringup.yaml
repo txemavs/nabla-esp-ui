@@ -1,0 +1,15 @@
+# Compile-only HFP fixture; no network or installation bindings.
+esphome:
+  name: nabla-audio-bringup
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+logger:
+external_components:
+  - source:
+      type: local
+      path: ../../external_components
+    components: [nabla_bt_audio]
+nabla_bt_audio:
+  id: bt_audio
