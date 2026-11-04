@@ -124,6 +124,8 @@ See the [component catalog](components/README.md) and
 
 ## Documentation and contributor language
 
+> **IMPORTANT: Rule zero.** Look first and reuse: before building any new system, helper, path or format, search this repo and the other Nabla repos and reuse or extend what exists. No parallel systems, no stopgap fixes; fix the root cause in the shared generic path. See [AGENTS.md](AGENTS.md).
+
 Project documentation, comments, help and new identifiers use English. UI locale
 resources may provide matching English/Spanish translations; user names and
 bindings remain user-owned. Conversations and explicitly Spanish issue threads
