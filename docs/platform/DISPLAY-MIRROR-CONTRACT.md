@@ -1,10 +1,35 @@
 # Display mirror HTTP contract
 
-Version: Phase 1 (2026-09-20). Related: [issue #34](https://github.com/txemavs/nabla-esp-ui/issues/34).
+Version: Phase 1 (2026-09-22). Related: [issue #34](https://github.com/txemavs/nabla-esp-ui/issues/34).
 
 The display mirror exposes logical framebuffer contents over HTTP for remote
 viewing and optional encoder input. Home Assistant or other consumers convert
 frames off-device; the ESP serves raw bytes without JPEG encoding.
+
+## ESPHome native API incompatibility
+
+**On large-panel devices (e.g. JC3248W535CN 480×320), HTTP frame serving and
+ESPHome native API (`api:`) are mutually exclusive.** Concurrent operation
+causes HTTP stack failure within seconds.
+
+| Configuration | Result |
+|--------------|--------|
+| Mirror preview + MQTT (API off) | **Supported** — validated on Panel 480 |
+| Native API + presence-only (no frame polling) | Works |
+| Native API + frame polling (any size) | **Unsupported — HTTP fails ~8s** |
+
+This is a fundamental resource conflict in the ESP32 TCP stack, not fixable by
+rate limiting, chunked transfer, or payload reduction.
+
+### Supported HA path for large panels
+
+Validated configuration (Panel 480 / JC3248W535CN):
+- **ESPHome native API: OFF** — HA config entry disabled (not deleted)
+- **Entity control: MQTT only** — lights via `nabla/control` topics
+- **Nabla Control: HTTP mirror ON** — preview mode (120×80), no `?full=1`
+
+Panel YAML omits `api:` section and uses MQTT for entity state. Nabla Control
+polls `/mirror/frame` (preview) and `/mirror/capabilities` without issues.
 
 ## Reference profiles
 
@@ -53,8 +78,34 @@ Returns the raw framebuffer contents.
 **Response**: `200 OK`, `Content-Type: application/octet-stream`  
 **Headers**: `Cache-Control: no-store`
 
+**Query parameters**:
+- `full=1`: Request full resolution instead of preview (large panels only)
+
+**Response headers** (preview mode):
+- `X-Nabla-Preview: WxH`: Indicates preview dimensions when serving downscaled frame
+
 **Error responses**:
-- `409 Conflict`: Frame not yet ready or allocation failed
+- `409 Conflict`: Frame not yet ready
+- `503 Service Unavailable`: Rate-limited (minimum 100ms) or another transfer in progress
+
+### Downscaled preview for large panels
+
+Panels with frames larger than 32KB automatically serve a downscaled preview
+by default. This prevents HTTP stack exhaustion when ESPHome native API
+(port 6053) is active concurrently with mirror polling.
+
+| Panel | Full frame | Preview | Scale |
+|-------|------------|---------|-------|
+| 480×320 | 153,600 bytes | 120×80 = 9,600 bytes | 4× |
+| 240×240 | 57,600 bytes | 120×120 = 14,400 bytes | 2× |
+| 160×128 | 20,480 bytes | (direct, no preview) | 1× |
+
+The preview uses nearest-neighbor downsampling. To request full resolution,
+add `?full=1` — but this may cause HTTP timeouts under concurrent API load.
+Full resolution is not recommended when ESPHome native API is enabled.
+
+Capabilities response includes `preview_width`, `preview_height`, and
+`preview_scale` fields when a preview is configured.
 
 #### Byte layout
 
