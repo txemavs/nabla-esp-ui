@@ -50,3 +50,10 @@ Both Wi-Fi renderers have an editor focus path. Generic forms define optional
 LEFT/RIGHT adjustments; UP/DOWN/ENTER remains sufficient. Field/dialog ESC restores
 its invoking focus before a subsequent ESC leaves the form. Remote input remains planned.
 See [component/input plan](../docs/platform/COMPONENTS-AND-INPUT.md) for the target.
+
+## Experimental Bluetooth classic input
+
+The optional nabla_bt_keyboard adapter queues HID key presses into the UI loop.
+The T-Watch keyboard fixture maps navigation keys to existing scripts and offers
+limited Latin text entry in Wi-Fi fields. It requires an original ESP32 and a
+boot-protocol keyboard. See [limitations](../external_components/nabla_bt_keyboard/README.md).

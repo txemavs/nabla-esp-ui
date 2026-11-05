@@ -186,3 +186,9 @@ substitutions:
   tr_twatch_ir_sent: "IR enviado"
   tr_twatch_vibrated: "Vibró"
   tr_normal_mode: "Modo normal"
+
+  # Optional keyboard connection menu.
+  tr_bt_keyboards: "Teclados"
+  tr_bt_search: "Buscar"
+  tr_bt_disconnect: "Desconectar"
+  tr_bt_forget: "Olvidar"
